@@ -1,0 +1,44 @@
+TITLE: Analysis 2+3
+DATA: FILE = analysis3_suppl3_S1.dat;
+VARIABLE:
+NAMES = ID WB content stressed lonely
+FR SO family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = WB
+FR SO family weak_ties
+weekend E;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = E;
+MISSING = .;
+DEFINE: CENTER E (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Well-being is predicted by friends and roommates, the slope is random
+S1 | WB ON FR;
+! Well-being is predicted by significant others, the slope is random
+S2 | WB ON SO;
+! Well-being is predicted by family, the slope is random
+S3 | WB ON family;
+! Well-being is predicted by weak ties, the slope is random
+S4 | WB ON weak_ties;
+! Control for weekend
+WB ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+WB S1-S4 WITH WB S1-S4;
+! The intercept is predicted by friends and roommates
+WB ON FR;
+! The intercept is predicted by significant others
+WB ON SO;
+! The intercept is predicted by family
+WB ON family;
+! The intercept is predicted by weak ties
+WB ON weak_ties;
+! The intercept is predicted by extraversion
+WB ON E;
+! The slopes are predicted by extraversion
+S1-S4 ON E;
+OUTPUT: STDYX STDY TECH8;

@@ -1,0 +1,969 @@
+Mplus VERSION 8.5 (Mac)
+MUTHEN & MUTHEN
+03/18/2022   5:53 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE: Analysis 4
+  DATA: FILE = analysis4+5_suppl1_S1.dat;
+  VARIABLE:
+  NAMES = ID WB content stressed lonely
+  TVC TCE SN peers family weak_ties
+  E A C N O gender ethnicity SES weekend;
+  USEVARIABLES = WB
+  TCE SN family weak_ties
+  weekend;
+  CLUSTER = ID;
+  WITHIN = TCE SN family weak_ties weekend;
+  MISSING = .;
+  DEFINE:
+  CENTER TCE (GROUPMEAN);
+  CENTER SN (GROUPMEAN);
+  CENTER family (GROUPMEAN);
+  CENTER weak_ties (GROUPMEAN);
+  ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+  BITERATIONS = (10000); PROCESSORS = 2;
+  MODEL:
+  %WITHIN%
+  ! Well-being is predicted by TCE, the slope is random
+  S1 | WB ON TCE;
+  ! Well-being is predicted by SN, the slope is random
+  S2 | WB ON SN;
+  ! Well-being is predicted by family, the slope is random
+  S3 | WB ON family;
+  ! Well-being is predicted by weak ties, the slope is random
+  S4 | WB ON weak_ties;
+  ! Control for weekend
+  WB ON weekend;
+  %BETWEEN%
+  ! Covariance between intercept and slopes
+  WB S1-S4 WITH WB S1-S4;
+  OUTPUT: STDYX STDY TECH8;
+
+
+
+*** WARNING in VARIABLE command
+  Note that only the first 8 characters of variable names are used in the output.
+  Shorten variable names to avoid any confusion.
+*** WARNING
+  One or more individual-level variables have no variation within a
+  cluster for the following clusters.
+
+     Variable   Cluster IDs with no within-cluster variation
+
+      WB          15 760 393 808 405 423 213 436 870 893 907 468 114 496 115 63 979 1017 1019
+                  118 1051 541 124 554 563 578 580 287 5 1265 635 1278 85 37 1308 1310 335 1354
+                  44 498 660 388 668 1024 711 1086 422 24 1249 867 263 1346 903 520 823 317 883
+                  125
+      WEEKEND     694 702 704 710 351 200 722 359 361 747 752 201 106 760 389 391 393 204 400
+                  805 810 405 209 417 838 25 423 213 62 443 893 217 907 452 458 927 466 468 218
+                  934 938 941 946 227 114 958 496 115 234 116 975 63 979 239 1007 1009 1017 1019
+                  1026 118 1033 1043 1051 528 68 541 1074 1077 1081 1087 124 1092 546 554 29 30
+                  253 563 1119 1126 1127 564 575 1151 576 1157 578 580 135 589 266 136 144 603
+                  74 287 609 5 611 33 1224 292 1231 162 1242 1250 36 635 640 1278 85 86 169 37
+                  1308 1310 335 1317 1318 1333 665 1337 1354 1373 672 195 345 623 480 269 639
+                  226 275 498 79 655 667 978 983 1000 1008 518 684 1024 692 693 1044 53 706 707
+                  1070 713 401 402 732 742 1118 297 553 1132 93 207 308 772 421 779 569 794 1189
+                  577 24 322 327 1232 1237 819 824 49 1261 837 337 606 854 862 867 179 263 1339
+                  1346 265 613 1368 898 1382 622 1389 913 316 895 1117 724 103 900 1131 40 1136
+                  55 520 8 173 632 1165 341 220 1197 1205 1208 1209 649 348 350 995 225 187 1252
+                  1258 1013 1015 457 1273 372 375 1049 839 376 1056 1311 230 487 1327 579 698
+                  1352 1365 20 155 157 876 69 502 627 80 633 219 273 500 370 321 653 750 1066
+                  437 378 661 334 383 762 442 286 917 918 924 931 395 791 1125 793 955 1344 956
+                  145 1366 474 52 865 965 970 171 982 994 712 896 497 550 1295 1018 41 325 1037
+                  251 681 1065 105 1349 126 1222 771 109 804 152 1028 212 329 28 1149 58 536 789
+                  1027 1129 656 142 976 1064 857 621 803 868 1361 588 279 618 829 985 939 174
+                  1238 1312 1204 233 1254 516 214 406 1251 897 1320 481 1302 921 1319
+
+*** WARNING
+  Data set contains cases with missing on all variables except
+  x-variables.  These cases were not included in the analysis.
+  Number of cases with missing on all variables except x-variables:  2
+   3 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+Analysis 4
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                        6700
+
+Number of dependent variables                                    1
+Number of independent variables                                  5
+Number of continuous latent variables                            4
+
+Observed dependent variables
+
+  Continuous
+   WB
+
+Observed independent variables
+   TCE         SN          FAMILY      WEAK_TIE    WEEKEND
+
+Continuous latent variables
+   S1          S2          S3          S4
+
+Variables with special functions
+
+  Cluster variable      ID
+
+  Within variables
+   TCE         SN          FAMILY      WEAK_TIE    WEEKEND
+
+  Centering (GROUPMEAN)
+   TCE         SN          FAMILY      WEAK_TIE
+
+
+Estimator                                                    BAYES
+Specifications for Bayesian Estimation
+  Point estimate                                            MEDIAN
+  Number of Markov chain Monte Carlo (MCMC) chains               2
+  Random seed for the first chain                                0
+  Starting value information                           UNPERTURBED
+  Algorithm used for Markov chain Monte Carlo           GIBBS(PX1)
+  Convergence criterion                                  0.500D-01
+  Maximum number of iterations                               50000
+  K-th iteration used for thinning                               1
+
+Input data file(s)
+  analysis4+5_suppl1_S1.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of clusters                       1203
+
+       Size (s)    Cluster ID with Size s
+
+          1        4 7 14 18 22 31 54 57 71 73 76 77 81 87 92 99 108 110
+                   117 123 130 151 154 160 165 167 168 183 189 199 202
+                   210 215 224 228 229 235 237 240 241 242 250 252 261
+                   272 281 282 290 291 300 301 305 309 311 328 331 339
+                   343 347 358 362 373 399 403 412 419 424 438 444 476
+                   478 491 494 499 501 504 506 507 522 535 543 555 559
+                   560 582 587 591 597 599 604 607 610 612 617 619 624
+                   637 643 644 645 658 663 670 675 682 709 714 717 740
+                   744 754 759 761 773 778 790 799 809 812 818 834 843
+                   848 850 851 860 884 885 889 894 899 916 919 929 932
+                   933 943 950 957 959 966 973 974 977 996 1004 1032 1059
+                   1067 1069 1071 1091 1094 1108 1111 1112 1113 1115 1142
+                   1143 1154 1158 1159 1167 1168 1169 1171 1172 1174 1185
+                   1186 1193 1199 1203 1211 1213 1228 1239 1259 1267 1269
+                   1275 1280 1288 1290 1294 1304 1316 1336 1356 1379 1384
+                   1388 1397
+          2        685 694 699 702 704 15 710 351 200 722 359 361 745 747
+                   752 201 106 760 389 391 393 204 798 400 801 805 808
+                   206 810 405 209 417 836 838 25 420 423 213 436 870 62
+                   441 443 893 217 451 907 452 458 927 466 468 218 934
+                   938 941 113 946 227 114 958 496 115 234 116 975 63 979
+                   239 515 1007 1009 1017 1019 1026 118 1033 1043 1051
+                   1055 525 528 68 541 1074 1077 1081 1087 124 1092 546
+                   554 29 30 253 563 1119 1126 1127 564 575 1151 576 1157
+                   578 580 260 135 589 266 136 144 603 74 287 609 5 611
+                   33 1224 292 1231 162 1242 1248 1250 36 1265 635 166
+                   1270 640 1278 85 86 169 654 37 1308 1310 335 1317 1318
+                   1333 665 1337 1354 44 1373 672 195 676 345
+          3        623 480 923 488 636 269 639 226 495 275 942 498 79 947
+                   655 657 377 660 961 380 664 388 667 668 978 66 983 512
+                   1000 514 1006 146 1008 518 684 51 1020 1024 692 693
+                   523 398 1044 527 703 53 706 707 1070 530 532 711 1080
+                   713 1086 17 401 719 402 1096 1099 1101 731 732 735 545
+                   742 1118 297 1120 1122 547 553 1132 1137 748 299 1147
+                   26 93 207 308 772 1162 1163 421 566 779 784 786 569
+                   1183 794 570 1189 422 98 577 24 430 322 327 440 1232
+                   1237 819 822 1247 824 1249 101 49 1261 1262 837 259
+                   600 446 337 606 854 856 178 861 1297 862 1306 867 456
+                   1313 871 874 880 882 179 263 1339 1346 265 613 1368
+                   78 898 1382 268 1386 622 1389 1390 913
+          4        1104 120 605 313 316 895 1117 724 103 900 903 411 910
+                   1128 1130 1131 40 1136 55 1138 520 743 8 1148 262 111
+                   1156 526 751 173 1160 629 632 1165 634 341 764 88 531
+                   775 1182 429 534 220 968 346 1197 1198 542 792 1205
+                   1208 1209 649 222 1219 348 350 987 995 137 225 139 1245
+                   187 34 815 666 1252 1257 1258 1012 1013 1015 365 457
+                   367 827 1273 830 372 568 1282 1038 191 375 1049 1301
+                   839 376 1056 845 1311 1060 1063 230 487 1327 1328 1330
+                   50 1335 579 698 1075 1342 490 1351 1352 196 586 1365
+                   1083 20 1 155 157 876 203 69 502 1102 758
+          5        826 19 828 408 833 626 627 307 630 80 633 67 847 418
+                   238 219 273 500 370 1210 572 1039 1214 321 864 1225
+                   646 176 653 1236 746 221 95 750 1066 285 437 378 825
+                   661 334 383 762 442 901 902 1268 767 769 286 119 1276
+                   914 1279 445 1100 1284 1285 1287 917 918 1293 390 161
+                   924 783 60 931 395 787 677 1315 791 396 1125 793 3 945
+                   796 190 948 949 687 955 1344 956 691 1145 537 145 1357
+                   1359 1150 1366 474 1369 1153 695 696 52 232 701 304
+                   823 484
+          6        1229 94 700 1235 642 107 482 865 1244 962 965 426 427
+                   970 171 1256 872 708 392 878 1121 540 982 317 883 991
+                   994 712 356 1133 357 890 797 716 319 896 718 497 288
+                   550 1295 1018 41 325 906 814 192 244 1037 741 267 448
+                   147 1046 511 251 679 681 83 930 832 1065 1191 105 1349
+                   340 1068 1353 753 1202 686 631 459 465 1367 255 257
+                   126 284 1216 581 1220 1222 771 952 954
+          7        990 56 993 194 1271 795 1089 858 593 641 1178 1180 109
+                   1098 509 470 866 1291 804 1103 1194 1195 602 1107 940
+                   1307 435 647 342 477 1314 152 879 1028 258 1324 439
+                   198 820 1332 565 1041 212 763 1227 1045 138 302 415
+                   283 573 1057 354 1240 329 1243 533 28 1149 58 536 1372
+                   1152 82 6 1155 911 789 584 338 1392 364
+          8        782 1277 1109 1187 1027 1190 129 366 1114 492 737 450
+                   529 184 394 844 1207 1124 963 368 10 1212 245 1129 969
+                   141 656 374 142 1322 1323 976 1064 1141 857 800 621
+                   803 539 156 926 1073 104 159 271 1350 868 410 89 384
+                   1355 1005 936 1253 1361 1255 1090 588 548 414 483 65
+                   1374 1014 1380 1381 1266 944 102 1175 279 601 729 780
+          9        859 908 461 382 776 1078 1079 618 303 336 551 318 1139
+                   185 475 1201 558 248 1034 829 1097 134 561 598 2 835
+                   223 505 985 939 432 1223 1362 208 453 312 678 1292 174
+                   513 489 1296 683 1300 379 721 1238 122 1176 1177 519
+                   1393 1312
+         10        1164 1204 324 984 1345 863 233 216 1029 842 1254 1298
+                   556 727 1215 869 516 1076 11 1264 596 544 648 1226 909
+                   853 1085 320 855 1234 1088 651 214 333 404 1334 170
+                   1395 454
+         11        925 406 112 177 1105 728 1299 59 557 659 1184 997 508
+                   1309 164 363 479 852 688 625 211 270 431 294 1377 1016
+                   1161 180 1061 887 1331 48 1286 720 1021 552 1134 1396
+                   1251
+         12        1260 806 1062 1196 1341 897 293 538 915 964 397 1320
+                   503 738 1146 873 1072 756 757 386 1192 662
+         13        1054 486 1340 131 100 590 310 562 428 32 298 481 1383
+                   723 1302 188 315 921 1173 1360 97 1001 1002
+         14        749 1110 928 42 360 72 249 344 1385 1281 1230 592 689
+                   1303 13 583 289 121
+         15        473 1364 788 96 1241 881 1031 585 256 1246 1375 807
+                   369 471
+         16        462 434 182 125 1319 840
+         17        875 1095 449 781 980 61
+         18        1343 197 247 841
+         19        802 615
+         20        1200 697 1003 777 463 1283
+         21        472 705
+         22        280 671
+         23        1042
+         24        1025
+         26        736 330 70
+         27        594
+         29        912
+         31        231
+         35        355
+         39        140
+
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+     Number of missing data patterns             1
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              WB            TCE           SN            FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ WB             1.000
+ TCE            1.000         1.000
+ SN             1.000         1.000         1.000
+ FAMILY         1.000         1.000         1.000         1.000
+ WEAK_TIE       1.000         1.000         1.000         1.000         1.000
+ WEEKEND        1.000         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              WEEKEND
+              ________
+ WEEKEND        1.000
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     WB                    2.841      -0.333       1.000    1.36%       2.333      2.667      3.000
+            6700.000       0.447      -0.237       4.000    6.54%       3.000      3.333
+     TCE                   0.000      -0.273      -0.971    0.01%      -0.333      0.000      0.000
+            6700.000       0.140      -0.239       0.929    0.03%       0.077      0.300
+     SN                    0.000       0.589      -0.929    0.01%      -0.167      0.000      0.000
+            6700.000       0.085       2.076       0.963    0.01%       0.000      0.000
+     FAMILY                0.000       1.502      -0.857    0.01%      -0.154      0.000      0.000
+            6700.000       0.077       2.971       0.971    0.01%       0.000      0.000
+     WEAK_TIES             0.000       2.048      -0.750    0.04%      -0.083      0.000      0.000
+            6700.000       0.049       6.871       0.966    0.01%       0.000      0.000
+     WEEKEND               0.240       1.218       0.000   76.00%       0.000      0.000      0.000
+            6700.000       0.182      -0.518       1.000   24.00%       0.000      1.000
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+     USE THE FBITERATIONS OPTION TO INCREASE THE NUMBER OF ITERATIONS BY A FACTOR
+     OF AT LEAST TWO TO CHECK CONVERGENCE AND THAT THE PSR VALUE DOES NOT INCREASE.
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                              22
+
+Information Criteria
+
+          Deviance (DIC)                        10553.896
+          Estimated Number of Parameters (pD)    1165.512
+
+
+
+MODEL RESULTS
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within Level
+
+ WB         ON
+    WEEKEND            0.018       0.016      0.126      -0.013       0.049
+
+ Residual Variances
+    WB                 0.238       0.005      0.000       0.228       0.248      *
+
+Between Level
+
+ WB       WITH
+    S1                -0.007       0.012      0.291      -0.030       0.018
+    S2                -0.009       0.016      0.272      -0.042       0.021
+    S3                -0.004       0.013      0.367      -0.032       0.019
+    S4                -0.017       0.017      0.152      -0.052       0.015
+
+ S1       WITH
+    S2                 0.035       0.019      0.003       0.004       0.075      *
+    S3                 0.012       0.013      0.168      -0.010       0.039
+    S4                -0.006       0.015      0.356      -0.034       0.025
+
+ S2       WITH
+    S3                 0.007       0.017      0.328      -0.020       0.046
+    S4                 0.005       0.017      0.384      -0.030       0.040
+
+ S3       WITH
+    S4                 0.037       0.019      0.028      -0.001       0.072
+
+ Means
+    WB                 2.850       0.016      0.000       2.819       2.880      *
+    S1                -0.033       0.022      0.070      -0.077       0.011
+    S2                -0.024       0.029      0.214      -0.081       0.032
+    S3                -0.042       0.027      0.065      -0.097       0.010
+    S4                -0.068       0.032      0.016      -0.134      -0.006      *
+
+ Variances
+    WB                 0.214       0.012      0.000       0.192       0.239      *
+    S1                 0.039       0.016      0.000       0.011       0.073      *
+    S2                 0.060       0.023      0.000       0.028       0.117      *
+    S3                 0.048       0.019      0.000       0.020       0.099      *
+    S4                 0.075       0.025      0.000       0.031       0.126      *
+
+
+STANDARDIZED MODEL RESULTS
+
+
+STDYX Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | WB ON
+    TCE               -0.016       0.010      0.049      -0.037       0.002
+
+ S2 | WB ON
+    SN                -0.008       0.010      0.206      -0.027       0.010
+
+ S3 | WB ON
+    FAMILY            -0.012       0.007      0.024      -0.026       0.000      *
+
+ S4 | WB ON
+    WEAK_TIES         -0.014       0.006      0.005      -0.025      -0.004      *
+
+ WB         ON
+    WEEKEND            0.008       0.008      0.123      -0.007       0.023
+
+ Residual Variances
+    WB                 0.961       0.005      0.000       0.951       0.972      *
+
+Between Level
+
+ WB       WITH
+    S1                -0.076       0.147      0.291      -0.381       0.202
+    S2                -0.083       0.143      0.272      -0.371       0.191
+    S3                -0.041       0.129      0.367      -0.314       0.195
+    S4                -0.137       0.135      0.152      -0.406       0.114
+
+ S1       WITH
+    S2                 0.738       0.202      0.003       0.174       0.947      *
+    S3                 0.286       0.272      0.168      -0.379       0.685
+    S4                -0.117       0.294      0.356      -0.683       0.439
+
+ S2       WITH
+    S3                 0.130       0.262      0.328      -0.370       0.627
+    S4                 0.075       0.252      0.384      -0.509       0.567
+
+ S3       WITH
+    S4                 0.620       0.225      0.028      -0.020       0.896
+
+ Means
+    WB                 6.157       0.174      0.000       5.823       6.504      *
+    S1                -0.174       0.130      0.070      -0.446       0.053
+    S2                -0.099       0.126      0.214      -0.356       0.133
+    S3                -0.189       0.129      0.065      -0.464       0.050
+    S4                -0.250       0.130      0.016      -0.557      -0.022      *
+
+ Variances
+    WB                 1.000       0.000      0.000       1.000       1.000
+    S1                 1.000       0.000      0.000       1.000       1.000
+    S2                 1.000       0.000      0.000       1.000       1.000
+    S3                 1.000       0.000      0.000       1.000       1.000
+    S4                 1.000       0.000      0.000       1.000       1.000
+
+
+STDY Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | WB ON
+    TCE               -0.065       0.043      0.049      -0.150       0.011
+
+ S2 | WB ON
+    SN                -0.048       0.063      0.222      -0.175       0.067
+
+ S3 | WB ON
+    FAMILY            -0.083       0.050      0.036      -0.195       0.006
+
+ S4 | WB ON
+    WEAK_TIES         -0.150       0.059      0.004      -0.279      -0.040      *
+
+ WB         ON
+    WEEKEND            0.035       0.032      0.123      -0.028       0.098
+
+ Residual Variances
+    WB                 0.961       0.005      0.000       0.951       0.972      *
+
+Between Level
+
+ WB       WITH
+    S1                -0.076       0.147      0.291      -0.381       0.202
+    S2                -0.083       0.143      0.272      -0.371       0.191
+    S3                -0.041       0.129      0.367      -0.314       0.195
+    S4                -0.137       0.135      0.152      -0.406       0.114
+
+ S1       WITH
+    S2                 0.738       0.202      0.003       0.174       0.947      *
+    S3                 0.286       0.272      0.168      -0.379       0.685
+    S4                -0.117       0.294      0.356      -0.683       0.439
+
+ S2       WITH
+    S3                 0.130       0.262      0.328      -0.370       0.627
+    S4                 0.075       0.252      0.384      -0.509       0.567
+
+ S3       WITH
+    S4                 0.620       0.225      0.028      -0.020       0.896
+
+ Means
+    WB                 6.157       0.174      0.000       5.823       6.504      *
+    S1                -0.174       0.130      0.070      -0.446       0.053
+    S2                -0.099       0.126      0.214      -0.356       0.133
+    S3                -0.189       0.129      0.065      -0.464       0.050
+    S4                -0.250       0.130      0.016      -0.557      -0.022      *
+
+ Variances
+    WB                 1.000       0.000      0.000       1.000       1.000
+    S1                 1.000       0.000      0.000       1.000       1.000
+    S2                 1.000       0.000      0.000       1.000       1.000
+    S3                 1.000       0.000      0.000       1.000       1.000
+    S4                 1.000       0.000      0.000       1.000       1.000
+
+
+R-SQUARE
+
+Within-Level R-Square Averaged Across Clusters
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    WB                 0.039       0.005      0.000       0.028       0.049
+
+
+TECHNICAL 1 OUTPUT
+
+
+     PARAMETER SPECIFICATION FOR WITHIN
+
+
+           NU
+              WB            TCE           SN            FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           NU
+              WEEKEND
+              ________
+                    0
+
+
+           LAMBDA
+              WB            TCE           SN            FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ WB                 0             0             0             0             0
+ TCE                0             0             0             0             0
+ SN                 0             0             0             0             0
+ FAMILY             0             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           LAMBDA
+              WEEKEND
+              ________
+ WB                 0
+ TCE                0
+ SN                 0
+ FAMILY             0
+ WEAK_TIE           0
+ WEEKEND            0
+
+
+           THETA
+              WB            TCE           SN            FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ WB                 0
+ TCE                0             0
+ SN                 0             0             0
+ FAMILY             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           THETA
+              WEEKEND
+              ________
+ WEEKEND            0
+
+
+           ALPHA
+              WB            TCE           SN            FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           ALPHA
+              WEEKEND
+              ________
+                    0
+
+
+           BETA
+              WB            TCE           SN            FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ WB                 0             0             0             0             0
+ TCE                0             0             0             0             0
+ SN                 0             0             0             0             0
+ FAMILY             0             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           BETA
+              WEEKEND
+              ________
+ WB                 1
+ TCE                0
+ SN                 0
+ FAMILY             0
+ WEAK_TIE           0
+ WEEKEND            0
+
+
+           PSI
+              WB            TCE           SN            FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ WB                 2
+ TCE                0             0
+ SN                 0             0             0
+ FAMILY             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           PSI
+              WEEKEND
+              ________
+ WEEKEND            0
+
+
+     PARAMETER SPECIFICATION FOR BETWEEN
+
+
+           NU
+              WB
+              ________
+                    0
+
+
+           LAMBDA
+              S1            S2            S3            S4            WB
+              ________      ________      ________      ________      ________
+ WB                 0             0             0             0             0
+
+
+           THETA
+              WB
+              ________
+ WB                 0
+
+
+           ALPHA
+              S1            S2            S3            S4            WB
+              ________      ________      ________      ________      ________
+                    3             4             5             6             7
+
+
+           BETA
+              S1            S2            S3            S4            WB
+              ________      ________      ________      ________      ________
+ S1                 0             0             0             0             0
+ S2                 0             0             0             0             0
+ S3                 0             0             0             0             0
+ S4                 0             0             0             0             0
+ WB                 0             0             0             0             0
+
+
+           PSI
+              S1            S2            S3            S4            WB
+              ________      ________      ________      ________      ________
+ S1                 8
+ S2                 9            10
+ S3                11            12            13
+ S4                14            15            16            17
+ WB                18            19            20            21            22
+
+
+     STARTING VALUES FOR WITHIN
+
+
+           NU
+              WB            TCE           SN            FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           NU
+              WEEKEND
+              ________
+                0.000
+
+
+           LAMBDA
+              WB            TCE           SN            FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ WB             1.000         0.000         0.000         0.000         0.000
+ TCE            0.000         1.000         0.000         0.000         0.000
+ SN             0.000         0.000         1.000         0.000         0.000
+ FAMILY         0.000         0.000         0.000         1.000         0.000
+ WEAK_TIE       0.000         0.000         0.000         0.000         1.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              WEEKEND
+              ________
+ WB             0.000
+ TCE            0.000
+ SN             0.000
+ FAMILY         0.000
+ WEAK_TIE       0.000
+ WEEKEND        1.000
+
+
+           THETA
+              WB            TCE           SN            FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ WB             0.000
+ TCE            0.000         0.000
+ SN             0.000         0.000         0.000
+ FAMILY         0.000         0.000         0.000         0.000
+ WEAK_TIE       0.000         0.000         0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           THETA
+              WEEKEND
+              ________
+ WEEKEND        0.000
+
+
+           ALPHA
+              WB            TCE           SN            FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           ALPHA
+              WEEKEND
+              ________
+                0.000
+
+
+           BETA
+              WB            TCE           SN            FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ WB             0.000         0.000         0.000         0.000         0.000
+ TCE            0.000         0.000         0.000         0.000         0.000
+ SN             0.000         0.000         0.000         0.000         0.000
+ FAMILY         0.000         0.000         0.000         0.000         0.000
+ WEAK_TIE       0.000         0.000         0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              WEEKEND
+              ________
+ WB             0.000
+ TCE            0.000
+ SN             0.000
+ FAMILY         0.000
+ WEAK_TIE       0.000
+ WEEKEND        0.000
+
+
+           PSI
+              WB            TCE           SN            FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ WB             0.223
+ TCE            0.000         0.070
+ SN             0.000         0.000         0.042
+ FAMILY         0.000         0.000         0.000         0.039
+ WEAK_TIE       0.000         0.000         0.000         0.000         0.024
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              WEEKEND
+              ________
+ WEEKEND        0.091
+
+
+     STARTING VALUES FOR BETWEEN
+
+
+           NU
+              WB
+              ________
+                0.000
+
+
+           LAMBDA
+              S1            S2            S3            S4            WB
+              ________      ________      ________      ________      ________
+ WB             0.000         0.000         0.000         0.000         1.000
+
+
+           THETA
+              WB
+              ________
+ WB             0.000
+
+
+           ALPHA
+              S1            S2            S3            S4            WB
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         2.841
+
+
+           BETA
+              S1            S2            S3            S4            WB
+              ________      ________      ________      ________      ________
+ S1             0.000         0.000         0.000         0.000         0.000
+ S2             0.000         0.000         0.000         0.000         0.000
+ S3             0.000         0.000         0.000         0.000         0.000
+ S4             0.000         0.000         0.000         0.000         0.000
+ WB             0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              S1            S2            S3            S4            WB
+              ________      ________      ________      ________      ________
+ S1             1.000
+ S2             0.000         1.000
+ S3             0.000         0.000         1.000
+ S4             0.000         0.000         0.000         1.000
+ WB             0.000         0.000         0.000         0.000         0.223
+
+
+
+     PRIORS FOR ALL PARAMETERS            PRIOR MEAN      PRIOR VARIANCE     PRIOR STD. DEV.
+
+     Parameter 1~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 2~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 3~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 4~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 5~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 6~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 7~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 8~IW(0.000,-6)              infinity            infinity            infinity
+     Parameter 9~IW(0.000,-6)              infinity            infinity            infinity
+     Parameter 10~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 11~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 12~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 13~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 14~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 15~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 16~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 17~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 18~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 19~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 20~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 21~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 22~IW(0.000,-6)             infinity            infinity            infinity
+
+
+TECHNICAL 8 OUTPUT
+
+
+   TECHNICAL 8 OUTPUT FOR BAYES ESTIMATION
+
+     CHAIN    BSEED
+     1        0
+     2        285380
+
+                     POTENTIAL       PARAMETER WITH
+     ITERATION    SCALE REDUCTION      HIGHEST PSR
+     100              3.656               12
+     200              2.361               12
+     300              2.386               15
+     400              2.216               16
+     500              3.022               16
+     600              3.099               15
+     700              3.263               15
+     800              3.187               15
+     900              3.636               15
+     1000             3.550               15
+     1100             3.904               6
+     1200             3.750               6
+     1300             2.835               6
+     1400             2.324               6
+     1500             2.181               6
+     1600             2.162               6
+     1700             1.867               6
+     1800             1.748               6
+     1900             1.628               6
+     2000             1.505               6
+     2100             1.508               15
+     2200             1.494               6
+     2300             1.519               14
+     2400             1.713               14
+     2500             1.776               14
+     2600             1.775               14
+     2700             1.845               14
+     2800             1.866               14
+     2900             1.950               14
+     3000             1.932               14
+     3100             1.944               14
+     3200             1.909               14
+     3300             1.859               14
+     3400             1.718               14
+     3500             1.709               14
+     3600             1.693               14
+     3700             1.631               14
+     3800             1.562               14
+     3900             1.522               14
+     4000             1.473               14
+     4100             1.486               14
+     4200             1.488               14
+     4300             1.510               14
+     4400             1.509               14
+     4500             1.437               14
+     4600             1.392               14
+     4700             1.334               14
+     4800             1.293               14
+     4900             1.250               14
+     5000             1.229               14
+     5100             1.244               14
+     5200             1.267               14
+     5300             1.270               14
+     5400             1.256               14
+     5500             1.243               14
+     5600             1.249               17
+     5700             1.256               17
+     5800             1.249               17
+     5900             1.257               17
+     6000             1.229               17
+     6100             1.220               17
+     6200             1.238               17
+     6300             1.260               17
+     6400             1.280               17
+     6500             1.270               17
+     6600             1.259               17
+     6700             1.250               17
+     6800             1.225               17
+     6900             1.220               17
+     7000             1.212               17
+     7100             1.217               17
+     7200             1.202               17
+     7300             1.206               17
+     7400             1.167               17
+     7500             1.150               17
+     7600             1.138               17
+     7700             1.139               17
+     7800             1.129               17
+     7900             1.119               17
+     8000             1.107               17
+     8100             1.101               17
+     8200             1.110               17
+     8300             1.114               17
+     8400             1.112               17
+     8500             1.106               17
+     8600             1.098               17
+     8700             1.087               17
+     8800             1.076               17
+     8900             1.067               17
+     9000             1.064               17
+     9100             1.053               17
+     9200             1.049               14
+     9300             1.049               14
+     9400             1.044               14
+     9500             1.043               14
+     9600             1.040               14
+     9700             1.041               14
+     9800             1.042               14
+     9900             1.047               14
+     10000            1.047               14
+
+
+     Beginning Time:  17:53:39
+        Ending Time:  17:58:47
+       Elapsed Time:  00:05:08
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2020 Muthen & Muthen

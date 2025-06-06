@@ -1,0 +1,58 @@
+TITLE: Analysis 5
+DATA: FILE = analysis4+5_suppl3_S1.dat;
+VARIABLE:
+NAMES = ID WB content stressed lonely
+FTF CMC mixed FR SO family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = WB
+CMC mixed SO family weak_ties
+weekend
+cxs cxf cxw mxs mxf mxw;
+CLUSTER = ID;
+WITHIN = CMC mixed SO family weak_ties weekend
+cxs cxf cxw mxs mxf mxw;
+MISSING = .;
+DEFINE:
+CENTER CMC (GROUPMEAN);
+CENTER mixed (GROUPMEAN);
+CENTER SO (GROUPMEAN);
+CENTER family (GROUPMEAN);
+CENTER weak_ties (GROUPMEAN);
+cxs=CMC*SO;
+cxf=CMC*family;
+cxw=CMC*weak_ties;
+mxs=mixed*SO;
+mxf=mixed*family;
+mxw=mixed*weak_ties;
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = 1000000 (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Well-being is predicted by CMC, the slope is random
+S1 | WB ON CMC;
+! Well-being is predicted by mixed episodes, the slope is random
+S2 | WB ON mixed;
+! Well-being is predicted by significant others, the slope is random
+S3 | WB ON SO;
+! Well-being is predicted by family, the slope is random
+S4 | WB ON family;
+! Well-being is predicted by weak ties, the slope is random
+S5 | WB ON weak_ties;
+! Well-being is predicted by CMC*significant others, the slope is random
+S6 | WB ON cxs;
+! Well-being is predicted by CMC*family, the slope is random
+S7 | WB ON cxf;
+! Well-being is predicted by CMC*weak ties, the slope is random
+S8 | WB ON cxw;
+! Well-being is predicted by mixed*significant others, the slope is random
+S9 | WB ON mxs;
+! Well-being is predicted by mixed*family, the slope is random
+S10 | WB ON mxf;
+! Well-being is predicted by mixed*weak ties, the slope is random
+S11 | WB ON mxw;
+! Control for weekend
+WB ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+WB S1-S11 WITH WB S1-S11;
+OUTPUT: STDYX STDY TECH8;

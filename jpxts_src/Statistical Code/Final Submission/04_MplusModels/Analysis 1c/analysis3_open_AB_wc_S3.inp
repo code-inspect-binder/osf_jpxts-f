@@ -1,0 +1,42 @@
+TITLE: Analysis 2+3
+DATA: FILE = analysis3_S3.dat;
+VARIABLE:
+NAMES = ID AB angry worried happy sad WB stressed lonely
+peers family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = AB
+peers family weak_ties
+weekend O gender ethnicity SES;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = O gender ethnicity SES;
+MISSING = .;
+DEFINE: CENTER O (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Affect balance is predicted by peers, the slope is random
+S1 | AB ON peers;
+! Affect balance is predicted by family, the slope is random
+S2 | AB ON family;
+! Affect balance is predicted by weak ties, the slope is random
+S3 | AB ON weak_ties;
+! Control for weekend
+AB ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+AB S1-S3 WITH AB S1-S3;
+! The intercept is predicted by peers
+AB ON peers;
+! The intercept is predicted by family
+AB ON family;
+! The intercept is predicted by weak ties
+AB ON weak_ties;
+! The intercept is predicted by openness
+AB ON O;
+! The slopes are predicted by openness
+S1-S3 ON O;
+! Control for demographic variables
+AB ON gender ethnicity SES;
+OUTPUT: STDYX STDY TECH8;

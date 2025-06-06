@@ -1,0 +1,40 @@
+TITLE: Analysis 2+3
+DATA: FILE = analysis2_S2.dat;
+VARIABLE:
+NAMES = ID WB content stressed lonely
+FTF CMC mixed
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = lonely
+FTF CMC mixed
+weekend C;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = C;
+MISSING = .;
+DEFINE: CENTER C (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Loneliness is predicted by FtF interactions, the slope is random
+S1 | lonely ON FTF;
+! Loneliness is predicted by CMC, the slope is random
+S2 | lonely ON CMC;
+! Loneliness is predicted by mixed episodes, the slope is random
+S3 | lonely ON mixed;
+! Control for weekend
+lonely ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+lonely S1-S3 WITH lonely S1-S3;
+! The intercept is predicted by FtF interactions
+lonely ON FTF;
+! The intercept is predicted by CMC
+lonely ON CMC;
+! The intercept is predicted by mixed episodes
+lonely ON mixed;
+! The intercept is predicted by conscientiousness
+lonely ON C;
+! The slopes are predicted by conscientiousness
+S1-S3 ON C;
+OUTPUT: STDYX STDY TECH8;

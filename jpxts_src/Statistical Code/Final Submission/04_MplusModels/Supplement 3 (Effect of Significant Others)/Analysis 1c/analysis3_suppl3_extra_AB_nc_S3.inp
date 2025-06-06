@@ -1,0 +1,44 @@
+TITLE: Analysis 2+3
+DATA: FILE = analysis3_suppl3_S3.dat;
+VARIABLE:
+NAMES = ID AB angry worried happy sad WB stressed lonely
+FR SO family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = AB
+FR SO family weak_ties
+weekend E;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = E;
+MISSING = .;
+DEFINE: CENTER E (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Affect balance is predicted by friends and roommates, the slope is random
+S1 | AB ON FR;
+! Affect balance is predicted by significant others, the slope is random
+S2 | AB ON SO;
+! Affect balance is predicted by family, the slope is random
+S3 | AB ON family;
+! Affect balance is predicted by weak ties, the slope is random
+S4 | AB ON weak_ties;
+! Control for weekend
+AB ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+AB S1-S4 WITH AB S1-S4;
+! The intercept is predicted by friends and roommates
+AB ON FR;
+! The intercept is predicted by significant others
+AB ON SO;
+! The intercept is predicted by family
+AB ON family;
+! The intercept is predicted by weak ties
+AB ON weak_ties;
+! The intercept is predicted by extraversion
+AB ON E;
+! The slopes are predicted by extraversion
+S1-S4 ON E;
+OUTPUT: STDYX STDY TECH8;

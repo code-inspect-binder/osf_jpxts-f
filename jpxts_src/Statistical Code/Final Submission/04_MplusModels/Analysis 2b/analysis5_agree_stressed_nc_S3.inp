@@ -1,0 +1,55 @@
+TITLE: Analysis 5
+DATA: FILE = analysis4+5_S3.dat;
+VARIABLE:
+NAMES = ID AB angry worried happy sad WB stressed lonely
+FTF CMC mixed peers family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = stressed
+CMC mixed family weak_ties
+weekend A
+cxf cxw mxf mxw;
+CLUSTER = ID;
+WITHIN = CMC mixed family weak_ties weekend
+cxf cxw mxf mxw;
+BETWEEN = A;
+MISSING = .;
+DEFINE:
+CENTER CMC (GROUPMEAN);
+CENTER mixed (GROUPMEAN);
+CENTER family (GROUPMEAN);
+CENTER weak_ties (GROUPMEAN);
+cxf=CMC*family;
+cxw=CMC*weak_ties;
+mxf=mixed*family;
+mxw=mixed*weak_ties;
+CENTER A (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Stress is predicted by CMC, the slope is random
+S1 | stressed ON CMC;
+! Stress is predicted by mixed episodes, the slope is random
+S2 | stressed ON mixed;
+! Stress is predicted by family, the slope is random
+S3 | stressed ON family;
+! Stress is predicted by weak ties, the slope is random
+S4 | stressed ON weak_ties;
+! Stress is predicted by CMC*family, the slope is random
+S5 | stressed ON cxf;
+! Stress is predicted by CMC*weak ties, the slope is random
+S6 | stressed ON cxw;
+! Stress is predicted by mixed*family, the slope is random
+S7 | stressed ON mxf;
+! Stress is predicted by mixed*weak ties, the slope is random
+S8 | stressed ON mxw;
+! Control for weekend
+stressed ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+stressed S1-S8 WITH stressed S1-S8;
+! The intercept is predicted by agreeableness
+stressed ON A;
+! The slopes are predicted by agreeableness
+S1-S8 ON A;
+OUTPUT: STDYX STDY TECH8;

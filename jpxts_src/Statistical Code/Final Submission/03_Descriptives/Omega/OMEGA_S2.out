@@ -1,0 +1,351 @@
+Mplus VERSION 8.5 (Mac)
+MUTHEN & MUTHEN
+09/26/2021   6:53 PM
+
+INPUT INSTRUCTIONS
+
+  DATA: FILE IS Omega.dat;
+  VARIABLE:
+  NAMES ARE ID X1-X3;
+  CLUSTER=ID;
+  MISSING=.;
+  ANALYSIS: TYPE=TWOLEVEL;
+  MODEL:
+  %WITHIN%
+  FW BY X1* (WL1)
+  X2 (WL2)
+  X3 (WL3);
+  FW@1;
+
+  X1 (WR1);
+  X2 (WR2);
+  X3 (WR3);
+
+  %BETWEEN%
+  FB BY X1* (BL1)
+  X2 (BL2)
+  X3 (BL3);
+  FB@1;
+
+  X1 (BR1);
+  X2 (BR2);
+  X3 (BR3);
+
+  OUTPUT: SAMPSTAT;
+
+  MODEL CONSTRAINT: NEW(NUMW DENOMW OMEGAW NUMB DENOMB OMEGAB);
+  NUMW = (WL1+WL2+WL3)**2;
+  DENOMW = ((WL1+WL2+WL3)**2)+(WR1+WR2+WR3);
+  OMEGAW = NUMW/DENOMW;
+
+  NUMB = (BL1+BL2+BL3)**2;
+  DENOMB = ((BL1+BL2+BL3)**2)+(BR1+BR2+BR3);
+  OMEGAB = NUMB/DENOMB;
+
+  WR1 > 0; BR1 > 0; WR2 > 0; BR2 > 0; WR3 > 0; BR3 > 0;
+
+
+
+*** WARNING
+  One or more individual-level variables have no variation within a
+  cluster for the following clusters.
+
+     Variable   Cluster IDs with no within-cluster variation
+
+      X1          486 171 710 751 384 131 708 453 563 720 629 13 610
+      X2          21 171 384 723 50 453 720 300 618 788 251 744 825 764 696
+      X3          21 497 171 261 751 384 448 283 131 708 350 781 100 352 69 96 404 513 209 50
+                  453 316 373 11 312 410 6 351 437 13 409 677 494 285 608 310 706 298 462 369
+                  532 477 786 392 451 733 296 724 48 9 108 81 236 257 243 776 428 635 467 501
+                  251 676 354 115 95 816 164 92 14 116 719 400 40 693 84 88 342 535 161 624 270
+                  804 20 101 124 286 585 78 250 129 344 704 468 139 235 600 514 24 705 661 287
+                  44 659 291 418 141
+
+*** WARNING
+  Data set contains cases with missing on all variables.
+  These cases were not included in the analysis.
+  Number of cases with missing on all variables:  34
+   2 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                       27116
+
+Number of dependent variables                                    3
+Number of independent variables                                  0
+Number of continuous latent variables                            2
+
+Observed dependent variables
+
+  Continuous
+   X1          X2          X3
+
+Continuous latent variables
+   FW          FB
+
+Variables with special functions
+
+  Cluster variable      ID
+
+Estimator                                                      MLR
+Information matrix                                        OBSERVED
+Maximum number of iterations                                   100
+Convergence criterion                                    0.100D-05
+Maximum number of EM iterations                                500
+Convergence criteria for the EM algorithm
+  Loglikelihood change                                   0.100D-02
+  Relative loglikelihood change                          0.100D-05
+  Derivative                                             0.100D-03
+Minimum variance                                         0.100D-03
+Maximum number of steepest descent iterations                   20
+Maximum number of iterations for H1                           2000
+Convergence criterion for H1                             0.100D-03
+Optimization algorithm                                         EMA
+
+Input data file(s)
+  Omega.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of missing data patterns             7
+     Number of clusters                        850
+
+     Average cluster size       31.901
+
+     Estimated Intraclass Correlations for the Y Variables
+
+                Intraclass              Intraclass              Intraclass
+     Variable  Correlation   Variable  Correlation   Variable  Correlation
+
+     X1           0.341      X2           0.343      X3           0.452
+
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              X1            X2            X3
+              ________      ________      ________
+ X1             0.998
+ X2             0.997         0.999
+ X3             0.997         0.998         0.998
+
+
+SAMPLE STATISTICS
+
+NOTE:  The sample statistics for within and between refer to the
+       maximum-likelihood estimated within and between covariance
+       matrices, respectively.
+
+
+     ESTIMATED SAMPLE STATISTICS FOR WITHIN
+
+
+           Means
+              X1            X2            X3
+              ________      ________      ________
+                0.000         0.000         0.000
+
+
+           Covariances
+              X1            X2            X3
+              ________      ________      ________
+ X1             0.538
+ X2             0.225         0.581
+ X3             0.126         0.112         0.357
+
+
+           Correlations
+              X1            X2            X3
+              ________      ________      ________
+ X1             1.000
+ X2             0.402         1.000
+ X3             0.288         0.245         1.000
+
+
+     ESTIMATED SAMPLE STATISTICS FOR BETWEEN
+
+
+           Means
+              X1            X2            X3
+              ________      ________      ________
+                2.609         2.825         3.418
+
+
+           Covariances
+              X1            X2            X3
+              ________      ________      ________
+ X1             0.279
+ X2             0.127         0.303
+ X3             0.104         0.157         0.294
+
+
+           Correlations
+              X1            X2            X3
+              ________      ________      ________
+ X1             1.000
+ X2             0.438         1.000
+ X3             0.363         0.526         1.000
+
+
+     MAXIMUM LOG-LIKELIHOOD VALUE FOR THE UNRESTRICTED (H1) MODEL IS -85230.707
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     X1                    2.606       0.031       1.000   10.15%       2.000      2.000      3.000
+           27057.000       0.816      -0.837       4.000   18.72%       3.000      3.000
+     X2                    2.864      -0.476       1.000   10.18%       2.000      3.000      3.000
+           27099.000       0.872      -0.631       4.000   27.55%       3.000      4.000
+     X3                    3.461      -1.483       1.000    3.88%       3.000      4.000      4.000
+           27075.000       0.629       1.610       4.000   61.24%       4.000      4.000
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                       15
+
+Loglikelihood
+
+          H0 Value                      -85230.707
+          H0 Scaling Correction Factor      3.0362
+            for MLR
+          H1 Value                      -85230.707
+          H1 Scaling Correction Factor      3.0362
+            for MLR
+
+Information Criteria
+
+          Akaike (AIC)                  170491.413
+          Bayesian (BIC)                170614.531
+          Sample-Size Adjusted BIC      170566.862
+            (n* = (n + 2) / 24)
+
+Chi-Square Test of Model Fit
+
+          Value                              0.000*
+          Degrees of Freedom                     0
+          P-Value                           0.0000
+          Scaling Correction Factor         1.0000
+            for MLR
+
+*   The chi-square value for MLM, MLMV, MLR, ULSMV, WLSM and WLSMV cannot be used
+    for chi-square difference testing in the regular way.  MLM, MLR and WLSM
+    chi-square difference testing is described on the Mplus website.  MLMV, WLSMV,
+    and ULSMV difference testing is done using the DIFFTEST option.
+
+RMSEA (Root Mean Square Error Of Approximation)
+
+          Estimate                           0.000
+
+CFI/TLI
+
+          CFI                                1.000
+          TLI                                1.000
+
+Chi-Square Test of Model Fit for the Baseline Model
+
+          Value                           3807.497
+          Degrees of Freedom                     6
+          P-Value                           0.0000
+
+SRMR (Standardized Root Mean Square Residual)
+
+          Value for Within                   0.000
+          Value for Between                  0.000
+
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+Within Level
+
+ FW       BY
+    X1                 0.504      0.014     36.085      0.000
+    X2                 0.446      0.012     37.811      0.000
+    X3                 0.250      0.011     22.777      0.000
+
+ Variances
+    FW                 1.000      0.000    999.000    999.000
+
+ Residual Variances
+    X1                 0.284      0.012     22.751      0.000
+    X2                 0.382      0.011     35.387      0.000
+    X3                 0.294      0.009     32.204      0.000
+
+Between Level
+
+ FB       BY
+    X1                 0.290      0.024     12.335      0.000
+    X2                 0.439      0.028     15.919      0.000
+    X3                 0.358      0.027     13.084      0.000
+
+ Intercepts
+    X1                 2.609      0.019    137.274      0.000
+    X2                 2.825      0.020    142.386      0.000
+    X3                 3.418      0.019    176.945      0.000
+
+ Variances
+    FB                 1.000      0.000    999.000    999.000
+
+ Residual Variances
+    X1                 0.195      0.013     14.608      0.000
+    X2                 0.110      0.019      5.844      0.000
+    X3                 0.166      0.017      9.843      0.000
+
+New/Additional Parameters
+    NUMW               1.441      0.051     28.432      0.000
+    DENOMW             2.401      0.058     41.500      0.000
+    OMEGAW             0.600      0.009     69.723      0.000
+    NUMB               1.182      0.094     12.614      0.000
+    DENOMB             1.652      0.094     17.618      0.000
+    OMEGAB             0.715      0.019     36.692      0.000
+
+
+QUALITY OF NUMERICAL RESULTS
+
+     Condition Number for the Information Matrix              0.164E-05
+       (ratio of smallest to largest eigenvalue)
+
+
+     Beginning Time:  18:53:48
+        Ending Time:  18:53:49
+       Elapsed Time:  00:00:01
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2020 Muthen & Muthen

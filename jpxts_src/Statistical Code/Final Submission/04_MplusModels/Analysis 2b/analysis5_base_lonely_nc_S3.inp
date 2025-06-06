@@ -1,0 +1,49 @@
+TITLE: Analysis 5
+DATA: FILE = analysis4+5_S3.dat;
+VARIABLE:
+NAMES = ID AB angry worried happy sad WB stressed lonely
+FTF CMC mixed peers family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = lonely
+CMC mixed family weak_ties
+weekend
+cxf cxw mxf mxw;
+CLUSTER = ID;
+WITHIN = CMC mixed family weak_ties weekend
+cxf cxw mxf mxw;
+MISSING = .;
+DEFINE:
+CENTER CMC (GROUPMEAN);
+CENTER mixed (GROUPMEAN);
+CENTER family (GROUPMEAN);
+CENTER weak_ties (GROUPMEAN);
+cxf=CMC*family;
+cxw=CMC*weak_ties;
+mxf=mixed*family;
+mxw=mixed*weak_ties;
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Loneliness is predicted by CMC, the slope is random
+S1 | lonely ON CMC;
+! Loneliness is predicted by mixed episodes, the slope is random
+S2 | lonely ON mixed;
+! Loneliness is predicted by family, the slope is random
+S3 | lonely ON family;
+! Loneliness is predicted by weak ties, the slope is random
+S4 | lonely ON weak_ties;
+! Loneliness is predicted by CMC*family, the slope is random
+S5 | lonely ON cxf;
+! Loneliness is predicted by CMC*weak ties, the slope is random
+S6 | lonely ON cxw;
+! Loneliness is predicted by mixed*family, the slope is random
+S7 | lonely ON mxf;
+! Loneliness is predicted by mixed*weak ties, the slope is random
+S8 | lonely ON mxw;
+! Control for weekend
+lonely ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+lonely S1-S8 WITH lonely S1-S8;
+OUTPUT: STDYX STDY TECH8;

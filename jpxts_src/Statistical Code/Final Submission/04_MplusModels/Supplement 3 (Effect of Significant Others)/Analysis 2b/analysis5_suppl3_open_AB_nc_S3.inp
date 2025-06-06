@@ -1,0 +1,64 @@
+TITLE: Analysis 5
+DATA: FILE = analysis4+5_suppl3_S3.dat;
+VARIABLE:
+NAMES = ID AB angry worried happy sad WB stressed lonely
+FTF CMC mixed FR SO family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = AB
+CMC mixed SO family weak_ties
+weekend O
+cxs cxf cxw mxs mxf mxw;
+CLUSTER = ID;
+WITHIN = CMC mixed SO family weak_ties weekend
+cxs cxf cxw mxs mxf mxw;
+BETWEEN = O;
+MISSING = .;
+DEFINE:
+CENTER CMC (GROUPMEAN);
+CENTER mixed (GROUPMEAN);
+CENTER SO (GROUPMEAN);
+CENTER family (GROUPMEAN);
+CENTER weak_ties (GROUPMEAN);
+cxs=CMC*SO;
+cxf=CMC*family;
+cxw=CMC*weak_ties;
+mxs=mixed*SO;
+mxf=mixed*family;
+mxw=mixed*weak_ties;
+CENTER O (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = 1000000 (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Affect balance is predicted by CMC, the slope is random
+S1 | AB ON CMC;
+! Affect balance is predicted by mixed episodes, the slope is random
+S2 | AB ON mixed;
+! Affect balance is predicted by significant others, the slope is random
+S3 | AB ON SO;
+! Affect balance is predicted by family, the slope is random
+S4 | AB ON family;
+! Affect balance is predicted by weak ties, the slope is random
+S5 | AB ON weak_ties;
+! Affect balance is predicted by CMC*significant others, the slope is random
+S6 | AB ON cxs;
+! Affect balance is predicted by CMC*family, the slope is random
+S7 | AB ON cxf;
+! Affect balance is predicted by CMC*weak ties, the slope is random
+S8 | AB ON cxw;
+! Affect balance is predicted by mixed*significant others, the slope is random
+S9 | AB ON mxs;
+! Affect balance is predicted by mixed*family, the slope is random
+S10 | AB ON mxf;
+! Affect balance is predicted by mixed*weak ties, the slope is random
+S11 | AB ON mxw;
+! Control for weekend
+AB ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+AB S1-S11 WITH AB S1-S11;
+! The intercept is predicted by openness
+AB ON O;
+! The slopes are predicted by openness
+S1-S11 ON O;
+OUTPUT: STDYX STDY TECH8;

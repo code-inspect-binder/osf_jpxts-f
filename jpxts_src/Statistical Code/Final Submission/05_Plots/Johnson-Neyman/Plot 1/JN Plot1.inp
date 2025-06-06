@@ -1,0 +1,30 @@
+TITLE: Analysis 1
+DATA: FILE IS analysis1_model1.dat;
+VARIABLE:
+NAMES ARE ID WB int N
+gender ethnicity SES weekend;
+USEVARIABLES ARE WB int weekend N;
+CLUSTER IS ID;
+WITHIN IS weekend; BETWEEN IS N;
+MISSING = .;
+DEFINE: CENTER N (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:			
+%WITHIN%
+WB;
+S1 | WB ON int; !Well-being is predicted by social interactions, the slope is random
+WB ON weekend; !Control for weekend on the within-person level	
+%BETWEEN%
+[WB];
+[S1] (slope);
+WB S1; WB WITH S1;
+WB ON int; !The intercept is predicted by social interactions
+WB ON N; !The intercept is predicted by neuroticism
+S1 on N (slope_N); !The slope is predicted by neuroticism
+MODEL CONSTRAINT:
+PLOT(Plot_N);
+LOOP(N,-2.5,2.5,0.01);
+Plot_N = slope + slope_N*(N);
+PLOT: TYPE = PLOT2;
+OUTPUT: STDYX STDY TECH8;

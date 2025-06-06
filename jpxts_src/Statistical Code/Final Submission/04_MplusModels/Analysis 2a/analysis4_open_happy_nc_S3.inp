@@ -1,0 +1,41 @@
+TITLE: Analysis 4
+DATA: FILE = analysis4+5_S3.dat;
+VARIABLE:
+NAMES = ID AB angry worried happy sad WB stressed lonely
+FTF CMC mixed peers family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = happy
+CMC mixed family weak_ties
+weekend O;
+CLUSTER = ID;
+WITHIN = CMC mixed family weak_ties weekend;
+BETWEEN = O;
+MISSING = .;
+DEFINE:
+CENTER CMC (GROUPMEAN);
+CENTER mixed (GROUPMEAN);
+CENTER family (GROUPMEAN);
+CENTER weak_ties (GROUPMEAN);
+CENTER O (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Happiness is predicted by CMC, the slope is random
+S1 | happy ON CMC;
+! Happiness is predicted by mixed episodes, the slope is random
+S2 | happy ON mixed;
+! Happiness is predicted by family, the slope is random
+S3 | happy ON family;
+! Happiness is predicted by weak ties, the slope is random
+S4 | happy ON weak_ties;
+! Control for weekend
+happy ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+happy S1-S4 WITH happy S1-S4;
+! The intercept is predicted by openness
+happy ON O;
+! The slopes are predicted by openness
+S1-S4 ON O;
+OUTPUT: STDYX STDY TECH8;

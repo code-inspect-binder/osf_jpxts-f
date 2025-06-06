@@ -1,0 +1,41 @@
+TITLE: Analysis 4
+DATA: FILE = analysis4+5_S3.dat;
+VARIABLE:
+NAMES = ID AB angry worried happy sad WB stressed lonely
+FTF CMC mixed peers family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = worried
+CMC mixed family weak_ties
+weekend E;
+CLUSTER = ID;
+WITHIN = CMC mixed family weak_ties weekend;
+BETWEEN = E;
+MISSING = .;
+DEFINE:
+CENTER CMC (GROUPMEAN);
+CENTER mixed (GROUPMEAN);
+CENTER family (GROUPMEAN);
+CENTER weak_ties (GROUPMEAN);
+CENTER E (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Worry is predicted by CMC, the slope is random
+S1 | worried ON CMC;
+! Worry is predicted by mixed episodes, the slope is random
+S2 | worried ON mixed;
+! Worry is predicted by family, the slope is random
+S3 | worried ON family;
+! Worry is predicted by weak ties, the slope is random
+S4 | worried ON weak_ties;
+! Control for weekend
+worried ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+worried S1-S4 WITH worried S1-S4;
+! The intercept is predicted by extraversion
+worried ON E;
+! The slopes are predicted by extraversion
+S1-S4 ON E;
+OUTPUT: STDYX STDY TECH8;

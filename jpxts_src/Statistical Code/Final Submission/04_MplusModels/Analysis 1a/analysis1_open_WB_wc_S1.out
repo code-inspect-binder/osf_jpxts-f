@@ -1,0 +1,942 @@
+Mplus VERSION 8.5 (Mac)
+MUTHEN & MUTHEN
+03/15/2022   7:21 AM
+
+INPUT INSTRUCTIONS
+
+  TITLE: Analysis 1
+  DATA: FILE = analysis1_S1.dat;
+  VARIABLE:
+  NAMES = ID WB content stressed lonely
+  int
+  E A C N O gender ethnicity SES weekend;
+  USEVARIABLES = WB
+  int
+  weekend O gender ethnicity SES;
+  CLUSTER = ID;
+  WITHIN = weekend;
+  BETWEEN = O gender ethnicity SES;
+  MISSING = .;
+  DEFINE: CENTER O (GRANDMEAN);
+  ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+  BITERATIONS = (10000); PROCESSORS = 2;
+  MODEL:
+  %WITHIN%
+  ! Well-being is predicted by social interactions, the slope is random
+  S1 | WB ON int;
+  ! Control for weekend
+  WB ON weekend;
+  %BETWEEN%
+  ! Covariance between intercept and slope
+  WB WITH S1;
+  ! The intercept is predicted by social interactions
+  WB ON int;
+  ! The intercept is predicted by openness
+  WB ON O;
+  ! The slope is predicted by openness
+  S1 ON O;
+  ! Control for demographic variables
+  WB ON gender ethnicity SES;
+  OUTPUT: STDYX STDY TECH8;
+
+
+
+*** WARNING in VARIABLE command
+  Note that only the first 8 characters of variable names are used in the output.
+  Shorten variable names to avoid any confusion.
+*** WARNING in MODEL command
+  In the MODEL command, the x variable on the WITHIN level has been turned into a
+  y variable to enable latent variable decomposition.  This variable will be treated
+  as a y-variable on both levels:  INT
+*** WARNING
+  One or more individual-level variables have no variation within a
+  cluster for the following clusters.
+
+     Variable   Cluster IDs with no within-cluster variation
+
+      WB          972 831
+      INT         972 1006 183 16 181 413 1348 424 92 380 64 988 1033 118 1379 613 913 1059 357
+                  1014 732 1262 910 433 1391 805 1099 49 518 660 803 11 66 928 1118 30 1004 514
+                  86 123 551 683 216 826 1131 1236 100 87 473 1311 346 1082 419 147 750 1365 677
+                  210 1224 329 213 242 1109 1136 1042 23 1334 1158 437 556 1244 945 616 890 1296
+                  963 736 1233 256 695 10 1377 1101 659 778 294 1343
+      WEEKEND     972 1167 183 717 938 16 1348 1123 389 7 850 433 868 1389 607 99
+
+*** WARNING
+  Data set contains cases with missing on x-variables.
+  These cases were not included in the analysis.
+  Number of cases with missing on x-variables:  17828
+   4 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+Analysis 1
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                       28889
+
+Number of dependent variables                                    2
+Number of independent variables                                  5
+Number of continuous latent variables                            1
+
+Observed dependent variables
+
+  Continuous
+   WB          INT
+
+Observed independent variables
+   WEEKEND     O           GENDER      ETHNICIT    SES
+
+Continuous latent variables
+   S1
+
+Variables with special functions
+
+  Cluster variable      ID
+
+  Within variables
+   WEEKEND
+
+  Between variables
+   O           GENDER      ETHNICIT    SES
+
+  Centering (GRANDMEAN)
+   O
+
+
+Estimator                                                    BAYES
+Specifications for Bayesian Estimation
+  Point estimate                                            MEDIAN
+  Number of Markov chain Monte Carlo (MCMC) chains               2
+  Random seed for the first chain                                0
+  Starting value information                           UNPERTURBED
+  Algorithm used for Markov chain Monte Carlo           GIBBS(PX1)
+  Convergence criterion                                  0.500D-01
+  Maximum number of iterations                               50000
+  K-th iteration used for thinning                               1
+
+Input data file(s)
+  analysis1_S1.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of clusters                        794
+
+       Size (s)    Cluster ID with Size s
+
+          1        21 45 1010
+          2        972
+          3        1167
+          4        1006 183 717 938 16
+          5        181
+          6        413 1348 637
+          7        1123 1248
+          8        424
+          9        476 92 389
+         10        569 380 524 567
+         11        64 1373 811 988
+         12        1033 118 998 1203
+         13        456 1154 951 1168 153 967
+         14        7 794 709 1278 130 877
+         15        941 468 922
+         16        458 1055 1007 332 115 278 1379 825
+         17        599 613 5 747 550 913 589
+         18        60 559 1059 1171 605 357 421 652
+         19        1014 55 850 732 365 1262 160 910 433 992 1080 1198 443
+                   1208 309 1391 17
+         20        325 1081 805 654 1099 49 935 1133 1144 14 629 518 860
+                   792 1062 522
+         21        660 175 88 39 868 359 1371 803 1070 499
+         22        719 11 1159 1051 727 345 66 977 1317 261 818 628 1094
+                   928 831 1121 485
+         23        1013 176 1118 718 30 291 1142 207 896 73 1067 1197 1004
+                   514
+         24        1259 86 600 1106 743 1191 674 24 966
+         25        123 1048 83 367 239 551 800 1182 606 218 1192 661 57
+                   622 391 683 699
+         26        627 91 946 773 452 889 76 1212 455 1336 1346 1032 1096
+                   1389 854 216
+         27        281 819 826 841 300 301 1199 105 316 258 1131 446 1236
+                   260 489 1152
+         28        1213 927 232 100 1257 87 838 473 607 425 387 110 1311
+                   714 882 1090 312 632 401 353
+         29        706 563 1269 1111 1282 769 346 902 495 672 830 165 923
+                   360 1354 929 1150 53 1382 168 169 1082 795
+         30        1063 375 341 995 290 933 419 62 142 1179 1093 566 426
+                   1017 1108 147 1114 570 750 957 1365 763 480 1380 638
+                   642
+         31        1041 801 663 38 1207 410 26 677 640 210 438 687 610
+                   1027 581 789 501
+         32        1258 307 190 221 178 1276 907 620 1300 31 397 834 444
+                   1318 676 350 288 318 98 1005 1224 1238 237 858 1252
+                   327 217 329
+         33        987 348 1052 1053 692 245 448 844 308 1306 568 213 507
+                   1087 99 970 547 412 242 876 272 1105 984 1107 1265 368
+                   1109
+         34        374 111 1034 845 1038 420 741 1332 1136 1147 748 636
+                   753 690 1384 134 1287 334 209 728
+         35        702 152 639 339 939 302 128 347 184 1340 1042 824 319
+                   655 1368 166 422 1153 553 1061 1234
+         36        788 548 681 766 23 1045 139 1334 29 189 974 1264 943
+                   577 406 562 1157 1158 230 564 758 990 1293
+         37        228 621 711 296 1324 820 208 682 321 1215 1353 162 1028
+                   177 437 54 555 701 556 1244 945 1301 529 616
+         38        1185 1319 1132 646 1141 724 861 793 703 61 3 1369 1022
+                   890 68 749 119 898
+         39        1313 965 51 1195 180 196 511 1337 299 976 384 20 277
+                   729 1164 1069 916 1077 1296 762 129 791 643
+         40        69 491 1023 414 1297 428 1216 1217 1125 963 948
+         41        723 614 37 155 101 70 523 736 1335 427 1057 432 97 243
+                   58 1233 187 879 1172 1239 833 1310
+         42        107 383 1068 65 1129 315 634 930 931 1196 688 494 445
+                   886 1307 804 863
+         43        752 852 671 944 351 510 760 1363 215 1046 364 463 1156
+                   742 89 503 1031
+         44        1124 980 1359 1249 82 585 1162 705 1138 904 837 306
+                   393 693 435 697 519
+         45        1206 137 1339 848 430 81 915 1260 666 161 731 42 212
+                   859 893 388 1160 154 135 1126 247 488
+         46        936 267 256 695 1342 436 1001 1349 878 1210 626 971
+                   1143 608 144 1314 1148 416 440 656 32 1187 505 1390
+                   618 206 10
+         47        150 840 1377 1341 1101 1344 530 1078 875 201 899 552
+                   541
+         48        865 358 1016 182 1020 1229 1232 1327 1130 157 1214
+         49        836 592 745 1000 1146 1073 71 1015 662 908 1018 1049
+                   1309 372 1285 1155 1173 716 1397
+         50        1227 1139 170 1097 219 467 1079 584 1026 808 536 399
+                   901 462
+         51        450 379 174 588 310 839 131 479 340 1292 262 498 921
+                   962 459 500 1176 679 1333
+         52        1345 531 1100 454 573 398 78 434 624 313
+         53        411 363 236 28 289 52 832 738 1325 482 537 797 694 205
+                   1002 822 779
+         54        881 596 574
+         55        1383 557 1065 2 449 1295 735 1231 1381
+         56        113 233 396 1029 659 1110 231 1256 1284 1356 1357 782
+         57        1076 561 906 807 657 1223 475 533 125 991 1375 108 778
+                   593
+         58        925 883 1350 1351 164 471 526 1243 486 192 294 404
+         59        122 914 1190 1304 809 955 1134
+         60        366 94 1372 197 1343
+         61        1228 1271 1298 293
+         62        756 582 481 538 138 1102 1003
+         63        508 249 338 1225
+         64        651 303
+         65        1283 266 112
+         66        95
+         67        270 869
+         72        254
+
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+     Number of missing data patterns             2
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              WB            INT           WEEKEND       O             GENDER
+              ________      ________      ________      ________      ________
+ WB             1.000
+ INT            1.000         1.000
+ WEEKEND        1.000         1.000         1.000
+ O              1.000         1.000         1.000         1.000
+ GENDER         1.000         1.000         1.000         1.000         1.000
+ ETHNICIT       1.000         1.000         1.000         1.000         1.000
+ SES            1.000         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              ETHNICIT      SES
+              ________      ________
+ ETHNICIT       1.000
+ SES            1.000         1.000
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     WB                    3.011      -0.531       1.000    0.94%       2.333      3.000      3.000
+           28882.000       0.448      -0.110       4.000   10.95%       3.333      3.667
+     INT                   0.768      -1.271       0.000   23.18%       0.000      1.000      1.000
+           28889.000       0.178      -0.385       1.000   76.82%       1.000      1.000
+     WEEKEND               0.255       1.126       0.000   74.54%       0.000      0.000      0.000
+           28889.000       0.190      -0.731       1.000   25.46%       0.000      1.000
+     O                     0.000      -0.069      -2.032    0.13%      -0.532     -0.132     -0.032
+             794.000       0.363      -0.077       1.468    0.13%       0.168      0.468
+     GENDER                0.646      -0.611       0.000   35.39%       0.000      1.000      1.000
+             794.000       0.229      -1.627       1.000   64.61%       1.000      1.000
+     ETHNICITY             0.635      -0.560       0.000   36.52%       0.000      1.000      1.000
+             794.000       0.232      -1.687       1.000   63.48%       1.000      1.000
+     SES                   0.859      -2.062       0.000   14.11%       1.000      1.000      1.000
+             794.000       0.121       2.254       1.000   85.89%       1.000      1.000
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+     USE THE FBITERATIONS OPTION TO INCREASE THE NUMBER OF ITERATIONS BY A FACTOR
+     OF AT LEAST TWO TO CHECK CONVERGENCE AND THAT THE PSR VALUE DOES NOT INCREASE.
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                              16
+
+Information Criteria
+
+          Deviance (DIC)                        70158.764
+          Estimated Number of Parameters (pD)    1673.249
+
+
+
+MODEL RESULTS
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within Level
+
+ WB         ON
+    WEEKEND            0.102       0.007      0.000       0.088       0.115      *
+
+ Variances
+    INT                0.150       0.001      0.000       0.147       0.152      *
+
+ Residual Variances
+    WB                 0.245       0.002      0.000       0.241       0.249      *
+
+Between Level
+
+ S1         ON
+    O                  0.008       0.017      0.321      -0.024       0.040
+
+ WB         ON
+    INT                0.075       0.108      0.251      -0.136       0.287
+    O                  0.006       0.027      0.408      -0.048       0.060
+    GENDER            -0.018       0.035      0.294      -0.087       0.049
+    ETHNICITY         -0.079       0.035      0.011      -0.147      -0.011      *
+    SES               -0.016       0.048      0.371      -0.110       0.078
+
+ WB       WITH
+    S1                -0.023       0.005      0.000      -0.032      -0.014      *
+
+ Means
+    INT                0.773       0.006      0.000       0.761       0.786      *
+
+ Intercepts
+    WB                 2.982       0.097      0.000       2.791       3.168      *
+    S1                 0.152       0.010      0.000       0.131       0.171      *
+
+ Variances
+    INT                0.028       0.002      0.000       0.025       0.032      *
+
+ Residual Variances
+    WB                 0.203       0.011      0.000       0.184       0.225      *
+    S1                 0.026       0.004      0.000       0.019       0.034      *
+
+
+STANDARDIZED MODEL RESULTS
+
+
+STDYX Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | WB ON
+    INT                0.115       0.006      0.000       0.102       0.127      *
+
+ WB         ON
+    WEEKEND            0.083       0.006      0.000       0.072       0.095      *
+
+ Variances
+    INT                1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    WB                 0.965       0.002      0.000       0.960       0.970      *
+
+Between Level
+
+ S1         ON
+    O                  0.020       0.044      0.321      -0.064       0.107
+
+ WB         ON
+    INT                0.028       0.040      0.251      -0.050       0.107
+    O                  0.006       0.026      0.408      -0.045       0.056
+    GENDER            -0.013       0.026      0.294      -0.063       0.036
+    ETHNICITY         -0.059       0.026      0.011      -0.109      -0.008      *
+    SES               -0.009       0.027      0.371      -0.062       0.044
+
+ WB       WITH
+    S1                -0.313       0.062      0.000      -0.434      -0.191      *
+
+ Means
+    INT                4.609       0.140      0.000       4.338       4.891      *
+
+ Intercepts
+    WB                 6.586       0.278      0.000       6.039       7.123      *
+    S1                 0.942       0.096      0.000       0.767       1.147      *
+
+ Variances
+    INT                1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    WB                 0.992       0.005      0.000       0.979       0.998      *
+    S1                 0.999       0.003      0.000       0.988       1.000      *
+
+
+STDY Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | WB ON
+    INT                0.115       0.006      0.000       0.102       0.127      *
+
+ WB         ON
+    WEEKEND            0.201       0.014      0.000       0.175       0.229      *
+
+ Variances
+    INT                1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    WB                 0.965       0.002      0.000       0.960       0.970      *
+
+Between Level
+
+ S1         ON
+    O                  0.047       0.102      0.321      -0.149       0.251
+
+ WB         ON
+    INT                0.028       0.040      0.251      -0.050       0.107
+    O                  0.014       0.060      0.408      -0.107       0.131
+    GENDER            -0.040       0.077      0.294      -0.190       0.108
+    ETHNICITY         -0.175       0.076      0.011      -0.323      -0.025      *
+    SES               -0.036       0.106      0.371      -0.242       0.171
+
+ WB       WITH
+    S1                -0.313       0.062      0.000      -0.434      -0.191      *
+
+ Means
+    INT                4.609       0.140      0.000       4.338       4.891      *
+
+ Intercepts
+    WB                 6.586       0.278      0.000       6.039       7.123      *
+    S1                 0.942       0.096      0.000       0.767       1.147      *
+
+ Variances
+    INT                1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    WB                 0.992       0.005      0.000       0.979       0.998      *
+    S1                 0.999       0.003      0.000       0.988       1.000      *
+
+
+R-SQUARE
+
+Within-Level R-Square Averaged Across Clusters
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    WB                 0.035       0.002      0.000       0.030       0.040
+
+Between Level
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    WB                 0.008       0.005      0.000       0.002       0.021
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    S1                 0.001       0.003      0.000       0.000       0.012
+
+
+TECHNICAL 1 OUTPUT
+
+
+     PARAMETER SPECIFICATION FOR WITHIN
+
+
+           NU
+              WB            INT           WEEKEND
+              ________      ________      ________
+                    0             0             0
+
+
+           LAMBDA
+              WB            INT           WEEKEND
+              ________      ________      ________
+ WB                 0             0             0
+ INT                0             0             0
+ WEEKEND            0             0             0
+
+
+           THETA
+              WB            INT           WEEKEND
+              ________      ________      ________
+ WB                 0
+ INT                0             0
+ WEEKEND            0             0             0
+
+
+           ALPHA
+              WB            INT           WEEKEND
+              ________      ________      ________
+                    0             0             0
+
+
+           BETA
+              WB            INT           WEEKEND
+              ________      ________      ________
+ WB                 0             0             1
+ INT                0             0             0
+ WEEKEND            0             0             0
+
+
+           PSI
+              WB            INT           WEEKEND
+              ________      ________      ________
+ WB                 2
+ INT                0             3
+ WEEKEND            0             0             0
+
+
+     PARAMETER SPECIFICATION FOR BETWEEN
+
+
+           NU
+              WB            INT           O             GENDER        ETHNICIT
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           NU
+              SES
+              ________
+                    0
+
+
+           LAMBDA
+              S1            WB            INT           O             GENDER
+              ________      ________      ________      ________      ________
+ WB                 0             0             0             0             0
+ INT                0             0             0             0             0
+ O                  0             0             0             0             0
+ GENDER             0             0             0             0             0
+ ETHNICIT           0             0             0             0             0
+ SES                0             0             0             0             0
+
+
+           LAMBDA
+              ETHNICIT      SES
+              ________      ________
+ WB                 0             0
+ INT                0             0
+ O                  0             0
+ GENDER             0             0
+ ETHNICIT           0             0
+ SES                0             0
+
+
+           THETA
+              WB            INT           O             GENDER        ETHNICIT
+              ________      ________      ________      ________      ________
+ WB                 0
+ INT                0             0
+ O                  0             0             0
+ GENDER             0             0             0             0
+ ETHNICIT           0             0             0             0             0
+ SES                0             0             0             0             0
+
+
+           THETA
+              SES
+              ________
+ SES                0
+
+
+           ALPHA
+              S1            WB            INT           O             GENDER
+              ________      ________      ________      ________      ________
+                    4             5             6             0             0
+
+
+           ALPHA
+              ETHNICIT      SES
+              ________      ________
+                    0             0
+
+
+           BETA
+              S1            WB            INT           O             GENDER
+              ________      ________      ________      ________      ________
+ S1                 0             0             0             7             0
+ WB                 0             0             8             9            10
+ INT                0             0             0             0             0
+ O                  0             0             0             0             0
+ GENDER             0             0             0             0             0
+ ETHNICIT           0             0             0             0             0
+ SES                0             0             0             0             0
+
+
+           BETA
+              ETHNICIT      SES
+              ________      ________
+ S1                 0             0
+ WB                11            12
+ INT                0             0
+ O                  0             0
+ GENDER             0             0
+ ETHNICIT           0             0
+ SES                0             0
+
+
+           PSI
+              S1            WB            INT           O             GENDER
+              ________      ________      ________      ________      ________
+ S1                13
+ WB                14            15
+ INT                0             0            16
+ O                  0             0             0             0
+ GENDER             0             0             0             0             0
+ ETHNICIT           0             0             0             0             0
+ SES                0             0             0             0             0
+
+
+           PSI
+              ETHNICIT      SES
+              ________      ________
+ ETHNICIT           0
+ SES                0             0
+
+
+     STARTING VALUES FOR WITHIN
+
+
+           NU
+              WB            INT           WEEKEND
+              ________      ________      ________
+                0.000         0.000         0.000
+
+
+           LAMBDA
+              WB            INT           WEEKEND
+              ________      ________      ________
+ WB             1.000         0.000         0.000
+ INT            0.000         1.000         0.000
+ WEEKEND        0.000         0.000         1.000
+
+
+           THETA
+              WB            INT           WEEKEND
+              ________      ________      ________
+ WB             0.000
+ INT            0.000         0.000
+ WEEKEND        0.000         0.000         0.000
+
+
+           ALPHA
+              WB            INT           WEEKEND
+              ________      ________      ________
+                0.000         0.000         0.000
+
+
+           BETA
+              WB            INT           WEEKEND
+              ________      ________      ________
+ WB             0.000         0.000         0.000
+ INT            0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000
+
+
+           PSI
+              WB            INT           WEEKEND
+              ________      ________      ________
+ WB             0.224
+ INT            0.000         0.089
+ WEEKEND        0.000         0.000         0.095
+
+
+     STARTING VALUES FOR BETWEEN
+
+
+           NU
+              WB            INT           O             GENDER        ETHNICIT
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           NU
+              SES
+              ________
+                0.000
+
+
+           LAMBDA
+              S1            WB            INT           O             GENDER
+              ________      ________      ________      ________      ________
+ WB             0.000         1.000         0.000         0.000         0.000
+ INT            0.000         0.000         1.000         0.000         0.000
+ O              0.000         0.000         0.000         1.000         0.000
+ GENDER         0.000         0.000         0.000         0.000         1.000
+ ETHNICIT       0.000         0.000         0.000         0.000         0.000
+ SES            0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              ETHNICIT      SES
+              ________      ________
+ WB             0.000         0.000
+ INT            0.000         0.000
+ O              0.000         0.000
+ GENDER         0.000         0.000
+ ETHNICIT       1.000         0.000
+ SES            0.000         1.000
+
+
+           THETA
+              WB            INT           O             GENDER        ETHNICIT
+              ________      ________      ________      ________      ________
+ WB             0.000
+ INT            0.000         0.000
+ O              0.000         0.000         0.000
+ GENDER         0.000         0.000         0.000         0.000
+ ETHNICIT       0.000         0.000         0.000         0.000         0.000
+ SES            0.000         0.000         0.000         0.000         0.000
+
+
+           THETA
+              SES
+              ________
+ SES            0.000
+
+
+           ALPHA
+              S1            WB            INT           O             GENDER
+              ________      ________      ________      ________      ________
+                0.000         3.011         0.768         0.000         0.000
+
+
+           ALPHA
+              ETHNICIT      SES
+              ________      ________
+                0.000         0.000
+
+
+           BETA
+              S1            WB            INT           O             GENDER
+              ________      ________      ________      ________      ________
+ S1             0.000         0.000         0.000         0.000         0.000
+ WB             0.000         0.000         0.000         0.000         0.000
+ INT            0.000         0.000         0.000         0.000         0.000
+ O              0.000         0.000         0.000         0.000         0.000
+ GENDER         0.000         0.000         0.000         0.000         0.000
+ ETHNICIT       0.000         0.000         0.000         0.000         0.000
+ SES            0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              ETHNICIT      SES
+              ________      ________
+ S1             0.000         0.000
+ WB             0.000         0.000
+ INT            0.000         0.000
+ O              0.000         0.000
+ GENDER         0.000         0.000
+ ETHNICIT       0.000         0.000
+ SES            0.000         0.000
+
+
+           PSI
+              S1            WB            INT           O             GENDER
+              ________      ________      ________      ________      ________
+ S1             1.000
+ WB             0.000         0.224
+ INT            0.000         0.000         0.089
+ O              0.000         0.000         0.000         0.182
+ GENDER         0.000         0.000         0.000         0.000         0.111
+ ETHNICIT       0.000         0.000         0.000         0.000         0.000
+ SES            0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              ETHNICIT      SES
+              ________      ________
+ ETHNICIT       0.115
+ SES            0.000         0.065
+
+
+
+     PRIORS FOR ALL PARAMETERS            PRIOR MEAN      PRIOR VARIANCE     PRIOR STD. DEV.
+
+     Parameter 1~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 2~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 3~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 4~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 5~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 6~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 7~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 8~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 9~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 10~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 11~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 12~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 13~IW(0.000,-3)             infinity            infinity            infinity
+     Parameter 14~IW(0.000,-3)             infinity            infinity            infinity
+     Parameter 15~IW(0.000,-3)             infinity            infinity            infinity
+     Parameter 16~IG(-1.000,0.000)         infinity            infinity            infinity
+
+
+TECHNICAL 8 OUTPUT
+
+
+   TECHNICAL 8 OUTPUT FOR BAYES ESTIMATION
+
+     CHAIN    BSEED
+     1        0
+     2        285380
+
+                     POTENTIAL       PARAMETER WITH
+     ITERATION    SCALE REDUCTION      HIGHEST PSR
+     100              1.102               4
+     200              1.039               4
+     300              1.038               9
+     400              1.017               15
+     500              1.018               8
+     600              1.009               5
+     700              1.001               15
+     800              1.002               1
+     900              1.006               4
+     1000             1.014               4
+     1100             1.021               4
+     1200             1.010               4
+     1300             1.012               4
+     1400             1.011               7
+     1500             1.012               7
+     1600             1.008               7
+     1700             1.017               7
+     1800             1.020               7
+     1900             1.016               7
+     2000             1.013               7
+     2100             1.007               7
+     2200             1.003               7
+     2300             1.002               7
+     2400             1.001               1
+     2500             1.001               15
+     2600             1.001               15
+     2700             1.001               15
+     2800             1.004               7
+     2900             1.003               7
+     3000             1.002               15
+     3100             1.002               15
+     3200             1.002               7
+     3300             1.004               7
+     3400             1.004               7
+     3500             1.004               7
+     3600             1.003               7
+     3700             1.005               7
+     3800             1.005               7
+     3900             1.007               7
+     4000             1.005               7
+     4100             1.005               7
+     4200             1.005               7
+     4300             1.004               13
+     4400             1.004               7
+     4500             1.004               7
+     4600             1.005               7
+     4700             1.004               7
+     4800             1.004               7
+     4900             1.003               7
+     5000             1.002               7
+     5100             1.002               7
+     5200             1.003               4
+     5300             1.001               4
+     5400             1.001               4
+     5500             1.000               4
+     5600             1.000               9
+     5700             1.000               9
+     5800             1.000               9
+     5900             1.000               7
+     6000             1.000               7
+     6100             1.001               7
+     6200             1.001               7
+     6300             1.001               7
+     6400             1.001               7
+     6500             1.001               7
+     6600             1.001               7
+     6700             1.001               7
+     6800             1.001               7
+     6900             1.001               7
+     7000             1.001               7
+     7100             1.001               7
+     7200             1.001               7
+     7300             1.001               7
+     7400             1.001               4
+     7500             1.001               4
+     7600             1.001               7
+     7700             1.000               7
+     7800             1.000               7
+     7900             1.001               7
+     8000             1.001               7
+     8100             1.001               7
+     8200             1.001               7
+     8300             1.001               7
+     8400             1.000               7
+     8500             1.001               7
+     8600             1.001               7
+     8700             1.000               13
+     8800             1.000               7
+     8900             1.001               7
+     9000             1.001               7
+     9100             1.000               7
+     9200             1.000               7
+     9300             1.000               7
+     9400             1.001               7
+     9500             1.000               7
+     9600             1.000               11
+     9700             1.000               14
+     9800             1.001               7
+     9900             1.001               7
+     10000            1.001               7
+
+
+     Beginning Time:  07:21:24
+        Ending Time:  07:27:22
+       Elapsed Time:  00:05:58
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2020 Muthen & Muthen

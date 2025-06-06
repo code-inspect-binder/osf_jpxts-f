@@ -1,0 +1,41 @@
+TITLE: Analysis 4
+DATA: FILE = analysis4+5_suppl1_S2.dat;
+VARIABLE:
+NAMES = ID WB content stressed lonely
+TVC TCE SN peers family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = WB
+TCE SN family weak_ties
+weekend E;
+CLUSTER = ID;
+WITHIN = TCE SN family weak_ties weekend;
+BETWEEN = E;
+MISSING = .;
+DEFINE:
+CENTER TCE (GROUPMEAN);
+CENTER SN (GROUPMEAN);
+CENTER family (GROUPMEAN);
+CENTER weak_ties (GROUPMEAN);
+CENTER E (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Well-being is predicted by TCE, the slope is random
+S1 | WB ON TCE;
+! Well-being is predicted by SN, the slope is random
+S2 | WB ON SN;
+! Well-being is predicted by family, the slope is random
+S3 | WB ON family;
+! Well-being is predicted by weak ties, the slope is random
+S4 | WB ON weak_ties;
+! Control for weekend
+WB ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+WB S1-S4 WITH WB S1-S4;
+! The intercept is predicted by extraversion
+WB ON E;
+! The slopes are predicted by extraversion
+S1-S4 ON E;
+OUTPUT: STDYX STDY TECH8;

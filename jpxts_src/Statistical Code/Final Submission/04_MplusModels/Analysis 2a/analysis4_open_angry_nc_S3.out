@@ -1,0 +1,1091 @@
+Mplus VERSION 8.5 (Mac)
+MUTHEN & MUTHEN
+03/17/2022  12:29 AM
+
+INPUT INSTRUCTIONS
+
+  TITLE: Analysis 4
+  DATA: FILE = analysis4+5_S3.dat;
+  VARIABLE:
+  NAMES = ID AB angry worried happy sad WB stressed lonely
+  FTF CMC mixed peers family weak_ties
+  E A C N O gender ethnicity SES weekend;
+  USEVARIABLES = angry
+  CMC mixed family weak_ties
+  weekend O;
+  CLUSTER = ID;
+  WITHIN = CMC mixed family weak_ties weekend;
+  BETWEEN = O;
+  MISSING = .;
+  DEFINE:
+  CENTER CMC (GROUPMEAN);
+  CENTER mixed (GROUPMEAN);
+  CENTER family (GROUPMEAN);
+  CENTER weak_ties (GROUPMEAN);
+  CENTER O (GRANDMEAN);
+  ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+  BITERATIONS = (10000); PROCESSORS = 2;
+  MODEL:
+  %WITHIN%
+  ! Anger is predicted by CMC, the slope is random
+  S1 | angry ON CMC;
+  ! Anger is predicted by mixed episodes, the slope is random
+  S2 | angry ON mixed;
+  ! Anger is predicted by family, the slope is random
+  S3 | angry ON family;
+  ! Anger is predicted by weak ties, the slope is random
+  S4 | angry ON weak_ties;
+  ! Control for weekend
+  angry ON weekend;
+  %BETWEEN%
+  ! Covariance between intercept and slopes
+  angry S1-S4 WITH angry S1-S4;
+  ! The intercept is predicted by openness
+  angry ON O;
+  ! The slopes are predicted by openness
+  S1-S4 ON O;
+  OUTPUT: STDYX STDY TECH8;
+
+
+
+*** WARNING in VARIABLE command
+  Note that only the first 8 characters of variable names are used in the output.
+  Shorten variable names to avoid any confusion.
+*** WARNING
+  One or more individual-level variables have no variation within a
+  cluster for the following clusters.
+
+     Variable   Cluster IDs with no within-cluster variation
+
+      ANGRY       45 404 4 156 816 29 376 49 396 790 303 545 502 93 131 666 369 761 106 58 718
+                  600 52 556 482 61 700 405 363 378 82 76 316 778 413 825 615 856 118 406 578
+                  222 685 533 701 435 234 480 881 888 105 214 663 807 247 53 390 804 509 95 573
+                  506 290 126 69 618 732 341 552 494 766 498 814 39 602 768 611 350 697 705 199
+                  229 605 221 610 769 536 24 374 333 177 703 572 659 201 36 589 249 254 83 606
+                  547 263 781 821 752 865 416 428 595 463 262 771 292 834 707 381 94 451 744 68
+                  411 210 6 366 171 88 863 758 200 599 869 50 483 437 323 153 305 110 427 90 675
+                  554 873 385 64 331 871 192 255 42 434 492 28 596 719 626 117 465 687 635 449
+                  107 89 632 860 198 884 582 257 384 511 567 245 218 399 114 154 159 338 757 415
+                  763 386 375 308 324 657 301 568 71 174 98 627 283
+      WEEKEND     404 271 806 816 49 396 57 485 845 502 598 93 131 666 851 556 844 26 349 680
+                  685 881 69 734 265 723 882
+
+*** WARNING
+  Data set contains cases with missing on x-variables.
+  These cases were not included in the analysis.
+  Number of cases with missing on x-variables:  2074
+*** WARNING
+  Data set contains cases with missing on all variables except
+  x-variables.  These cases were not included in the analysis.
+  Number of cases with missing on all variables except x-variables:  59
+   4 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+Analysis 4
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                       19302
+
+Number of dependent variables                                    1
+Number of independent variables                                  6
+Number of continuous latent variables                            4
+
+Observed dependent variables
+
+  Continuous
+   ANGRY
+
+Observed independent variables
+   CMC         MIXED       FAMILY      WEAK_TIE    WEEKEND     O
+
+Continuous latent variables
+   S1          S2          S3          S4
+
+Variables with special functions
+
+  Cluster variable      ID
+
+  Within variables
+   CMC         MIXED       FAMILY      WEAK_TIE    WEEKEND
+
+  Between variables
+   O
+
+  Centering (GRANDMEAN)
+   O
+
+  Centering (GROUPMEAN)
+   CMC         MIXED       FAMILY      WEAK_TIE
+
+
+Estimator                                                    BAYES
+Specifications for Bayesian Estimation
+  Point estimate                                            MEDIAN
+  Number of Markov chain Monte Carlo (MCMC) chains               2
+  Random seed for the first chain                                0
+  Starting value information                           UNPERTURBED
+  Algorithm used for Markov chain Monte Carlo           GIBBS(PX1)
+  Convergence criterion                                  0.500D-01
+  Maximum number of iterations                               50000
+  K-th iteration used for thinning                               1
+
+Input data file(s)
+  analysis4+5_S3.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of clusters                        753
+
+       Size (s)    Cluster ID with Size s
+
+          1        10 63 240 311 608 625 740 876
+          2        45 404 562 4 271 298 156 806 816
+          3        29 352 376 49 396 57 790 485 303 845 545 502
+          4        598 93 131 11 666 667 369
+          5        459 22 761 571 532 636 5 851 106 58 718
+          6        600 52 556 482 61 700 302 880 405
+          7        363 173 844 634 26 378 330 170 238 349
+          8        82 76 316 592 778 280 413 813 825 162 615 473 856 118
+                   119
+          9        629 203 164 406 654 796 578 222 680 820 685 178 533
+                   847 701 435 234 480 881 888
+         10        770 105 20 214 21 663 807 9 424 431 839 846 247 185
+                   728 499 189 522 202 53
+         11        195 268 390 683 555 558 804 509 630 358 152 887 59 95
+         12        122 573 506 310 290 126 537 69 481 618 732 619 341 552
+                   418 750 494 766 498 135 650 569
+         13        814 55 734 543 467 269 505 39 602 508 768 611 350 510
+                   67 265 529 488 723 452
+         14        697 277 585 704 705 588 722 423 199 229 826 642 141
+                   525 408 605 221 610 322 684 769 472 130 692 797
+         15        339 38 397 80 182 183 536 656 420 74 24 374 858 97 772
+                   333 784 882 336 564 624 177 703
+         16        572 230 706 659 209 201 36 587 589 249 293 254 594 883
+                   258 469 346 83
+         17        565 606 547 440 237 263 321 370 566 781 821
+         18        373 752 753 708 865 450 180 13 225 14 416 428 595 317
+                   755 678
+         19        733 463 262 441 327 66 751 714 620 760 721 817 281 689
+                   662 771 251
+         20        621 379 717 343 273 669 862 252 304 872 292 738 18 377
+                   831 834 163 19
+         21        775 501 266 215 92 584 612 236 253 707 551 51 716 518
+                   381 94 486 451 99 241 340 744 835
+         22        651 68 411 210 515 6 366 672 25 246 332 372 715 171
+                   88
+         23        403 335 644 776 176 607 351 507 306 132 863 133 65 810
+                   444 520 758 312 158 200 371 886 458 599 348
+         24        33 243 668 633 869 474 270 138 50 483 274 429 193 695
+                   548 437 81 194
+         25        344 244 421 347 323 426 559 475 295 145 100 233 153
+                   815 305 110 276 579 8 497 2 720 124 85
+         26        148 287 427 743 850 179 328 216 699 368 278 46 838
+         27        446 47 531 319 671 789 90 675 111 726 843 539 682 161
+                   419 239 713 445
+         28        325 120 307 398 864 491 779 665 554 604 873 356 535
+                   495 73 517 385 64 591 681 147
+         29        647 487 190 84 754 1 549 837 658 331 155 235 664 345
+                   31 223 157 12 777
+         30        168 286 871 792 793 204 192 524 676 255 401 42 528 461
+                   841 788
+         31        434 809 492 28 877 596 228 146 496 315 34 123 432 719
+                   282
+         32        762 767 542 140 660 41 232 799 87 394 601 291 314 780
+                   855
+         33        818 259 729 597 854 261 318 231 382 833 759 646 430
+                   765 866 626 727 577
+         34        586 795 490 217 798 686 3 563 391 580 653 54 471 631
+                   77 849
+         35        117 489 447 465 805 264 275 523 687 32 745 635 188 731
+         36        513 560 470 677 115 622 219 694 250 296
+         37        614 43 417 15 400 289 670 829 260 861 449 107 453
+         38        101 448 256 823 89 191 407 830 632 709 353 16 172
+         39        860 167 267 380 187 808 37 439 354
+         40        557 747 127 739 462 414 388 285
+         41        613 748 299 362 691 409 181 198 884 582 800 75 655 257
+         42        848 425 384 220 791 511 698 623
+         43        484 367 227 272 712 812 567 479
+         44        245 143 360 648 412 72 357 218
+         45        436 129 393 208 570 628 248
+         46        399 109 114 154
+         47        300 159 102 819 783 679 213 836 546 128
+         48        338 757 637 142 415 454 763
+         49        165 794 746 137 643 62 386
+         50        375 645 774 640
+         51        561 652 308 125 355 853
+         52        324 827 657 301
+         53        842 27
+         54        782 568 71 521
+         55        174 500 730 226 553
+         56        840 603 519
+         58        151 639 103 514 98
+         59        212 803 402 627
+         60        690 283 313
+         61        364
+         62        534 476
+         64        443
+         67        674
+         68        186
+         69        801
+         73        824
+         74        530
+         75        764
+         78        711
+         80        40
+
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+     Number of missing data patterns             1
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              ANGRY         CMC           MIXED         FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ ANGRY          1.000
+ CMC            1.000         1.000
+ MIXED          1.000         1.000         1.000
+ FAMILY         1.000         1.000         1.000         1.000
+ WEAK_TIE       1.000         1.000         1.000         1.000         1.000
+ WEEKEND        1.000         1.000         1.000         1.000         1.000
+ O              1.000         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              WEEKEND       O
+              ________      ________
+ WEEKEND        1.000
+ O              1.000         1.000
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     ANGRY                 1.193       3.162       1.000   86.05%       1.000      1.000      1.000
+           19302.000       0.287      10.447       4.000    1.21%       1.000      1.000
+     CMC                   0.000       0.673      -0.952    0.01%      -0.292     -0.143     -0.091
+           19302.000       0.153      -0.301       0.982    0.01%      -0.037      0.409
+     MIXED                 0.000       1.498      -0.891    0.03%      -0.152     -0.059     -0.036
+           19302.000       0.086       2.737       0.983    0.01%       0.000      0.000
+     FAMILY                0.000       0.727      -0.983    0.01%      -0.214     -0.053     -0.025
+           19302.000       0.111       1.016       0.983    0.01%       0.000      0.162
+     WEAK_TIES             0.000       1.600      -0.929    0.01%      -0.167     -0.077     -0.050
+           19302.000       0.094       2.390       0.984    0.01%      -0.024      0.000
+     WEEKEND               0.298       0.885       0.000   70.23%       0.000      0.000      0.000
+           19302.000       0.209      -1.217       1.000   29.77%       0.000      1.000
+     O                     0.000      -0.210      -1.902    0.13%      -0.569     -0.152      0.014
+             753.000       0.422      -0.482       1.264    1.59%       0.181      0.598
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+     USE THE FBITERATIONS OPTION TO INCREASE THE NUMBER OF ITERATIONS BY A FACTOR
+     OF AT LEAST TWO TO CHECK CONVERGENCE AND THAT THE PSR VALUE DOES NOT INCREASE.
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                              27
+
+Information Criteria
+
+          Deviance (DIC)                        26834.216
+          Estimated Number of Parameters (pD)    1037.177
+
+
+
+MODEL RESULTS
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within Level
+
+ ANGRY      ON
+    WEEKEND           -0.030       0.008      0.000      -0.046      -0.015      *
+
+ Residual Variances
+    ANGRY              0.223       0.002      0.000       0.218       0.228      *
+
+Between Level
+
+ S1         ON
+    O                  0.007       0.018      0.356      -0.029       0.042
+
+ S2         ON
+    O                  0.026       0.021      0.106      -0.014       0.066
+
+ S3         ON
+    O                  0.002       0.021      0.463      -0.040       0.043
+
+ S4         ON
+    O                  0.008       0.022      0.361      -0.034       0.053
+
+ ANGRY      ON
+    O                 -0.001       0.016      0.486      -0.031       0.030
+
+ ANGRY    WITH
+    S1                 0.015       0.004      0.000       0.008       0.022      *
+    S2                 0.005       0.004      0.105      -0.003       0.012
+    S3                 0.024       0.004      0.000       0.016       0.032      *
+    S4                 0.001       0.004      0.400      -0.008       0.010
+
+ S1       WITH
+    S2                 0.000       0.003      0.463      -0.006       0.008
+    S3                 0.006       0.004      0.058      -0.001       0.015
+    S4                -0.012       0.004      0.000      -0.021      -0.004      *
+
+ S2       WITH
+    S3                -0.002       0.004      0.307      -0.011       0.005
+    S4                -0.001       0.005      0.440      -0.010       0.009
+
+ S3       WITH
+    S4                 0.004       0.005      0.208      -0.006       0.015
+
+ Intercepts
+    ANGRY              1.216       0.010      0.000       1.196       1.237      *
+    S1                 0.043       0.012      0.000       0.018       0.067      *
+    S2                 0.033       0.014      0.014       0.004       0.057      *
+    S3                 0.071       0.014      0.000       0.043       0.098      *
+    S4                -0.009       0.015      0.262      -0.040       0.019
+
+ Residual Variances
+    ANGRY              0.065       0.004      0.000       0.057       0.073      *
+    S1                 0.021       0.005      0.000       0.013       0.032      *
+    S2                 0.009       0.004      0.000       0.004       0.019      *
+    S3                 0.028       0.006      0.000       0.018       0.042      *
+    S4                 0.027       0.007      0.000       0.015       0.043      *
+
+
+STANDARDIZED MODEL RESULTS
+
+
+STDYX Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | ANGRY ON
+    CMC                0.033       0.007      0.000       0.017       0.047      *
+
+ S2 | ANGRY ON
+    MIXED              0.015       0.006      0.007       0.003       0.024      *
+
+ S3 | ANGRY ON
+    FAMILY             0.041       0.007      0.000       0.027       0.055      *
+
+ S4 | ANGRY ON
+    WEAK_TIES         -0.004       0.008      0.293      -0.019       0.011
+
+ ANGRY      ON
+    WEEKEND           -0.027       0.007      0.000      -0.040      -0.012      *
+
+ Residual Variances
+    ANGRY              0.964       0.003      0.000       0.957       0.970      *
+
+Between Level
+
+ S1         ON
+    O                  0.022       0.059      0.356      -0.095       0.137
+
+ S2         ON
+    O                  0.124       0.100      0.106      -0.066       0.316
+
+ S3         ON
+    O                  0.006       0.058      0.463      -0.107       0.118
+
+ S4         ON
+    O                  0.023       0.064      0.361      -0.096       0.155
+
+ ANGRY      ON
+    O                 -0.001       0.028      0.486      -0.057       0.055
+
+ ANGRY    WITH
+    S1                 0.407       0.095      0.000       0.220       0.589      *
+    S2                 0.204       0.158      0.105      -0.124       0.500
+    S3                 0.556       0.083      0.000       0.380       0.706      *
+    S4                 0.028       0.109      0.400      -0.181       0.243
+
+ S1       WITH
+    S2                 0.023       0.224      0.463      -0.422       0.455
+    S3                 0.257       0.155      0.058      -0.061       0.550
+    S4                -0.507       0.151      0.000      -0.801      -0.209      *
+
+ S2       WITH
+    S3                -0.141       0.272      0.307      -0.700       0.316
+    S4                -0.048       0.293      0.440      -0.578       0.530
+
+ S3       WITH
+    S4                 0.159       0.181      0.208      -0.239       0.473
+
+ Intercepts
+    ANGRY              4.778       0.154      0.000       4.480       5.086      *
+    S1                 0.300       0.095      0.000       0.119       0.493      *
+    S2                 0.329       0.162      0.014       0.041       0.680      *
+    S3                 0.419       0.094      0.000       0.248       0.620      *
+    S4                -0.057       0.093      0.262      -0.247       0.121
+
+ Residual Variances
+    ANGRY              1.000       0.001      0.000       0.996       1.000      *
+    S1                 0.998       0.006      0.000       0.980       1.000      *
+    S2                 0.984       0.028      0.000       0.900       1.000      *
+    S3                 0.998       0.005      0.000       0.983       1.000      *
+    S4                 0.998       0.007      0.000       0.975       1.000      *
+
+
+STDY Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | ANGRY ON
+    CMC                0.091       0.021      0.000       0.045       0.130      *
+
+ S2 | ANGRY ON
+    MIXED              0.073       0.029      0.012       0.009       0.119      *
+
+ S3 | ANGRY ON
+    FAMILY             0.145       0.025      0.000       0.094       0.196      *
+
+ S4 | ANGRY ON
+    WEAK_TIES         -0.019       0.030      0.254      -0.081       0.037
+
+ ANGRY      ON
+    WEEKEND           -0.063       0.017      0.000      -0.095      -0.029      *
+
+ Residual Variances
+    ANGRY              0.964       0.003      0.000       0.957       0.970      *
+
+Between Level
+
+ S1         ON
+    O                  0.047       0.128      0.356      -0.207       0.296
+
+ S2         ON
+    O                  0.268       0.217      0.106      -0.144       0.684
+
+ S3         ON
+    O                  0.012       0.125      0.463      -0.232       0.255
+
+ S4         ON
+    O                  0.050       0.138      0.361      -0.209       0.336
+
+ ANGRY      ON
+    O                 -0.002       0.061      0.486      -0.122       0.118
+
+ ANGRY    WITH
+    S1                 0.407       0.095      0.000       0.220       0.589      *
+    S2                 0.204       0.158      0.105      -0.124       0.500
+    S3                 0.556       0.083      0.000       0.380       0.706      *
+    S4                 0.028       0.109      0.400      -0.181       0.243
+
+ S1       WITH
+    S2                 0.023       0.224      0.463      -0.422       0.455
+    S3                 0.257       0.155      0.058      -0.061       0.550
+    S4                -0.507       0.151      0.000      -0.801      -0.209      *
+
+ S2       WITH
+    S3                -0.141       0.272      0.307      -0.700       0.316
+    S4                -0.048       0.293      0.440      -0.578       0.530
+
+ S3       WITH
+    S4                 0.159       0.181      0.208      -0.239       0.473
+
+ Intercepts
+    ANGRY              4.778       0.154      0.000       4.480       5.086      *
+    S1                 0.300       0.095      0.000       0.119       0.493      *
+    S2                 0.329       0.162      0.014       0.041       0.680      *
+    S3                 0.419       0.094      0.000       0.248       0.620      *
+    S4                -0.057       0.093      0.262      -0.247       0.121
+
+ Residual Variances
+    ANGRY              1.000       0.001      0.000       0.996       1.000      *
+    S1                 0.998       0.006      0.000       0.980       1.000      *
+    S2                 0.984       0.028      0.000       0.900       1.000      *
+    S3                 0.998       0.005      0.000       0.983       1.000      *
+    S4                 0.998       0.007      0.000       0.975       1.000      *
+
+
+R-SQUARE
+
+Within-Level R-Square Averaged Across Clusters
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    ANGRY              0.036       0.003      0.000       0.030       0.042
+
+Between Level
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    ANGRY              0.000       0.001      0.000       0.000       0.004
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    S1                 0.002       0.006      0.000       0.000       0.019
+    S2                 0.016       0.028      0.000       0.000       0.100
+    S3                 0.002       0.005      0.000       0.000       0.017
+    S4                 0.002       0.007      0.000       0.000       0.025
+
+
+TECHNICAL 1 OUTPUT
+
+
+     PARAMETER SPECIFICATION FOR WITHIN
+
+
+           NU
+              ANGRY         CMC           MIXED         FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           NU
+              WEEKEND
+              ________
+                    0
+
+
+           LAMBDA
+              ANGRY         CMC           MIXED         FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ ANGRY              0             0             0             0             0
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ FAMILY             0             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           LAMBDA
+              WEEKEND
+              ________
+ ANGRY              0
+ CMC                0
+ MIXED              0
+ FAMILY             0
+ WEAK_TIE           0
+ WEEKEND            0
+
+
+           THETA
+              ANGRY         CMC           MIXED         FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ ANGRY              0
+ CMC                0             0
+ MIXED              0             0             0
+ FAMILY             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           THETA
+              WEEKEND
+              ________
+ WEEKEND            0
+
+
+           ALPHA
+              ANGRY         CMC           MIXED         FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           ALPHA
+              WEEKEND
+              ________
+                    0
+
+
+           BETA
+              ANGRY         CMC           MIXED         FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ ANGRY              0             0             0             0             0
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ FAMILY             0             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           BETA
+              WEEKEND
+              ________
+ ANGRY              1
+ CMC                0
+ MIXED              0
+ FAMILY             0
+ WEAK_TIE           0
+ WEEKEND            0
+
+
+           PSI
+              ANGRY         CMC           MIXED         FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ ANGRY              2
+ CMC                0             0
+ MIXED              0             0             0
+ FAMILY             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           PSI
+              WEEKEND
+              ________
+ WEEKEND            0
+
+
+     PARAMETER SPECIFICATION FOR BETWEEN
+
+
+           NU
+              ANGRY         O
+              ________      ________
+                    0             0
+
+
+           LAMBDA
+              S1            S2            S3            S4            ANGRY
+              ________      ________      ________      ________      ________
+ ANGRY              0             0             0             0             0
+ O                  0             0             0             0             0
+
+
+           LAMBDA
+              O
+              ________
+ ANGRY              0
+ O                  0
+
+
+           THETA
+              ANGRY         O
+              ________      ________
+ ANGRY              0
+ O                  0             0
+
+
+           ALPHA
+              S1            S2            S3            S4            ANGRY
+              ________      ________      ________      ________      ________
+                    3             4             5             6             7
+
+
+           ALPHA
+              O
+              ________
+                    0
+
+
+           BETA
+              S1            S2            S3            S4            ANGRY
+              ________      ________      ________      ________      ________
+ S1                 0             0             0             0             0
+ S2                 0             0             0             0             0
+ S3                 0             0             0             0             0
+ S4                 0             0             0             0             0
+ ANGRY              0             0             0             0             0
+ O                  0             0             0             0             0
+
+
+           BETA
+              O
+              ________
+ S1                 8
+ S2                 9
+ S3                10
+ S4                11
+ ANGRY             12
+ O                  0
+
+
+           PSI
+              S1            S2            S3            S4            ANGRY
+              ________      ________      ________      ________      ________
+ S1                13
+ S2                14            15
+ S3                16            17            18
+ S4                19            20            21            22
+ ANGRY             23            24            25            26            27
+ O                  0             0             0             0             0
+
+
+           PSI
+              O
+              ________
+ O                  0
+
+
+     STARTING VALUES FOR WITHIN
+
+
+           NU
+              ANGRY         CMC           MIXED         FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           NU
+              WEEKEND
+              ________
+                0.000
+
+
+           LAMBDA
+              ANGRY         CMC           MIXED         FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ ANGRY          1.000         0.000         0.000         0.000         0.000
+ CMC            0.000         1.000         0.000         0.000         0.000
+ MIXED          0.000         0.000         1.000         0.000         0.000
+ FAMILY         0.000         0.000         0.000         1.000         0.000
+ WEAK_TIE       0.000         0.000         0.000         0.000         1.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              WEEKEND
+              ________
+ ANGRY          0.000
+ CMC            0.000
+ MIXED          0.000
+ FAMILY         0.000
+ WEAK_TIE       0.000
+ WEEKEND        1.000
+
+
+           THETA
+              ANGRY         CMC           MIXED         FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ ANGRY          0.000
+ CMC            0.000         0.000
+ MIXED          0.000         0.000         0.000
+ FAMILY         0.000         0.000         0.000         0.000
+ WEAK_TIE       0.000         0.000         0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           THETA
+              WEEKEND
+              ________
+ WEEKEND        0.000
+
+
+           ALPHA
+              ANGRY         CMC           MIXED         FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           ALPHA
+              WEEKEND
+              ________
+                0.000
+
+
+           BETA
+              ANGRY         CMC           MIXED         FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ ANGRY          0.000         0.000         0.000         0.000         0.000
+ CMC            0.000         0.000         0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         0.000         0.000
+ FAMILY         0.000         0.000         0.000         0.000         0.000
+ WEAK_TIE       0.000         0.000         0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              WEEKEND
+              ________
+ ANGRY          0.000
+ CMC            0.000
+ MIXED          0.000
+ FAMILY         0.000
+ WEAK_TIE       0.000
+ WEEKEND        0.000
+
+
+           PSI
+              ANGRY         CMC           MIXED         FAMILY        WEAK_TIE
+              ________      ________      ________      ________      ________
+ ANGRY          0.143
+ CMC            0.000         0.077
+ MIXED          0.000         0.000         0.043
+ FAMILY         0.000         0.000         0.000         0.055
+ WEAK_TIE       0.000         0.000         0.000         0.000         0.047
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              WEEKEND
+              ________
+ WEEKEND        0.105
+
+
+     STARTING VALUES FOR BETWEEN
+
+
+           NU
+              ANGRY         O
+              ________      ________
+                0.000         0.000
+
+
+           LAMBDA
+              S1            S2            S3            S4            ANGRY
+              ________      ________      ________      ________      ________
+ ANGRY          0.000         0.000         0.000         0.000         1.000
+ O              0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              O
+              ________
+ ANGRY          0.000
+ O              1.000
+
+
+           THETA
+              ANGRY         O
+              ________      ________
+ ANGRY          0.000
+ O              0.000         0.000
+
+
+           ALPHA
+              S1            S2            S3            S4            ANGRY
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         1.193
+
+
+           ALPHA
+              O
+              ________
+                0.000
+
+
+           BETA
+              S1            S2            S3            S4            ANGRY
+              ________      ________      ________      ________      ________
+ S1             0.000         0.000         0.000         0.000         0.000
+ S2             0.000         0.000         0.000         0.000         0.000
+ S3             0.000         0.000         0.000         0.000         0.000
+ S4             0.000         0.000         0.000         0.000         0.000
+ ANGRY          0.000         0.000         0.000         0.000         0.000
+ O              0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              O
+              ________
+ S1             0.000
+ S2             0.000
+ S3             0.000
+ S4             0.000
+ ANGRY          0.000
+ O              0.000
+
+
+           PSI
+              S1            S2            S3            S4            ANGRY
+              ________      ________      ________      ________      ________
+ S1             1.000
+ S2             0.000         1.000
+ S3             0.000         0.000         1.000
+ S4             0.000         0.000         0.000         1.000
+ ANGRY          0.000         0.000         0.000         0.000         0.143
+ O              0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              O
+              ________
+ O              0.214
+
+
+
+     PRIORS FOR ALL PARAMETERS            PRIOR MEAN      PRIOR VARIANCE     PRIOR STD. DEV.
+
+     Parameter 1~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 2~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 3~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 4~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 5~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 6~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 7~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 8~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 9~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 10~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 11~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 12~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 13~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 14~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 15~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 16~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 17~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 18~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 19~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 20~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 21~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 22~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 23~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 24~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 25~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 26~IW(0.000,-6)             infinity            infinity            infinity
+     Parameter 27~IW(0.000,-6)             infinity            infinity            infinity
+
+
+TECHNICAL 8 OUTPUT
+
+
+   TECHNICAL 8 OUTPUT FOR BAYES ESTIMATION
+
+     CHAIN    BSEED
+     1        0
+     2        285380
+
+                     POTENTIAL       PARAMETER WITH
+     ITERATION    SCALE REDUCTION      HIGHEST PSR
+     100              1.168               5
+     200              1.237               20
+     300              1.216               9
+     400              1.179               9
+     500              1.165               20
+     600              1.245               20
+     700              1.320               20
+     800              1.353               20
+     900              1.282               20
+     1000             1.223               20
+     1100             1.211               9
+     1200             1.235               9
+     1300             1.263               9
+     1400             1.296               9
+     1500             1.198               9
+     1600             1.202               9
+     1700             1.200               9
+     1800             1.162               9
+     1900             1.153               9
+     2000             1.148               4
+     2100             1.162               4
+     2200             1.122               4
+     2300             1.102               4
+     2400             1.077               8
+     2500             1.072               21
+     2600             1.079               21
+     2700             1.056               21
+     2800             1.033               13
+     2900             1.036               18
+     3000             1.042               18
+     3100             1.032               18
+     3200             1.026               18
+     3300             1.024               18
+     3400             1.039               4
+     3500             1.036               4
+     3600             1.029               4
+     3700             1.027               17
+     3800             1.022               17
+     3900             1.021               17
+     4000             1.021               17
+     4100             1.023               14
+     4200             1.029               14
+     4300             1.034               14
+     4400             1.028               14
+     4500             1.022               14
+     4600             1.019               14
+     4700             1.017               14
+     4800             1.020               22
+     4900             1.020               21
+     5000             1.023               21
+     5100             1.025               21
+     5200             1.029               21
+     5300             1.023               21
+     5400             1.018               21
+     5500             1.017               5
+     5600             1.017               21
+     5700             1.016               21
+     5800             1.014               6
+     5900             1.014               3
+     6000             1.015               6
+     6100             1.017               3
+     6200             1.019               5
+     6300             1.019               5
+     6400             1.021               4
+     6500             1.020               5
+     6600             1.018               5
+     6700             1.016               5
+     6800             1.018               5
+     6900             1.020               5
+     7000             1.018               5
+     7100             1.026               4
+     7200             1.027               4
+     7300             1.023               4
+     7400             1.018               4
+     7500             1.019               4
+     7600             1.018               4
+     7700             1.012               4
+     7800             1.010               4
+     7900             1.011               17
+     8000             1.012               17
+     8100             1.014               17
+     8200             1.014               17
+     8300             1.015               17
+     8400             1.017               17
+     8500             1.019               17
+     8600             1.020               17
+     8700             1.022               17
+     8800             1.024               17
+     8900             1.025               17
+     9000             1.024               17
+     9100             1.023               17
+     9200             1.025               17
+     9300             1.026               17
+     9400             1.027               17
+     9500             1.024               17
+     9600             1.023               17
+     9700             1.024               17
+     9800             1.025               17
+     9900             1.027               17
+     10000            1.028               17
+
+
+     Beginning Time:  00:29:07
+        Ending Time:  00:33:10
+       Elapsed Time:  00:04:03
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2020 Muthen & Muthen

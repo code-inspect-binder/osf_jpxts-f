@@ -1,0 +1,785 @@
+Mplus VERSION 8.5 (Mac)
+MUTHEN & MUTHEN
+03/15/2022   5:22 AM
+
+INPUT INSTRUCTIONS
+
+  TITLE: Analysis 1
+  DATA: FILE = analysis1_S3.dat;
+  VARIABLE:
+  NAMES = ID AB angry worried happy sad WB stressed lonely
+  int
+  E A C N O gender ethnicity SES weekend;
+  USEVARIABLES = stressed
+  int
+  weekend;
+  CLUSTER = ID;
+  WITHIN = weekend;
+  MISSING = .;
+  ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+  BITERATIONS = (10000); PROCESSORS = 2;
+  MODEL:
+  %WITHIN%
+  ! Stress is predicted by social interactions, the slope is random
+  S1 | stressed ON int;
+  ! Control for weekend
+  stressed ON weekend;
+  %BETWEEN%
+  ! Covariance between intercept and slope
+  stressed WITH S1;
+  ! The intercept is predicted by social interactions
+  stressed ON int;
+  OUTPUT: STDYX STDY TECH8;
+
+
+
+*** WARNING in MODEL command
+  In the MODEL command, the x variable on the WITHIN level has been turned into a
+  y variable to enable latent variable decomposition.  This variable will be treated
+  as a y-variable on both levels:  INT
+*** WARNING
+  One or more individual-level variables have no variation within a
+  cluster for the following clusters.
+
+     Variable   Cluster IDs with no within-cluster variation
+
+      STRESSED    516 649 271 342 173 76 98
+      INT         516 144 302
+      WEEKEND     516 736 160 242 485 10 666 240 649 271 342 49 593 598 737
+
+   2 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+Analysis 1
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                       65496
+
+Number of dependent variables                                    2
+Number of independent variables                                  1
+Number of continuous latent variables                            1
+
+Observed dependent variables
+
+  Continuous
+   STRESSED    INT
+
+Observed independent variables
+   WEEKEND
+
+Continuous latent variables
+   S1
+
+Variables with special functions
+
+  Cluster variable      ID
+
+  Within variables
+   WEEKEND
+
+
+Estimator                                                    BAYES
+Specifications for Bayesian Estimation
+  Point estimate                                            MEDIAN
+  Number of Markov chain Monte Carlo (MCMC) chains               2
+  Random seed for the first chain                                0
+  Starting value information                           UNPERTURBED
+  Algorithm used for Markov chain Monte Carlo           GIBBS(PX1)
+  Convergence criterion                                  0.500D-01
+  Maximum number of iterations                               50000
+  K-th iteration used for thinning                               1
+
+Input data file(s)
+  analysis1_S3.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of clusters                        864
+
+       Size (s)    Cluster ID with Size s
+
+          1        63 279 477 756 787
+          3        516 736
+          4        160
+          5        242 485 10
+          6        666 240 625 649
+          7        271 4 742 342 49 790
+          8        96 593
+          9        608
+         11        404
+         12        203 144
+         13        280 405 369 816 820 856
+         14        206
+         15        701
+         16        598 737 302
+         18        473 806 162 761 688 867
+         19        555 880
+         20        844 238
+         22        169
+         23        846 527 290 173
+         24        52
+         27        558 422
+         28        152
+         29        170
+         31        309 778
+         32        689
+         35        116 131 311 94
+         36        804 885
+         37        857
+         38        23 60
+         39        435
+         40        321 888
+         41        510 93 564 183
+         42        306 202
+         43        617
+         44        456 651
+         45        413 374
+         46        722 556 887 61
+         47        669
+         48        322 797 79
+         49        336 295 724 424 609
+         50        615 83
+         51        90 671 848 108 269
+         52        491 696 316 474
+         53        376 822 21 176 44 236
+         54        20 67
+         55        526 590 310 533
+         56        611 512 352
+         57        337 547 467 168 58
+         58        274 163 635 704 445 99 868 874 463 494 235 472
+         59        314 749 703 551 19 831 166 499 370
+         60        817 5 760 91 802 768 179 781
+         61        663 164 82 2 207 296 462 482 656
+         62        401 17 871 223
+         63        434 814 410 334 263 872 738 877 702 110 495 721
+         64        623 285 371 705 825 753 835 85 431 339 595
+         65        715 592 391 672 732 680 133 630 488 698 600 252 492
+                   97 105 832
+         66        667 773 716 375 571 850 11 214 629 532 46 741 640 250
+                   8 502 259 146
+         67        225 229 118 332 851 695 22 643 31 380 185 221 244 706
+                   135 501 367
+         68        470 752 379 139 432 368 6 729 662 319 78 204 66 358
+         69        261 821 262 80 125 69 758 565 647 381 349 399 504 241
+                   157 793 796 72 281 227 416 29 545 14
+         70        249 542 692 354 136 18 132 75 209 858 805 243 523 293
+                   670 875 572 717 343 769 113
+         71        48 326 712 429 308 231 719 39 43 870 522 200 731 340
+                   779 239 76 788 253
+         72        348 839 610 291 329 222 258 361 177 276 718 810 439
+                   304 286 408 277 324 550 733 784 834
+         73        35 792 362 745 363 233 560 451 490 808 863 866 111 188
+                   583 33 428 645 534 496 829 201 403 88
+         74        230 325 785 573 750 282 620 195 452 228 192 634 528
+                   265 879 845 248 509 813
+         75        123 475 727 783 442 652 13 529 317 581 762 854 215 557
+                   37
+         76        518 699 260 415 247 417 668 633 400 156 127 678 378
+                   754 301 567 539 882 81 268 697
+         77        254 665 433 751 636 520 789 471 791 382 622 142 457
+                   800 205 284 660 739 691 531
+         78        468 122 847 373 100 327 77 683 723 313 596 359 479 601
+                   450 126 653 216 119 876 138 459 199 568 246 841 287
+         79        486 734 812 441 641 330 407 646 446 577 869 684 305
+                   430 585 95 497 101 725 165 1 357 765 112
+         80        57 626 627 189 347 569 191 333 182 64 799 387 612 25
+                   616 289 682 220 884 466 419 747
+         81        315 505 161 794 582 714 661 117 270 115
+         82        297 621 440 650 448 685 624 543 498 409 318
+         83        823 862 3 828 155 447 481 535 47 677 655 273 659 384
+                   525 350 713 883 351 53 36 795
+         84        815 197 210 212 213 860 584 618 464 562 237 830 187
+                   566 483 524 836 838 777 26 193 657 145 632 356 849 576
+         85        121 84 453 536 538 256 540 92 420 513 51 412 194 755
+                   619
+         86        312 638 298 798 515 819 878 395 700 631 599 89 720 519
+                   604
+         87        606 219 386 328 323 54 331 886 137 41
+         88        353 614 438 853 673 554 24 124
+         89        639 159 628 607 803 594 676 881 423 153 377 514 586
+                   508 546
+         90        365 257 544 42 335 303 589 855 843 28 167 552
+         91        740 198 818 299 744 414 613 654 234 411
+         92        178 559 425 506 728 772 809 130
+         93        726 224 444 264 548 251 300 232 780 461 32
+         94        68 578 681 579 454 694 443
+         95        833 597 690 389 837 602 637 50
+         96        266 786 275 397 65 9 575 455 480
+         97        840 190 763 98 865 292 278 708 489
+         98        390 338 102 396 15 141 364
+         99        775 147 59 458 767
+        100        34 561 344 181 511 45 537 770 143 128 549
+        101        345 393 469
+        102        476 402 746 186 757 388 38 605 500
+        103        842 642 493 644 288 759
+        104        171 426 648 782 385 107 71 465 245
+        105        74 62 87 507 255
+        106        294 320 148 827 226
+        107        591 272 658 730 27 427
+        108        774 437 120 517
+        109        217 824 355 267 151 109
+        110        398 570 106
+        112        12 580 341 158 174 421 487 674 675
+        113        864 154 484 418
+        114        394 360 103
+        115        521 283 766 707 73
+        116        372 406 686
+        117        588 129 114 449 346 679 587
+        118        55 826 208 776
+        119        307
+        121        172 40
+        122        687
+        124        16 748 859
+        125        140 563
+        126        436
+        127        366 180
+        128        861
+        129        392
+        130        711 743
+        131        553
+        132        771
+        134        801
+        135        764
+        138        807
+        143        873
+        144        603
+        145        218
+        151        664
+        152        530
+        162        709
+
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+     Number of missing data patterns             2
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              STRESSED      INT           WEEKEND
+              ________      ________      ________
+ STRESSED       0.993
+ INT            0.993         1.000
+ WEEKEND        0.993         1.000         1.000
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     STRESSED              2.176       0.422       1.000   29.31%       1.000      2.000      2.000
+           65064.000       0.984      -0.870       4.000   12.68%       2.000      3.000
+     INT                   0.475       0.099       0.000   52.47%       0.000      0.000      0.000
+           65496.000       0.249      -1.990       1.000   47.53%       1.000      1.000
+     WEEKEND               0.266       1.058       0.000   73.39%       0.000      0.000      0.000
+           65496.000       0.195      -0.880       1.000   26.61%       0.000      1.000
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+     USE THE FBITERATIONS OPTION TO INCREASE THE NUMBER OF ITERATIONS BY A FACTOR
+     OF AT LEAST TWO TO CHECK CONVERGENCE AND THAT THE PSR VALUE DOES NOT INCREASE.
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                              11
+
+Information Criteria
+
+          Deviance (DIC)                       226610.113
+          Estimated Number of Parameters (pD)    1959.203
+
+
+
+MODEL RESULTS
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within Level
+
+ STRESSED   ON
+    WEEKEND           -0.251       0.007      0.000      -0.264      -0.238      *
+
+ Variances
+    INT                0.199       0.001      0.000       0.197       0.202      *
+
+ Residual Variances
+    STRESSED           0.539       0.003      0.000       0.533       0.545      *
+
+Between Level
+
+ STRESSED   ON
+    INT                0.066       0.107      0.272      -0.145       0.278
+
+ STRESSED WITH
+    S1                -0.010       0.006      0.034      -0.022       0.001
+
+ Means
+    INT                0.478       0.008      0.000       0.463       0.494      *
+    S1                -0.010       0.008      0.125      -0.026       0.007
+
+ Intercepts
+    STRESSED           2.223       0.056      0.000       2.110       2.331      *
+
+ Variances
+    INT                0.049       0.003      0.000       0.045       0.055      *
+    S1                 0.022       0.003      0.000       0.017       0.028      *
+
+ Residual Variances
+    STRESSED           0.441       0.022      0.000       0.401       0.486      *
+
+
+STANDARDIZED MODEL RESULTS
+
+
+STDYX Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | STRESSED ON
+    INT               -0.006       0.004      0.097      -0.014       0.002
+
+ STRESSED   ON
+    WEEKEND           -0.144       0.004      0.000      -0.151      -0.136      *
+
+ Variances
+    INT                1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    STRESSED           0.971       0.001      0.000       0.968       0.974      *
+
+Between Level
+
+ STRESSED   ON
+    INT                0.022       0.036      0.272      -0.049       0.092
+
+ STRESSED WITH
+    S1                -0.105       0.059      0.034      -0.220       0.008
+
+ Means
+    INT                2.150       0.066      0.000       2.025       2.278      *
+    S1                -0.065       0.057      0.125      -0.177       0.046
+
+ Intercepts
+    STRESSED           3.346       0.121      0.000       3.101       3.575      *
+
+ Variances
+    INT                1.000       0.000      0.000       1.000       1.000
+    S1                 1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    STRESSED           0.999       0.002      0.000       0.991       1.000      *
+
+
+STDY Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | STRESSED ON
+    INT               -0.006       0.004      0.097      -0.014       0.002
+
+ STRESSED   ON
+    WEEKEND           -0.337       0.009      0.000      -0.354      -0.320      *
+
+ Variances
+    INT                1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    STRESSED           0.971       0.001      0.000       0.968       0.974      *
+
+Between Level
+
+ STRESSED   ON
+    INT                0.022       0.036      0.272      -0.049       0.092
+
+ STRESSED WITH
+    S1                -0.105       0.059      0.034      -0.220       0.008
+
+ Means
+    INT                2.150       0.066      0.000       2.025       2.278      *
+    S1                -0.065       0.057      0.125      -0.177       0.046
+
+ Intercepts
+    STRESSED           3.346       0.121      0.000       3.101       3.575      *
+
+ Variances
+    INT                1.000       0.000      0.000       1.000       1.000
+    S1                 1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    STRESSED           0.999       0.002      0.000       0.991       1.000      *
+
+
+R-SQUARE
+
+Within-Level R-Square Averaged Across Clusters
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    STRESSED           0.029       0.001      0.000       0.026       0.032
+
+Between Level
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    STRESSED           0.001       0.002      0.000       0.000       0.009
+
+
+TECHNICAL 1 OUTPUT
+
+
+     PARAMETER SPECIFICATION FOR WITHIN
+
+
+           NU
+              STRESSED      INT           WEEKEND
+              ________      ________      ________
+                    0             0             0
+
+
+           LAMBDA
+              STRESSED      INT           WEEKEND
+              ________      ________      ________
+ STRESSED           0             0             0
+ INT                0             0             0
+ WEEKEND            0             0             0
+
+
+           THETA
+              STRESSED      INT           WEEKEND
+              ________      ________      ________
+ STRESSED           0
+ INT                0             0
+ WEEKEND            0             0             0
+
+
+           ALPHA
+              STRESSED      INT           WEEKEND
+              ________      ________      ________
+                    0             0             0
+
+
+           BETA
+              STRESSED      INT           WEEKEND
+              ________      ________      ________
+ STRESSED           0             0             1
+ INT                0             0             0
+ WEEKEND            0             0             0
+
+
+           PSI
+              STRESSED      INT           WEEKEND
+              ________      ________      ________
+ STRESSED           2
+ INT                0             3
+ WEEKEND            0             0             0
+
+
+     PARAMETER SPECIFICATION FOR BETWEEN
+
+
+           NU
+              STRESSED      INT
+              ________      ________
+                    0             0
+
+
+           LAMBDA
+              S1            STRESSED      INT
+              ________      ________      ________
+ STRESSED           0             0             0
+ INT                0             0             0
+
+
+           THETA
+              STRESSED      INT
+              ________      ________
+ STRESSED           0
+ INT                0             0
+
+
+           ALPHA
+              S1            STRESSED      INT
+              ________      ________      ________
+                    4             5             6
+
+
+           BETA
+              S1            STRESSED      INT
+              ________      ________      ________
+ S1                 0             0             0
+ STRESSED           0             0             7
+ INT                0             0             0
+
+
+           PSI
+              S1            STRESSED      INT
+              ________      ________      ________
+ S1                 8
+ STRESSED           9            10
+ INT                0             0            11
+
+
+     STARTING VALUES FOR WITHIN
+
+
+           NU
+              STRESSED      INT           WEEKEND
+              ________      ________      ________
+                0.000         0.000         0.000
+
+
+           LAMBDA
+              STRESSED      INT           WEEKEND
+              ________      ________      ________
+ STRESSED       1.000         0.000         0.000
+ INT            0.000         1.000         0.000
+ WEEKEND        0.000         0.000         1.000
+
+
+           THETA
+              STRESSED      INT           WEEKEND
+              ________      ________      ________
+ STRESSED       0.000
+ INT            0.000         0.000
+ WEEKEND        0.000         0.000         0.000
+
+
+           ALPHA
+              STRESSED      INT           WEEKEND
+              ________      ________      ________
+                0.000         0.000         0.000
+
+
+           BETA
+              STRESSED      INT           WEEKEND
+              ________      ________      ________
+ STRESSED       0.000         0.000         0.000
+ INT            0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000
+
+
+           PSI
+              STRESSED      INT           WEEKEND
+              ________      ________      ________
+ STRESSED       0.492
+ INT            0.000         0.125
+ WEEKEND        0.000         0.000         0.098
+
+
+     STARTING VALUES FOR BETWEEN
+
+
+           NU
+              STRESSED      INT
+              ________      ________
+                0.000         0.000
+
+
+           LAMBDA
+              S1            STRESSED      INT
+              ________      ________      ________
+ STRESSED       0.000         1.000         0.000
+ INT            0.000         0.000         1.000
+
+
+           THETA
+              STRESSED      INT
+              ________      ________
+ STRESSED       0.000
+ INT            0.000         0.000
+
+
+           ALPHA
+              S1            STRESSED      INT
+              ________      ________      ________
+                0.000         2.176         0.475
+
+
+           BETA
+              S1            STRESSED      INT
+              ________      ________      ________
+ S1             0.000         0.000         0.000
+ STRESSED       0.000         0.000         0.000
+ INT            0.000         0.000         0.000
+
+
+           PSI
+              S1            STRESSED      INT
+              ________      ________      ________
+ S1             1.000
+ STRESSED       0.000         0.492
+ INT            0.000         0.000         0.125
+
+
+
+     PRIORS FOR ALL PARAMETERS            PRIOR MEAN      PRIOR VARIANCE     PRIOR STD. DEV.
+
+     Parameter 1~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 2~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 3~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 4~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 5~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 6~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 7~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 8~IW(0.000,-3)              infinity            infinity            infinity
+     Parameter 9~IW(0.000,-3)              infinity            infinity            infinity
+     Parameter 10~IW(0.000,-3)             infinity            infinity            infinity
+     Parameter 11~IG(-1.000,0.000)         infinity            infinity            infinity
+
+
+TECHNICAL 8 OUTPUT
+
+
+   TECHNICAL 8 OUTPUT FOR BAYES ESTIMATION
+
+     CHAIN    BSEED
+     1        0
+     2        285380
+
+                     POTENTIAL       PARAMETER WITH
+     ITERATION    SCALE REDUCTION      HIGHEST PSR
+     100              1.032               6
+     200              1.015               5
+     300              1.028               5
+     400              1.007               9
+     500              1.018               9
+     600              1.014               9
+     700              1.019               9
+     800              1.011               9
+     900              1.003               9
+     1000             1.004               9
+     1100             1.002               9
+     1200             1.003               9
+     1300             1.002               10
+     1400             1.001               10
+     1500             1.001               10
+     1600             1.003               10
+     1700             1.005               4
+     1800             1.008               4
+     1900             1.013               4
+     2000             1.007               4
+     2100             1.007               4
+     2200             1.006               4
+     2300             1.009               4
+     2400             1.007               4
+     2500             1.008               4
+     2600             1.005               4
+     2700             1.006               4
+     2800             1.004               4
+     2900             1.001               4
+     3000             1.001               4
+     3100             1.000               4
+     3200             1.000               7
+     3300             1.000               1
+     3400             1.000               10
+     3500             1.000               1
+     3600             1.000               1
+     3700             1.000               5
+     3800             1.000               5
+     3900             1.000               5
+     4000             1.000               1
+     4100             1.000               5
+     4200             1.000               1
+     4300             1.000               4
+     4400             1.000               9
+     4500             1.000               4
+     4600             1.000               4
+     4700             1.001               4
+     4800             1.001               4
+     4900             1.001               4
+     5000             1.001               4
+     5100             1.001               4
+     5200             1.001               4
+     5300             1.001               4
+     5400             1.001               4
+     5500             1.001               4
+     5600             1.001               4
+     5700             1.000               4
+     5800             1.000               4
+     5900             1.000               1
+     6000             1.000               1
+     6100             1.000               4
+     6200             1.000               4
+     6300             1.000               4
+     6400             1.000               4
+     6500             1.001               4
+     6600             1.001               4
+     6700             1.000               4
+     6800             1.000               4
+     6900             1.000               4
+     7000             1.000               4
+     7100             1.000               4
+     7200             1.000               4
+     7300             1.000               4
+     7400             1.000               4
+     7500             1.001               4
+     7600             1.001               4
+     7700             1.001               4
+     7800             1.001               4
+     7900             1.001               4
+     8000             1.001               4
+     8100             1.001               4
+     8200             1.001               4
+     8300             1.001               4
+     8400             1.001               4
+     8500             1.001               4
+     8600             1.001               4
+     8700             1.000               4
+     8800             1.000               4
+     8900             1.000               4
+     9000             1.000               4
+     9100             1.000               4
+     9200             1.000               4
+     9300             1.000               9
+     9400             1.000               4
+     9500             1.000               4
+     9600             1.000               4
+     9700             1.000               4
+     9800             1.000               4
+     9900             1.000               4
+     10000            1.000               4
+
+
+     Beginning Time:  05:22:26
+        Ending Time:  05:30:11
+       Elapsed Time:  00:07:45
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2020 Muthen & Muthen

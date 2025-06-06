@@ -1,0 +1,35 @@
+TITLE: Analysis 4
+DATA: FILE = analysis4+5_S1.dat;
+VARIABLE:
+NAMES = ID WB content stressed lonely
+FTF CMC mixed peers family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = content
+CMC mixed family weak_ties
+weekend;
+CLUSTER = ID;
+WITHIN = CMC mixed family weak_ties weekend;
+MISSING = .;
+DEFINE:
+CENTER CMC (GROUPMEAN);
+CENTER mixed (GROUPMEAN);
+CENTER family (GROUPMEAN);
+CENTER weak_ties (GROUPMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Contentment is predicted by CMC, the slope is random
+S1 | content ON CMC;
+! Contentment is predicted by mixed episodes, the slope is random
+S2 | content ON mixed;
+! Contentment is predicted by family, the slope is random
+S3 | content ON family;
+! Contentment is predicted by weak ties, the slope is random
+S4 | content ON weak_ties;
+! Control for weekend
+content ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+content S1-S4 WITH content S1-S4;
+OUTPUT: STDYX STDY TECH8;

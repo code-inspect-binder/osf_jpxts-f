@@ -1,0 +1,40 @@
+TITLE: Analysis 2+3
+DATA: FILE = analysis3_S3.dat;
+VARIABLE:
+NAMES = ID AB angry worried happy sad WB stressed lonely
+peers family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = angry
+peers family weak_ties
+weekend A;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = A;
+MISSING = .;
+DEFINE: CENTER A (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Anger is predicted by peers, the slope is random
+S1 | angry ON peers;
+! Anger is predicted by family, the slope is random
+S2 | angry ON family;
+! Anger is predicted by weak ties, the slope is random
+S3 | angry ON weak_ties;
+! Control for weekend
+angry ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+angry S1-S3 WITH angry S1-S3;
+! The intercept is predicted by peers
+angry ON peers;
+! The intercept is predicted by family
+angry ON family;
+! The intercept is predicted by weak ties
+angry ON weak_ties;
+! The intercept is predicted by agreeableness
+angry ON A;
+! The slopes are predicted by agreeableness
+S1-S3 ON A;
+OUTPUT: STDYX STDY TECH8;

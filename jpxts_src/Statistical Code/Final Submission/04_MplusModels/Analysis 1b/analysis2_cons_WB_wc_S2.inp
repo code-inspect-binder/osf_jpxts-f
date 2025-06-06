@@ -1,0 +1,42 @@
+TITLE: Analysis 2+3
+DATA: FILE = analysis2_S2.dat;
+VARIABLE:
+NAMES = ID WB content stressed lonely
+FTF CMC mixed
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = WB
+FTF CMC mixed
+weekend C gender ethnicity SES;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = C gender ethnicity SES;
+MISSING = .;
+DEFINE: CENTER C (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Well-being is predicted by FtF interactions, the slope is random
+S1 | WB ON FTF;
+! Well-being is predicted by CMC, the slope is random
+S2 | WB ON CMC;
+! Well-being is predicted by mixed episodes, the slope is random
+S3 | WB ON mixed;
+! Control for weekend
+WB ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+WB S1-S3 WITH WB S1-S3;
+! The intercept is predicted by FtF interactions
+WB ON FTF;
+! The intercept is predicted by CMC
+WB ON CMC;
+! The intercept is predicted by mixed episodes
+WB ON mixed;
+! The intercept is predicted by conscientiousness
+WB ON C;
+! The slopes are predicted by conscientiousness
+S1-S3 ON C;
+! Control for demographic variables
+WB ON gender ethnicity SES;
+OUTPUT: STDYX STDY TECH8;

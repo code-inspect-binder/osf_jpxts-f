@@ -1,0 +1,34 @@
+TITLE: Analysis 1
+DATA: FILE = analysis1_S3.dat;
+VARIABLE:
+NAMES = ID AB angry worried happy sad WB stressed lonely
+int
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = AB
+int
+weekend N gender ethnicity SES;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = N gender ethnicity SES;
+MISSING = .;
+DEFINE: CENTER N (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Affect balance is predicted by social interactions, the slope is random
+S1 | AB ON int;
+! Control for weekend
+AB ON weekend;
+%BETWEEN%
+! Covariance between intercept and slope
+AB WITH S1;
+! The intercept is predicted by social interactions
+AB ON int;
+! The intercept is predicted by neuroticism
+AB ON N;
+! The slope is predicted by neuroticism
+S1 ON N;
+! Control for demographic variables
+AB ON gender ethnicity SES;
+OUTPUT: STDYX STDY TECH8;

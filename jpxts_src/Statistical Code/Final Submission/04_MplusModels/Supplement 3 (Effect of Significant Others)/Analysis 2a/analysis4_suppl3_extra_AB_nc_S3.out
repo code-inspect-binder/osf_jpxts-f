@@ -1,0 +1,1161 @@
+Mplus VERSION 8.5 (Mac)
+MUTHEN & MUTHEN
+03/19/2022   8:05 AM
+
+INPUT INSTRUCTIONS
+
+  TITLE: Analysis 4
+  DATA: FILE = analysis4+5_suppl3_S3.dat;
+  VARIABLE:
+  NAMES = ID AB angry worried happy sad WB stressed lonely
+  FTF CMC mixed FR SO family weak_ties
+  E A C N O gender ethnicity SES weekend;
+  USEVARIABLES = AB
+  CMC mixed SO family weak_ties
+  weekend E;
+  CLUSTER = ID;
+  WITHIN = CMC mixed SO family weak_ties weekend;
+  BETWEEN = E;
+  MISSING = .;
+  DEFINE:
+  CENTER CMC (GROUPMEAN);
+  CENTER mixed (GROUPMEAN);
+  CENTER SO (GROUPMEAN);
+  CENTER family (GROUPMEAN);
+  CENTER weak_ties (GROUPMEAN);
+  CENTER E (GRANDMEAN);
+  ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+  BITERATIONS = (10000); PROCESSORS = 2;
+  MODEL:
+  %WITHIN%
+  ! Affect balance is predicted by CMC, the slope is random
+  S1 | AB ON CMC;
+  ! Affect balance is predicted by mixed episodes, the slope is random
+  S2 | AB ON mixed;
+  ! Affect balance is predicted by significant others, the slope is random
+  S3 | AB ON SO;
+  ! Affect balance is predicted by family, the slope is random
+  S4 | AB ON family;
+  ! Affect balance is predicted by weak ties, the slope is random
+  S5 | AB ON weak_ties;
+  ! Control for weekend
+  AB ON weekend;
+  %BETWEEN%
+  ! Covariance between intercept and slopes
+  AB S1-S5 WITH AB S1-S5;
+  ! The intercept is predicted by extraversion
+  AB ON E;
+  ! The slopes are predicted by extraversion
+  S1-S5 ON E;
+  OUTPUT: STDYX STDY TECH8;
+
+
+
+*** WARNING in VARIABLE command
+  Note that only the first 8 characters of variable names are used in the output.
+  Shorten variable names to avoid any confusion.
+*** WARNING
+  One or more individual-level variables have no variation within a
+  cluster for the following clusters.
+
+     Variable   Cluster IDs with no within-cluster variation
+
+      AB          156 49 806 502 76
+      WEEKEND     404 49 271 806 816 11 396 57 485 845 93 598 131 666 381 851 556 844 26 119 349
+                  629 680 685 881 887 69 734 723 265 882
+
+*** WARNING
+  Data set contains cases with missing on x-variables.
+  These cases were not included in the analysis.
+  Number of cases with missing on x-variables:  1880
+*** WARNING
+  Data set contains cases with missing on all variables except
+  x-variables.  These cases were not included in the analysis.
+  Number of cases with missing on all variables except x-variables:  97
+   4 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+Analysis 4
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                       17950
+
+Number of dependent variables                                    1
+Number of independent variables                                  7
+Number of continuous latent variables                            5
+
+Observed dependent variables
+
+  Continuous
+   AB
+
+Observed independent variables
+   CMC         MIXED       SO          FAMILY      WEAK_TIE    WEEKEND
+   E
+
+Continuous latent variables
+   S1          S2          S3          S4          S5
+
+Variables with special functions
+
+  Cluster variable      ID
+
+  Within variables
+   CMC         MIXED       SO          FAMILY      WEAK_TIE    WEEKEND
+
+  Between variables
+   E
+
+  Centering (GRANDMEAN)
+   E
+
+  Centering (GROUPMEAN)
+   CMC         MIXED       SO          FAMILY      WEAK_TIE
+
+
+Estimator                                                    BAYES
+Specifications for Bayesian Estimation
+  Point estimate                                            MEDIAN
+  Number of Markov chain Monte Carlo (MCMC) chains               2
+  Random seed for the first chain                                0
+  Starting value information                           UNPERTURBED
+  Algorithm used for Markov chain Monte Carlo           GIBBS(PX1)
+  Convergence criterion                                  0.500D-01
+  Maximum number of iterations                               50000
+  K-th iteration used for thinning                               1
+
+Input data file(s)
+  analysis4+5_suppl3_S3.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of clusters                        756
+
+       Size (s)    Cluster ID with Size s
+
+          1        10 63 240 311 608 625 740 876
+          2        156 404 562 45 49 271 298 806 816 4
+          3        545 11 352 376 29 667 396 57 790 473 485 845 303
+          4        93 598 500 131 804 5 666 369 502 610
+          5        52 761 22 381 459 636 532 851 106 58 718 571
+          6        302 634 482 556 844 61 700 600 880 405 173
+          7        330 663 26 820 280 363 162 119 378 238 170 349 328
+          8        354 732 592 118 778 372 796 316 615 813 82 629 825 856
+                   413 76 701
+          9        135 215 222 164 234 533 654 406 141 39 680 681 685 847
+                   435 178 189 578 203 881 888 480
+         10        105 185 9 202 247 807 333 499 20 839 214 846 509 728
+                   522 630 21 424 887 770 431 53
+         11        152 268 195 95 683 684 390 358 555 452 558 721 60 59
+                   523
+         12        126 467 290 418 310 481 423 537 341 618 619 494 498
+                   552 554 69 750 122 766 769 650 569 506 573
+         13        510 67 814 269 564 488 734 529 237 350 797 543 472 669
+                   768 55 505 602 41 611 723 199 508 265
+         14        536 704 705 717 408 130 722 692 585 826 642 588 277
+                   229 127 336 397 605 525 697 398 221 703 74 589 177 322
+         15        609 97 374 858 656 38 339 24 882 182 624 80 784 420
+                   183
+         16        258 36 179 230 572 749 439 752 209 445 317 587 274 293
+                   83 201 706 594 883 469 659 249 346 755 254
+         17        781 440 695 651 370 251 486 664 25 565 66 821 335 263
+                   566 547 321 606
+         18        13 14 373 620 595 416 865 292 678 753 815 708 180 604
+                   450 377 428 225
+         19        375 340 446 771 266 689 306 281 733 662 94 463 627 262
+                   751 337 327 817 760 18 714 441
+         20        19 236 343 862 872 304 379 273 621 831 834 241 252 163
+                   738
+         21        51 92 89 584 99 344 808 451 518 835 253 612 818 643
+                   501 775 707 295 551 716 81 792
+         22        366 672 2 539 715 210 332 171 515 517 426 6 68 88 246
+                   8 411 50 744
+         23        507 348 312 474 843 776 158 351 65 520 444 599 176 110
+                   863 644 200 46 132 810 607 368 458 167 758 886 133 429
+                   371 421 403 282
+         24        483 869 217 138 347 647 437 37 16 243 548 33 194 193
+                   668 633 147 270
+         25        153 462 864 233 579 497 244 854 100 276 559 475 720
+                   124 145 323 325 85 305
+         26        492 743 699 148 838 278 287 216 427 419 850 101
+         27        345 726 671 239 213 675 319 117 111 682 713 779 47 307
+                   789 746 531 161 84 798 90 812 542
+         28        535 190 356 665 470 873 64 491 12 73 586 120 495 628
+                   385 386 331 591
+         29        754 837 223 235 1 549 155 391 747 3 157 31 658 777 487
+         30        168 676 260 430 841 871 528 286 401 42 77 788 291 461
+                   192 793 204 212 255 719 524
+         31        795 87 596 582 28 432 877 434 146 228 809 380 34 123
+                   231 315 496
+         32        660 102 394 601 762 686 767 855 799 232 780 314 140
+         33        259 54 490 318 626 447 646 727 382 729 731 833 698 261
+                   597 866 759 577
+         34        645 489 580 563 631 652 709 653 301 471 622 32 849
+         35        227 687 275 805 635 264 448 745 465 188 313 655 453
+         36        174 560 785 677 829 115 691 296 694 219 250 513
+         37        449 614 417 107 400 670 15 43 861 283 289 357
+         38        800 353 256 823 407 191 632 830 860 172 791
+         39        267 187 388
+         40        637 557 848 285 739 414
+         41        75 748 613 272 412 299 884 362 198 220 181 409
+         42        511 623 72 384 367 393 425 257
+         43        479 712 567 484
+         44        436 218 142 360 245 143 561 648 154
+         45        570 165 208 248 129
+         46        399 454 114
+         47        300 109 679 783 836 546 819 159 128
+         48        338 757 763 415 364 226
+         49        534 514 62 794 137
+         50        640 774
+         51        690 308 355 125 853
+         52        324 827 657
+         53        553 27 842
+         54        568 782 476 71
+         55        521 730
+         56        840 519 603 824
+         57        98
+         58        151 639 103
+         59        803 402
+         64        443
+         67        674
+         68        186
+         69        801 711
+         70        530
+         75        764
+         80        40
+
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+     Number of missing data patterns             1
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              AB            CMC           MIXED         SO            FAMILY
+              ________      ________      ________      ________      ________
+ AB             1.000
+ CMC            1.000         1.000
+ MIXED          1.000         1.000         1.000
+ SO             1.000         1.000         1.000         1.000
+ FAMILY         1.000         1.000         1.000         1.000         1.000
+ WEAK_TIE       1.000         1.000         1.000         1.000         1.000
+ WEEKEND        1.000         1.000         1.000         1.000         1.000
+ E              1.000         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              WEAK_TIE      WEEKEND       E
+              ________      ________      ________
+ WEAK_TIE       1.000
+ WEEKEND        1.000         1.000
+ E              1.000         1.000         1.000
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     AB                    1.192      -0.447      -3.000    0.30%       0.000      1.000      1.333
+           17950.000       1.685      -0.310       3.000   15.14%       1.667      2.333
+     CMC                   0.000       0.653      -0.966    0.01%      -0.290     -0.136     -0.083
+           17950.000       0.153      -0.282       0.982    0.01%      -0.037      0.407
+     MIXED                 0.000       1.877      -0.865    0.03%      -0.118     -0.042     -0.024
+           17950.000       0.069       4.595       0.986    0.01%       0.000      0.000
+     SO                    0.000       0.416      -0.936    0.02%       0.000      0.000      0.000
+           17950.000       0.053       4.543       0.978    0.01%       0.000      0.000
+     FAMILY                0.000       0.655      -0.983    0.01%      -0.222     -0.064     -0.028
+           17950.000       0.117       0.718       0.983    0.01%       0.000      0.231
+     WEAK_TIES             0.000       1.510      -0.923    0.01%      -0.185     -0.083     -0.056
+           17950.000       0.100       2.024       0.983    0.01%      -0.029      0.000
+     WEEKEND               0.298       0.885       0.000   70.23%       0.000      0.000      0.000
+           17950.000       0.209      -1.217       1.000   29.77%       0.000      1.000
+     E                     0.000      -0.103      -2.019    0.13%      -0.685     -0.185     -0.019
+             756.000       0.535      -0.467       1.648    0.13%       0.231      0.648
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+     USE THE FBITERATIONS OPTION TO INCREASE THE NUMBER OF ITERATIONS BY A FACTOR
+     OF AT LEAST TWO TO CHECK CONVERGENCE AND THAT THE PSR VALUE DOES NOT INCREASE.
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                              35
+
+Information Criteria
+
+          Deviance (DIC)                        51204.511
+          Estimated Number of Parameters (pD)    1384.741
+
+
+
+MODEL RESULTS
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within Level
+
+ AB         ON
+    WEEKEND            0.250       0.017      0.000       0.217       0.284      *
+
+ Residual Variances
+    AB                 0.940       0.011      0.000       0.919       0.961      *
+
+Between Level
+
+ S1         ON
+    E                  0.061       0.041      0.068      -0.018       0.140
+
+ S2         ON
+    E                 -0.010       0.048      0.422      -0.106       0.086
+
+ S3         ON
+    E                  0.119       0.079      0.070      -0.041       0.270
+
+ S4         ON
+    E                  0.126       0.053      0.010       0.023       0.231      *
+
+ S5         ON
+    E                  0.050       0.047      0.145      -0.041       0.143
+
+ AB         ON
+    E                  0.382       0.040      0.000       0.302       0.458      *
+
+ AB       WITH
+    S1                 0.081       0.023      0.000       0.036       0.126      *
+    S2                 0.001       0.028      0.484      -0.053       0.055
+    S3                 0.039       0.046      0.192      -0.047       0.131
+    S4                 0.085       0.030      0.001       0.026       0.144      *
+    S5                -0.027       0.027      0.163      -0.082       0.026
+
+ S1       WITH
+    S2                 0.065       0.025      0.002       0.020       0.118      *
+    S3                -0.041       0.038      0.142      -0.115       0.035
+    S4                 0.049       0.026      0.023       0.001       0.105      *
+    S5                -0.044       0.026      0.032      -0.096       0.002
+
+ S2       WITH
+    S3                -0.006       0.054      0.455      -0.123       0.093
+    S4                 0.015       0.031      0.294      -0.046       0.078
+    S5                -0.011       0.027      0.352      -0.060       0.045
+
+ S3       WITH
+    S4                 0.078       0.051      0.068      -0.024       0.182
+    S5                 0.083       0.045      0.018       0.005       0.179      *
+
+ S4       WITH
+    S5                 0.088       0.034      0.003       0.022       0.160      *
+
+ Intercepts
+    AB                 1.074       0.030      0.000       1.017       1.132      *
+    S1                -0.350       0.029      0.000      -0.406      -0.294      *
+    S2                 0.001       0.037      0.485      -0.074       0.074
+    S3                 0.025       0.057      0.335      -0.088       0.138
+    S4                -0.278       0.037      0.000      -0.351      -0.205      *
+    S5                -0.218       0.035      0.000      -0.286      -0.151      *
+
+ Residual Variances
+    AB                 0.567       0.033      0.000       0.508       0.637      *
+    S1                 0.143       0.027      0.000       0.098       0.202      *
+    S2                 0.102       0.031      0.000       0.052       0.173      *
+    S3                 0.351       0.082      0.000       0.213       0.534      *
+    S4                 0.313       0.046      0.000       0.233       0.411      *
+    S5                 0.165       0.042      0.000       0.093       0.257      *
+
+
+STANDARDIZED MODEL RESULTS
+
+
+STDYX Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | AB ON
+    CMC               -0.125       0.008      0.000      -0.142      -0.108      *
+
+ S2 | AB ON
+    MIXED              0.000       0.005      0.468      -0.010       0.010
+
+ S3 | AB ON
+    SO                 0.005       0.005      0.148      -0.004       0.014
+
+ S4 | AB ON
+    FAMILY            -0.084       0.008      0.000      -0.100      -0.068      *
+
+ S5 | AB ON
+    WEAK_TIES         -0.060       0.008      0.000      -0.074      -0.043      *
+
+ AB         ON
+    WEEKEND            0.103       0.007      0.000       0.090       0.117      *
+
+ Residual Variances
+    AB                 0.902       0.005      0.000       0.893       0.911      *
+
+Between Level
+
+ S1         ON
+    E                  0.082       0.055      0.068      -0.025       0.191
+
+ S2         ON
+    E                 -0.015       0.078      0.422      -0.171       0.138
+
+ S3         ON
+    E                  0.103       0.068      0.070      -0.032       0.236
+
+ S4         ON
+    E                  0.114       0.048      0.010       0.021       0.206      *
+
+ S5         ON
+    E                  0.063       0.060      0.145      -0.051       0.182
+
+ AB         ON
+    E                  0.250       0.025      0.000       0.199       0.298      *
+
+ AB       WITH
+    S1                 0.285       0.078      0.000       0.127       0.434      *
+    S2                 0.005       0.118      0.484      -0.218       0.234
+    S3                 0.088       0.101      0.192      -0.105       0.288
+    S4                 0.204       0.069      0.001       0.062       0.336      *
+    S5                -0.088       0.090      0.163      -0.269       0.085
+
+ S1       WITH
+    S2                 0.547       0.163      0.002       0.200       0.839      *
+    S3                -0.185       0.167      0.142      -0.499       0.157
+    S4                 0.235       0.117      0.023       0.003       0.464      *
+    S5                -0.295       0.151      0.032      -0.574       0.016
+
+ S2       WITH
+    S3                -0.030       0.289      0.455      -0.665       0.473
+    S4                 0.090       0.168      0.294      -0.267       0.401
+    S5                -0.081       0.207      0.352      -0.439       0.352
+
+ S3       WITH
+    S4                 0.239       0.140      0.068      -0.080       0.472
+    S5                 0.355       0.155      0.018       0.024       0.627      *
+
+ S4       WITH
+    S5                 0.390       0.126      0.003       0.112       0.610      *
+
+ Intercepts
+    AB                 1.380       0.055      0.000       1.273       1.487      *
+    S1                -0.920       0.119      0.000      -1.178      -0.711      *
+    S2                 0.004       0.118      0.485      -0.233       0.233
+    S3                 0.041       0.098      0.335      -0.146       0.237
+    S4                -0.494       0.075      0.000      -0.648      -0.353      *
+    S5                -0.535       0.125      0.000      -0.814      -0.334      *
+
+ Residual Variances
+    AB                 0.938       0.013      0.000       0.911       0.960      *
+    S1                 0.993       0.010      0.000       0.963       1.000      *
+    S2                 0.997       0.009      0.000       0.967       1.000      *
+    S3                 0.989       0.015      0.000       0.944       1.000      *
+    S4                 0.987       0.011      0.000       0.957       0.999      *
+    S5                 0.996       0.009      0.000       0.967       1.000      *
+
+
+STDY Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | AB ON
+    CMC               -0.338       0.024      0.000      -0.386      -0.291      *
+
+ S2 | AB ON
+    MIXED              0.001       0.030      0.493      -0.054       0.063
+
+ S3 | AB ON
+    SO                 0.021       0.051      0.356      -0.077       0.124
+
+ S4 | AB ON
+    FAMILY            -0.269       0.029      0.000      -0.324      -0.209      *
+
+ S5 | AB ON
+    WEAK_TIES         -0.213       0.030      0.000      -0.268      -0.151      *
+
+ AB         ON
+    WEEKEND            0.245       0.017      0.000       0.213       0.277      *
+
+ Residual Variances
+    AB                 0.902       0.005      0.000       0.893       0.911      *
+
+Between Level
+
+ S1         ON
+    E                  0.161       0.109      0.068      -0.048       0.376
+
+ S2         ON
+    E                 -0.030       0.154      0.422      -0.335       0.272
+
+ S3         ON
+    E                  0.202       0.135      0.070      -0.064       0.464
+
+ S4         ON
+    E                  0.224       0.094      0.010       0.042       0.405      *
+
+ S5         ON
+    E                  0.123       0.118      0.145      -0.101       0.358
+
+ AB         ON
+    E                  0.491       0.050      0.000       0.391       0.585      *
+
+ AB       WITH
+    S1                 0.285       0.078      0.000       0.127       0.434      *
+    S2                 0.005       0.118      0.484      -0.218       0.234
+    S3                 0.088       0.101      0.192      -0.105       0.288
+    S4                 0.204       0.069      0.001       0.062       0.336      *
+    S5                -0.088       0.090      0.163      -0.269       0.085
+
+ S1       WITH
+    S2                 0.547       0.163      0.002       0.200       0.839      *
+    S3                -0.185       0.167      0.142      -0.499       0.157
+    S4                 0.235       0.117      0.023       0.003       0.464      *
+    S5                -0.295       0.151      0.032      -0.574       0.016
+
+ S2       WITH
+    S3                -0.030       0.289      0.455      -0.665       0.473
+    S4                 0.090       0.168      0.294      -0.267       0.401
+    S5                -0.081       0.207      0.352      -0.439       0.352
+
+ S3       WITH
+    S4                 0.239       0.140      0.068      -0.080       0.472
+    S5                 0.355       0.155      0.018       0.024       0.627      *
+
+ S4       WITH
+    S5                 0.390       0.126      0.003       0.112       0.610      *
+
+ Intercepts
+    AB                 1.380       0.055      0.000       1.273       1.487      *
+    S1                -0.920       0.119      0.000      -1.178      -0.711      *
+    S2                 0.004       0.118      0.485      -0.233       0.233
+    S3                 0.041       0.098      0.335      -0.146       0.237
+    S4                -0.494       0.075      0.000      -0.648      -0.353      *
+    S5                -0.535       0.125      0.000      -0.814      -0.334      *
+
+ Residual Variances
+    AB                 0.938       0.013      0.000       0.911       0.960      *
+    S1                 0.993       0.010      0.000       0.963       1.000      *
+    S2                 0.997       0.009      0.000       0.967       1.000      *
+    S3                 0.989       0.015      0.000       0.944       1.000      *
+    S4                 0.987       0.011      0.000       0.957       0.999      *
+    S5                 0.996       0.009      0.000       0.967       1.000      *
+
+
+R-SQUARE
+
+Within-Level R-Square Averaged Across Clusters
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    AB                 0.098       0.005      0.000       0.089       0.107
+
+Between Level
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    AB                 0.062       0.013      0.000       0.040       0.089
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    S1                 0.007       0.010      0.000       0.000       0.037
+    S2                 0.003       0.009      0.000       0.000       0.033
+    S3                 0.011       0.015      0.000       0.000       0.056
+    S4                 0.013       0.011      0.000       0.001       0.043
+    S5                 0.004       0.009      0.000       0.000       0.033
+
+
+TECHNICAL 1 OUTPUT
+
+
+     PARAMETER SPECIFICATION FOR WITHIN
+
+
+           NU
+              AB            CMC           MIXED         SO            FAMILY
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           NU
+              WEAK_TIE      WEEKEND
+              ________      ________
+                    0             0
+
+
+           LAMBDA
+              AB            CMC           MIXED         SO            FAMILY
+              ________      ________      ________      ________      ________
+ AB                 0             0             0             0             0
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ SO                 0             0             0             0             0
+ FAMILY             0             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           LAMBDA
+              WEAK_TIE      WEEKEND
+              ________      ________
+ AB                 0             0
+ CMC                0             0
+ MIXED              0             0
+ SO                 0             0
+ FAMILY             0             0
+ WEAK_TIE           0             0
+ WEEKEND            0             0
+
+
+           THETA
+              AB            CMC           MIXED         SO            FAMILY
+              ________      ________      ________      ________      ________
+ AB                 0
+ CMC                0             0
+ MIXED              0             0             0
+ SO                 0             0             0             0
+ FAMILY             0             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           THETA
+              WEAK_TIE      WEEKEND
+              ________      ________
+ WEAK_TIE           0
+ WEEKEND            0             0
+
+
+           ALPHA
+              AB            CMC           MIXED         SO            FAMILY
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           ALPHA
+              WEAK_TIE      WEEKEND
+              ________      ________
+                    0             0
+
+
+           BETA
+              AB            CMC           MIXED         SO            FAMILY
+              ________      ________      ________      ________      ________
+ AB                 0             0             0             0             0
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ SO                 0             0             0             0             0
+ FAMILY             0             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           BETA
+              WEAK_TIE      WEEKEND
+              ________      ________
+ AB                 0             1
+ CMC                0             0
+ MIXED              0             0
+ SO                 0             0
+ FAMILY             0             0
+ WEAK_TIE           0             0
+ WEEKEND            0             0
+
+
+           PSI
+              AB            CMC           MIXED         SO            FAMILY
+              ________      ________      ________      ________      ________
+ AB                 2
+ CMC                0             0
+ MIXED              0             0             0
+ SO                 0             0             0             0
+ FAMILY             0             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           PSI
+              WEAK_TIE      WEEKEND
+              ________      ________
+ WEAK_TIE           0
+ WEEKEND            0             0
+
+
+     PARAMETER SPECIFICATION FOR BETWEEN
+
+
+           NU
+              AB            E
+              ________      ________
+                    0             0
+
+
+           LAMBDA
+              S1            S2            S3            S4            S5
+              ________      ________      ________      ________      ________
+ AB                 0             0             0             0             0
+ E                  0             0             0             0             0
+
+
+           LAMBDA
+              AB            E
+              ________      ________
+ AB                 0             0
+ E                  0             0
+
+
+           THETA
+              AB            E
+              ________      ________
+ AB                 0
+ E                  0             0
+
+
+           ALPHA
+              S1            S2            S3            S4            S5
+              ________      ________      ________      ________      ________
+                    3             4             5             6             7
+
+
+           ALPHA
+              AB            E
+              ________      ________
+                    8             0
+
+
+           BETA
+              S1            S2            S3            S4            S5
+              ________      ________      ________      ________      ________
+ S1                 0             0             0             0             0
+ S2                 0             0             0             0             0
+ S3                 0             0             0             0             0
+ S4                 0             0             0             0             0
+ S5                 0             0             0             0             0
+ AB                 0             0             0             0             0
+ E                  0             0             0             0             0
+
+
+           BETA
+              AB            E
+              ________      ________
+ S1                 0             9
+ S2                 0            10
+ S3                 0            11
+ S4                 0            12
+ S5                 0            13
+ AB                 0            14
+ E                  0             0
+
+
+           PSI
+              S1            S2            S3            S4            S5
+              ________      ________      ________      ________      ________
+ S1                15
+ S2                16            17
+ S3                18            19            20
+ S4                21            22            23            24
+ S5                25            26            27            28            29
+ AB                30            31            32            33            34
+ E                  0             0             0             0             0
+
+
+           PSI
+              AB            E
+              ________      ________
+ AB                35
+ E                  0             0
+
+
+     STARTING VALUES FOR WITHIN
+
+
+           NU
+              AB            CMC           MIXED         SO            FAMILY
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           NU
+              WEAK_TIE      WEEKEND
+              ________      ________
+                0.000         0.000
+
+
+           LAMBDA
+              AB            CMC           MIXED         SO            FAMILY
+              ________      ________      ________      ________      ________
+ AB             1.000         0.000         0.000         0.000         0.000
+ CMC            0.000         1.000         0.000         0.000         0.000
+ MIXED          0.000         0.000         1.000         0.000         0.000
+ SO             0.000         0.000         0.000         1.000         0.000
+ FAMILY         0.000         0.000         0.000         0.000         1.000
+ WEAK_TIE       0.000         0.000         0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              WEAK_TIE      WEEKEND
+              ________      ________
+ AB             0.000         0.000
+ CMC            0.000         0.000
+ MIXED          0.000         0.000
+ SO             0.000         0.000
+ FAMILY         0.000         0.000
+ WEAK_TIE       1.000         0.000
+ WEEKEND        0.000         1.000
+
+
+           THETA
+              AB            CMC           MIXED         SO            FAMILY
+              ________      ________      ________      ________      ________
+ AB             0.000
+ CMC            0.000         0.000
+ MIXED          0.000         0.000         0.000
+ SO             0.000         0.000         0.000         0.000
+ FAMILY         0.000         0.000         0.000         0.000         0.000
+ WEAK_TIE       0.000         0.000         0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           THETA
+              WEAK_TIE      WEEKEND
+              ________      ________
+ WEAK_TIE       0.000
+ WEEKEND        0.000         0.000
+
+
+           ALPHA
+              AB            CMC           MIXED         SO            FAMILY
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           ALPHA
+              WEAK_TIE      WEEKEND
+              ________      ________
+                0.000         0.000
+
+
+           BETA
+              AB            CMC           MIXED         SO            FAMILY
+              ________      ________      ________      ________      ________
+ AB             0.000         0.000         0.000         0.000         0.000
+ CMC            0.000         0.000         0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         0.000         0.000
+ SO             0.000         0.000         0.000         0.000         0.000
+ FAMILY         0.000         0.000         0.000         0.000         0.000
+ WEAK_TIE       0.000         0.000         0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              WEAK_TIE      WEEKEND
+              ________      ________
+ AB             0.000         0.000
+ CMC            0.000         0.000
+ MIXED          0.000         0.000
+ SO             0.000         0.000
+ FAMILY         0.000         0.000
+ WEAK_TIE       0.000         0.000
+ WEEKEND        0.000         0.000
+
+
+           PSI
+              AB            CMC           MIXED         SO            FAMILY
+              ________      ________      ________      ________      ________
+ AB             0.842
+ CMC            0.000         0.076
+ MIXED          0.000         0.000         0.035
+ SO             0.000         0.000         0.000         0.027
+ FAMILY         0.000         0.000         0.000         0.000         0.059
+ WEAK_TIE       0.000         0.000         0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              WEAK_TIE      WEEKEND
+              ________      ________
+ WEAK_TIE       0.050
+ WEEKEND        0.000         0.105
+
+
+     STARTING VALUES FOR BETWEEN
+
+
+           NU
+              AB            E
+              ________      ________
+                0.000         0.000
+
+
+           LAMBDA
+              S1            S2            S3            S4            S5
+              ________      ________      ________      ________      ________
+ AB             0.000         0.000         0.000         0.000         0.000
+ E              0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              AB            E
+              ________      ________
+ AB             1.000         0.000
+ E              0.000         1.000
+
+
+           THETA
+              AB            E
+              ________      ________
+ AB             0.000
+ E              0.000         0.000
+
+
+           ALPHA
+              S1            S2            S3            S4            S5
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           ALPHA
+              AB            E
+              ________      ________
+                1.192         0.000
+
+
+           BETA
+              S1            S2            S3            S4            S5
+              ________      ________      ________      ________      ________
+ S1             0.000         0.000         0.000         0.000         0.000
+ S2             0.000         0.000         0.000         0.000         0.000
+ S3             0.000         0.000         0.000         0.000         0.000
+ S4             0.000         0.000         0.000         0.000         0.000
+ S5             0.000         0.000         0.000         0.000         0.000
+ AB             0.000         0.000         0.000         0.000         0.000
+ E              0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              AB            E
+              ________      ________
+ S1             0.000         0.000
+ S2             0.000         0.000
+ S3             0.000         0.000
+ S4             0.000         0.000
+ S5             0.000         0.000
+ AB             0.000         0.000
+ E              0.000         0.000
+
+
+           PSI
+              S1            S2            S3            S4            S5
+              ________      ________      ________      ________      ________
+ S1             1.000
+ S2             0.000         1.000
+ S3             0.000         0.000         1.000
+ S4             0.000         0.000         0.000         1.000
+ S5             0.000         0.000         0.000         0.000         1.000
+ AB             0.000         0.000         0.000         0.000         0.000
+ E              0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              AB            E
+              ________      ________
+ AB             0.842
+ E              0.000         0.259
+
+
+
+     PRIORS FOR ALL PARAMETERS            PRIOR MEAN      PRIOR VARIANCE     PRIOR STD. DEV.
+
+     Parameter 1~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 2~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 3~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 4~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 5~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 6~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 7~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 8~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 9~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 10~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 11~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 12~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 13~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 14~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 15~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 16~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 17~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 18~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 19~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 20~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 21~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 22~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 23~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 24~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 25~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 26~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 27~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 28~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 29~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 30~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 31~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 32~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 33~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 34~IW(0.000,-7)             infinity            infinity            infinity
+     Parameter 35~IW(0.000,-7)             infinity            infinity            infinity
+
+
+TECHNICAL 8 OUTPUT
+
+
+   TECHNICAL 8 OUTPUT FOR BAYES ESTIMATION
+
+     CHAIN    BSEED
+     1        0
+     2        285380
+
+                     POTENTIAL       PARAMETER WITH
+     ITERATION    SCALE REDUCTION      HIGHEST PSR
+     100              3.325               17
+     200              1.785               25
+     300              1.628               27
+     400              1.609               17
+     500              1.293               27
+     600              1.586               26
+     700              1.731               26
+     800              1.589               26
+     900              1.440               17
+     1000             1.789               17
+     1100             1.461               17
+     1200             1.325               17
+     1300             1.212               26
+     1400             1.192               26
+     1500             1.263               26
+     1600             1.276               26
+     1700             1.355               26
+     1800             1.435               26
+     1900             1.426               26
+     2000             1.514               26
+     2100             1.656               26
+     2200             1.718               26
+     2300             1.752               26
+     2400             1.617               26
+     2500             1.504               26
+     2600             1.401               26
+     2700             1.381               26
+     2800             1.418               26
+     2900             1.393               26
+     3000             1.298               26
+     3100             1.313               26
+     3200             1.342               26
+     3300             1.339               26
+     3400             1.342               26
+     3500             1.324               26
+     3600             1.316               26
+     3700             1.299               26
+     3800             1.260               26
+     3900             1.256               26
+     4000             1.253               26
+     4100             1.240               26
+     4200             1.226               26
+     4300             1.197               26
+     4400             1.188               26
+     4500             1.164               26
+     4600             1.157               26
+     4700             1.170               26
+     4800             1.194               26
+     4900             1.214               26
+     5000             1.235               26
+     5100             1.241               26
+     5200             1.242               26
+     5300             1.226               26
+     5400             1.201               26
+     5500             1.210               26
+     5600             1.206               26
+     5700             1.188               26
+     5800             1.161               26
+     5900             1.157               26
+     6000             1.114               26
+     6100             1.096               26
+     6200             1.073               26
+     6300             1.062               26
+     6400             1.064               26
+     6500             1.060               26
+     6600             1.059               26
+     6700             1.060               26
+     6800             1.050               25
+     6900             1.056               25
+     7000             1.070               25
+     7100             1.067               25
+     7200             1.068               25
+     7300             1.063               25
+     7400             1.067               25
+     7500             1.071               25
+     7600             1.072               25
+     7700             1.071               25
+     7800             1.069               25
+     7900             1.071               25
+     8000             1.065               25
+     8100             1.060               25
+     8200             1.060               25
+     8300             1.053               18
+     8400             1.053               25
+     8500             1.054               18
+     8600             1.064               18
+     8700             1.067               18
+     8800             1.072               18
+     8900             1.068               18
+     9000             1.070               18
+     9100             1.063               18
+     9200             1.056               18
+     9300             1.047               18
+     9400             1.043               18
+     9500             1.048               18
+     9600             1.054               18
+     9700             1.048               18
+     9800             1.042               18
+     9900             1.037               25
+     10000            1.042               25
+
+
+     Beginning Time:  08:05:13
+        Ending Time:  08:10:42
+       Elapsed Time:  00:05:29
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2020 Muthen & Muthen

@@ -1,0 +1,1077 @@
+Mplus VERSION 8.5 (Mac)
+MUTHEN & MUTHEN
+03/19/2022  12:46 AM
+
+INPUT INSTRUCTIONS
+
+  TITLE: Analysis 2+3
+  DATA: FILE = analysis3_suppl2_S1.dat;
+  VARIABLE:
+  NAMES = ID WB content stressed lonely
+  peers family weak_ties
+  E A C N O gender ethnicity SES weekend;
+  USEVARIABLES = WB
+  peers family weak_ties
+  weekend A;
+  CLUSTER = ID;
+  WITHIN = weekend;
+  BETWEEN = A;
+  MISSING = .;
+  DEFINE: CENTER A (GRANDMEAN);
+  ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+  BITERATIONS = (10000); PROCESSORS = 2;
+  MODEL:
+  %WITHIN%
+  ! Well-being is predicted by peers, the slope is random
+  S1 | WB ON peers;
+  ! Well-being is predicted by family, the slope is random
+  S2 | WB ON family;
+  ! Well-being is predicted by weak ties, the slope is random
+  S3 | WB ON weak_ties;
+  ! Control for weekend
+  WB ON weekend;
+  %BETWEEN%
+  ! Covariance between intercept and slopes
+  WB S1-S3 WITH WB S1-S3;
+  ! The intercept is predicted by peers
+  WB ON peers;
+  ! The intercept is predicted by family
+  WB ON family;
+  ! The intercept is predicted by weak ties
+  WB ON weak_ties;
+  ! The intercept is predicted by agreeableness
+  WB ON A;
+  ! The slopes are predicted by agreeableness
+  S1-S3 ON A;
+  OUTPUT: STDYX STDY TECH8;
+
+
+
+*** WARNING in VARIABLE command
+  Note that only the first 8 characters of variable names are used in the output.
+  Shorten variable names to avoid any confusion.
+*** WARNING in MODEL command
+  In the MODEL command, the x variable on the WITHIN level has been turned into a
+  y variable to enable latent variable decomposition.  This variable will be treated
+  as a y-variable on both levels:  PEERS
+*** WARNING in MODEL command
+  In the MODEL command, the x variable on the WITHIN level has been turned into a
+  y variable to enable latent variable decomposition.  This variable will be treated
+  as a y-variable on both levels:  FAMILY
+*** WARNING in MODEL command
+  In the MODEL command, the x variable on the WITHIN level has been turned into a
+  y variable to enable latent variable decomposition.  This variable will be treated
+  as a y-variable on both levels:  WEAK_TIES
+*** WARNING
+  One or more individual-level variables have no variation within a
+  cluster for the following clusters.
+
+     Variable   Cluster IDs with no within-cluster variation
+
+      WB          972 831
+      PEERS       331 1047 84 1006 183 1040 181 413 90 1348 1128 988 578 9 913 525 732 934 816
+                  514 86 159 59 281 1199 87 891 93 1008 1224 98 556 496 372 1325
+      FAMILY      331 1167 717 1006 183 16 1040 202 938 385 4 1219 413 323 973 90 637 235 1242
+                  1128 851 1280 1373 811 799 1074 1278 709 407 1175 571 7 877 1050 794 468 941
+                  458 825 278 674 591 599 421 1208 732 188 1133 105 827 255 359 1094 1159 345
+                  831 699 504 176 73 896 551 952 86 1192 83 798 854 239 367 12 1250 151 316 1131
+                  770 1253 687 110 489 169 297 929 714 1090 1269 350 1052 919 62 638 642 824 806
+                  99 1105 422 548 171 133 758 184 228 681 177 954 762 511 1185 1385 277 51 305
+                  40 58 565 335 352 688 614 383 1031 510 752 1138 505 1046 306 1344 893 936 440
+                  656 1078 267 865 592 1289 403 531 143 52 574 991 486 1190
+      WEAK_TIE    972 1047 1167 938 637 1248 578 1168 951 1007 400 55 504 1096 513 1021 607 1090
+                  1111 1105 406 681 729 1023 980 122
+      WEEKEND     331 972 1047 84 1167 717 183 16 1040 202 938 385 4 395 1348 1123 235 343 389
+                  988 799 1074 1278 7 850 433 755 917 474 868 275 1389 607 99
+
+*** WARNING
+  Data set contains cases with missing on x-variables.
+  These cases were not included in the analysis.
+  Number of cases with missing on x-variables:  6055
+   6 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+Analysis 2+3
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                       39747
+
+Number of dependent variables                                    4
+Number of independent variables                                  2
+Number of continuous latent variables                            3
+
+Observed dependent variables
+
+  Continuous
+   WB          PEERS       FAMILY      WEAK_TIES
+
+Observed independent variables
+   WEEKEND     A
+
+Continuous latent variables
+   S1          S2          S3
+
+Variables with special functions
+
+  Cluster variable      ID
+
+  Within variables
+   WEEKEND
+
+  Between variables
+   A
+
+  Centering (GRANDMEAN)
+   A
+
+
+Estimator                                                    BAYES
+Specifications for Bayesian Estimation
+  Point estimate                                            MEDIAN
+  Number of Markov chain Monte Carlo (MCMC) chains               2
+  Random seed for the first chain                                0
+  Starting value information                           UNPERTURBED
+  Algorithm used for Markov chain Monte Carlo           GIBBS(PX1)
+  Convergence criterion                                  0.500D-01
+  Maximum number of iterations                               50000
+  K-th iteration used for thinning                               1
+
+Input data file(s)
+  analysis3_suppl2_S1.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of clusters                       1136
+
+       Size (s)    Cluster ID with Size s
+
+          1        21 45 1010
+          2        331 972 1047
+          3        84 1167
+          4        717 1006 183 16 1040 202 938
+          5        181 385 4 1219
+          6        395 413 323 973 90 1348 637
+          7        1248 1123 424
+          8        235 1242 343 1388
+          9        1128 92 389 851 476 1280 524 988
+         10        567 569 1294 1373 380
+         11        811 549 64 578 9 799
+         12        644 1074 998 1278 709 153 967 1154 1033 19 118 1203
+         13        456 589 407 1168 1175 951 30
+         14        571 1247 1255 7 130 877 1050 774 794 1237
+         15        1007 115 843 1163 654 468 365 922 1055 265 941 1092
+                   5
+         16        458 332 825 1080 559 103 613 278 1379
+         17        674 550 1171 527 1117 204 591 913 599 747 400
+         18        357 525 605 850 17 421 884 1059 704 60 443 1208 652
+                   1014
+         19        992 418 1166 55 1062 1262 1274 160 433 732 1302 188
+                   1338 1198 49 910 309 1133 1391 755
+         20        518 629 1099 1222 792 522 917 805 1144 934 935 105 325
+                   1303 827 255 175 1371 474 554 14 860 1081
+         21        36 947 359 88 291 1070 868 803 660 1094 810 39 816 485
+                   928 818 761 499
+         22        261 719 66 727 1051 1159 484 11 453 977 979 345 275
+                   1317 423 628 831 1013 699 207 1118 1121
+         23        504 514 1004 464 1106 57 216 469 718 1142 950 176 73
+                   966 1058 173 1067 600 896 1197 551
+         24        1140 997 287 290 1259 1261 767 1165 952 123 1286 889
+                   622 86 733 1191 1192 83 798 24 1386 854 743
+         25        239 391 1096 392 100 887 683 1182 744 218 1048 367 927
+                   713 91 650 12 606 452 193 661 1250 800
+         26        455 1252 300 627 1086 946 675 678 1032 312 598 446 151
+                   316 826 1336 918 1346 1131 473 1212 923 770 1236 76
+                   1389 773 159
+         27        513 933 336 665 819 1253 301 353 417 1152 841 760 59
+                   763 532 1282 419 687 110 258 1311 317 281 995 489 1199
+                   563 260 179 53 169 297 1119 580
+         28        929 6 712 830 1021 387 838 714 492 1257 495 346 1161
+                   394 957 607 328 795 882 672 566 425 975 397 1090 985
+                   902 1354 401 203 87 1213 632 232
+         29        1108 1111 1269 1273 1114 360 706 318 141 891 786 1063
+                   787 147 165 750 1082 1150 1017 1360 426 560 1380 1382
+                   350 50 168 769 41 570
+         30        26 15 210 1179 1276 375 1039 213 677 911 341 777 542
+                   1052 919 62 217 638 789 640 642 288 1071 1365 748 194
+                   142 801 146 874 480 1093
+         31        327 1207 93 329 501 1041 31 38 781 610 410 1008 438
+                   581 1265 834 663 18 667 1027 237
+         32        348 307 221 984 1279 856 858 116 190 620 1300 1005 272
+                   1306 824 368 1318 1145 1224 444 374 1238 894 1087 676
+                   448 907 98 568 1258 968 845 178 847
+         33        1186 1053 245 844 507 246 806 1291 741 99 711 308 1136
+                   547 408 450 1085 1332 970 757 134 1034 692 876 319 412
+                   728 937 1105 987 1107 702 1109 990 242
+         34        1153 422 820 1009 259 753 548 1061 334 649 139 209 339
+                   1334 690 111 1340 171 106 700 47 1038 1368 664 373 1042
+                   420 1384 1147 636 857 1287 302
+         35        555 655 166 1322 1331 562 1264 939 152 639 829 1218
+                   1353 128 1 1234 23 347 133 1293 1245 758 184 553 244
+         36        974 682 228 943 1324 867 54 685 871 457 1157 1158 788
+                   766 558 437 406 964 230 577 1240 1045 1089 701 189 564
+                   29 1308 681
+         37        1244 1028 441 993 1337 298 208 529 1352 177 945 1301
+                   162 1215 321 616 1374 556 621 1313 954 296 1320 762
+                   439 764
+         38        749 511 37 1164 643 793 890 3 1319 842 898 646 119 121
+                   196 20 1185 1069 724 180 689 1270 1022 1132 274 124
+                   68 1141 1369 861 44 384 8 1216 1385 703 61 1296 414
+                   602 544
+         39        1251 729 1066 97 299 1170 472 912 1077 737 916 965 277
+                   1376 1377 51 1054 791 129 1194 1195 897 305 1392 976
+         40        40 1125 963 1297 668 428 776 855 187 1217 1177 69 631
+                   948 491 1235 895 594 104 931 101 1023 315 1160
+         41        736 930 58 1057 565 886 1268 595 804 1335 648 107 198
+                   335 523 814 1075 352 1359 427 1233 1172 688 70 432 1129
+                   1239 634 1180 723 635 155 243 1310 42 222 833 614 879
+                   1395
+         42        65 1184 383 494 431 944 1031 863 1307 1196 496 852 445
+                   1068 1314 510 671 691 1072
+         43        641 994 752 996 705 1355 1138 215 351 1363 731 463 503
+                   226 505 89 253 1046 693 695 1156 742 161 276 1162 306
+                   364 1201
+         44        697 1229 435 904 585 586 32 135 666 828 81 1204 519
+                   82 1323 1249 25 1328 837 144 241 212 1124 618 1126 980
+                   393
+         45        1344 1260 247 1349 154 429 859 430 893 488 388 1362
+                   137 234 720 470 619 376 185 848 206 623 1206 971 915
+                   1143 626 754 369 1148 1339 1012
+         46        250 1187 1189 256 936 416 440 251 1120 150 656 465 608
+                   1078 267 1018 1342 1155 10 1130 1210 1390 436 878 1001
+                   982
+         47        1101 865 840 853 541 1016 633 1341 552 120 875 22 530
+                   899 201 284 1327 1073
+         48        1285 467 716 1232 157 1064 1079 1214 358 182 1367 63
+                   342 1020 1397
+         49        1015 1309 592 71 662 1173 372 1000 836 908 344 313 340
+                   1049 378 509 588 498 745 1097 1146 74
+         50        462 145 808 584 1002 399 1289 536 170 1292 1139 901
+                   1246 1026 921 219 262 377 1227 832 1333 136
+         51        839 1100 679 479 379 1176 482 459 403 573 434 174 738
+                   500 292 531 797 131 962 310 233 1098
+         52        2 454 143 779 735 624 236 289 386 78 220 398 285 1345
+                   411
+         53        1325 214 822 1223 205 543 534 694 354 28 537 52 363
+                   1295
+         54        561 574 77 1231 1088 67 782 596 248 881
+         55        113 1383 1267 449 557 1243 1065 1357 1284 1029 1230
+                   1396 1381
+         56        79 396 906 231 1356 659 1256 1110 991
+         57        807 125 1343 1200 1364 471 475 778 1304 1076 657 526
+                   533 1375 593 486 108
+         58        186 1350 1351 294 404 164 925 1025 883 1134 192
+         59        122 955 197 809 94 914 1372 478 402 1190
+         60        366 880 582 1137 13 617 1095 796
+         61        481 263 1228 1271 1298 293 1003 903
+         62        508 249 756 138 520 1102 538
+         63        338 1225 978 651 579
+         64        303 1393 266
+         65        270 1283 112
+         66        95 869
+         72        254
+
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+     Number of missing data patterns             2
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              WB            PEERS         FAMILY        WEAK_TIE      WEEKEND
+              ________      ________      ________      ________      ________
+ WB             1.000
+ PEERS          1.000         1.000
+ FAMILY         1.000         1.000         1.000
+ WEAK_TIE       1.000         1.000         1.000         1.000
+ WEEKEND        1.000         1.000         1.000         1.000         1.000
+ A              1.000         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              A
+              ________
+ A              1.000
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     WB                    3.014      -0.527       1.000    0.96%       2.333      3.000      3.000
+           39734.000       0.449      -0.116       4.000   11.25%       3.333      3.667
+     PEERS                 0.618      -0.486       0.000   38.19%       0.000      1.000      1.000
+           39747.000       0.236      -1.764       1.000   61.81%       1.000      1.000
+     FAMILY                0.188       1.600       0.000   81.23%       0.000      0.000      0.000
+           39747.000       0.152       0.559       1.000   18.77%       0.000      0.000
+     WEAK_TIES             0.248       1.170       0.000   75.24%       0.000      0.000      0.000
+           39747.000       0.186      -0.632       1.000   24.76%       0.000      1.000
+     WEEKEND               0.256       1.116       0.000   74.36%       0.000      0.000      0.000
+           39747.000       0.191      -0.755       1.000   25.64%       0.000      1.000
+     A                     0.000      -0.229      -2.069    0.18%      -0.513     -0.180      0.042
+            1136.000       0.386      -0.306       1.265    1.06%       0.153      0.487
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+     USE THE FBITERATIONS OPTION TO INCREASE THE NUMBER OF ITERATIONS BY A FACTOR
+     OF AT LEAST TWO TO CHECK CONVERGENCE AND THAT THE PSR VALUE DOES NOT INCREASE.
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                              32
+
+Information Criteria
+
+          Deviance (DIC)                       180854.005
+          Estimated Number of Parameters (pD)    4850.993
+
+
+
+MODEL RESULTS
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within Level
+
+ WB         ON
+    WEEKEND            0.089       0.006      0.000       0.078       0.101      *
+
+ Variances
+    PEERS              0.191       0.001      0.000       0.188       0.194      *
+    FAMILY             0.126       0.001      0.000       0.124       0.128      *
+    WEAK_TIES          0.170       0.001      0.000       0.167       0.172      *
+
+ Residual Variances
+    WB                 0.241       0.002      0.000       0.238       0.245      *
+
+Between Level
+
+ S1         ON
+    A                  0.015       0.012      0.104      -0.009       0.039
+
+ S2         ON
+    A                 -0.012       0.016      0.213      -0.043       0.018
+
+ S3         ON
+    A                  0.013       0.012      0.146      -0.011       0.035
+
+ WB         ON
+    PEERS              0.024       0.070      0.361      -0.112       0.160
+    FAMILY             0.090       0.091      0.164      -0.085       0.268
+    WEAK_TIES         -0.017       0.118      0.443      -0.243       0.216
+    A                  0.148       0.022      0.000       0.105       0.190      *
+
+ WB       WITH
+    S1                -0.013       0.003      0.000      -0.020      -0.007      *
+    S2                -0.010       0.004      0.011      -0.019      -0.001      *
+    S3                -0.016       0.003      0.000      -0.023      -0.009      *
+
+ S1       WITH
+    S2                 0.005       0.002      0.017       0.000       0.010      *
+    S3                 0.005       0.002      0.002       0.002       0.009      *
+
+ S2       WITH
+    S3                -0.001       0.002      0.394      -0.005       0.004
+
+ Means
+    PEERS              0.623       0.007      0.000       0.610       0.636      *
+    FAMILY             0.184       0.005      0.000       0.174       0.195      *
+    WEAK_TIES          0.254       0.004      0.000       0.245       0.263      *
+
+ Intercepts
+    WB                 2.939       0.052      0.000       2.837       3.042      *
+    S1                 0.132       0.008      0.000       0.117       0.147      *
+    S2                 0.058       0.010      0.000       0.039       0.078      *
+    S3                -0.010       0.008      0.092      -0.025       0.005
+
+ Variances
+    PEERS              0.045       0.002      0.000       0.041       0.049      *
+    FAMILY             0.026       0.001      0.000       0.024       0.029      *
+    WEAK_TIES          0.017       0.001      0.000       0.015       0.019      *
+
+ Residual Variances
+    WB                 0.190       0.009      0.000       0.174       0.207      *
+    S1                 0.021       0.003      0.000       0.017       0.027      *
+    S2                 0.032       0.004      0.000       0.025       0.040      *
+    S3                 0.015       0.002      0.000       0.011       0.020      *
+
+
+STANDARDIZED MODEL RESULTS
+
+
+STDYX Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | WB ON
+    PEERS              0.112       0.005      0.000       0.101       0.122      *
+
+ S2 | WB ON
+    FAMILY             0.040       0.006      0.000       0.028       0.051      *
+
+ S3 | WB ON
+    WEAK_TIES         -0.008       0.005      0.078      -0.018       0.003
+
+ WB         ON
+    WEEKEND            0.072       0.005      0.000       0.062       0.082      *
+
+ Variances
+    PEERS              1.000       0.000      0.000       1.000       1.000
+    FAMILY             1.000       0.000      0.000       1.000       1.000
+    WEAK_TIES          1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    WB                 0.940       0.003      0.000       0.934       0.946      *
+
+Between Level
+
+ S1         ON
+    A                  0.045       0.036      0.104      -0.025       0.116
+
+ S2         ON
+    A                 -0.030       0.038      0.213      -0.106       0.045
+
+ S3         ON
+    A                  0.045       0.042      0.146      -0.039       0.127
+
+ WB         ON
+    PEERS              0.011       0.033      0.361      -0.054       0.077
+    FAMILY             0.033       0.033      0.164      -0.031       0.098
+    WEAK_TIES         -0.005       0.035      0.443      -0.072       0.064
+    A                  0.147       0.021      0.000       0.103       0.188      *
+
+ WB       WITH
+    S1                -0.208       0.054      0.000      -0.313      -0.103      *
+    S2                -0.132       0.057      0.011      -0.239      -0.015      *
+    S3                -0.298       0.062      0.000      -0.418      -0.175      *
+
+ S1       WITH
+    S2                 0.197       0.093      0.017       0.010       0.375      *
+    S3                 0.291       0.094      0.002       0.102       0.469      *
+
+ S2       WITH
+    S3                -0.030       0.110      0.394      -0.255       0.175
+
+ Means
+    PEERS              2.941       0.078      0.000       2.789       3.093      *
+    FAMILY             1.142       0.043      0.000       1.058       1.225      *
+    WEAK_TIES          1.936       0.063      0.000       1.815       2.063      *
+
+ Intercepts
+    WB                 6.659       0.186      0.000       6.293       7.025      *
+    S1                 0.901       0.075      0.000       0.763       1.057      *
+    S2                 0.327       0.060      0.000       0.214       0.450      *
+    S3                -0.081       0.061      0.092      -0.200       0.038
+
+ Variances
+    PEERS              1.000       0.000      0.000       1.000       1.000
+    FAMILY             1.000       0.000      0.000       1.000       1.000
+    WEAK_TIES          1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    WB                 0.974       0.007      0.000       0.959       0.986      *
+    S1                 0.998       0.004      0.000       0.987       1.000      *
+    S2                 0.999       0.003      0.000       0.989       1.000      *
+    S3                 0.998       0.005      0.000       0.984       1.000      *
+
+
+STDY Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | WB ON
+    PEERS              0.112       0.005      0.000       0.101       0.122      *
+
+ S2 | WB ON
+    FAMILY             0.040       0.006      0.000       0.028       0.051      *
+
+ S3 | WB ON
+    WEAK_TIES         -0.008       0.005      0.078      -0.018       0.003
+
+ WB         ON
+    WEEKEND            0.176       0.012      0.000       0.152       0.199      *
+
+ Variances
+    PEERS              1.000       0.000      0.000       1.000       1.000
+    FAMILY             1.000       0.000      0.000       1.000       1.000
+    WEAK_TIES          1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    WB                 0.940       0.003      0.000       0.934       0.946      *
+
+Between Level
+
+ S1         ON
+    A                  0.103       0.082      0.104      -0.058       0.264
+
+ S2         ON
+    A                 -0.069       0.087      0.213      -0.241       0.103
+
+ S3         ON
+    A                  0.103       0.097      0.146      -0.088       0.290
+
+ WB         ON
+    PEERS              0.011       0.033      0.361      -0.054       0.077
+    FAMILY             0.033       0.033      0.164      -0.031       0.098
+    WEAK_TIES         -0.005       0.035      0.443      -0.072       0.064
+    A                  0.335       0.049      0.000       0.236       0.430      *
+
+ WB       WITH
+    S1                -0.208       0.054      0.000      -0.313      -0.103      *
+    S2                -0.132       0.057      0.011      -0.239      -0.015      *
+    S3                -0.298       0.062      0.000      -0.418      -0.175      *
+
+ S1       WITH
+    S2                 0.197       0.093      0.017       0.010       0.375      *
+    S3                 0.291       0.094      0.002       0.102       0.469      *
+
+ S2       WITH
+    S3                -0.030       0.110      0.394      -0.255       0.175
+
+ Means
+    PEERS              2.941       0.078      0.000       2.789       3.093      *
+    FAMILY             1.142       0.043      0.000       1.058       1.225      *
+    WEAK_TIES          1.936       0.063      0.000       1.815       2.063      *
+
+ Intercepts
+    WB                 6.659       0.186      0.000       6.293       7.025      *
+    S1                 0.901       0.075      0.000       0.763       1.057      *
+    S2                 0.327       0.060      0.000       0.214       0.450      *
+    S3                -0.081       0.061      0.092      -0.200       0.038
+
+ Variances
+    PEERS              1.000       0.000      0.000       1.000       1.000
+    FAMILY             1.000       0.000      0.000       1.000       1.000
+    WEAK_TIES          1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    WB                 0.974       0.007      0.000       0.959       0.986      *
+    S1                 0.998       0.004      0.000       0.987       1.000      *
+    S2                 0.999       0.003      0.000       0.989       1.000      *
+    S3                 0.998       0.005      0.000       0.984       1.000      *
+
+
+R-SQUARE
+
+Within-Level R-Square Averaged Across Clusters
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    WB                 0.060       0.003      0.000       0.054       0.066
+
+Between Level
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    WB                 0.026       0.007      0.000       0.014       0.041
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    S1                 0.002       0.004      0.000       0.000       0.013
+    S2                 0.001       0.003      0.000       0.000       0.011
+    S3                 0.002       0.005      0.000       0.000       0.016
+
+
+TECHNICAL 1 OUTPUT
+
+
+     PARAMETER SPECIFICATION FOR WITHIN
+
+
+           NU
+              WB            PEERS         FAMILY        WEAK_TIE      WEEKEND
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           LAMBDA
+              WB            PEERS         FAMILY        WEAK_TIE      WEEKEND
+              ________      ________      ________      ________      ________
+ WB                 0             0             0             0             0
+ PEERS              0             0             0             0             0
+ FAMILY             0             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           THETA
+              WB            PEERS         FAMILY        WEAK_TIE      WEEKEND
+              ________      ________      ________      ________      ________
+ WB                 0
+ PEERS              0             0
+ FAMILY             0             0             0
+ WEAK_TIE           0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           ALPHA
+              WB            PEERS         FAMILY        WEAK_TIE      WEEKEND
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           BETA
+              WB            PEERS         FAMILY        WEAK_TIE      WEEKEND
+              ________      ________      ________      ________      ________
+ WB                 0             0             0             0             1
+ PEERS              0             0             0             0             0
+ FAMILY             0             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           PSI
+              WB            PEERS         FAMILY        WEAK_TIE      WEEKEND
+              ________      ________      ________      ________      ________
+ WB                 2
+ PEERS              0             3
+ FAMILY             0             0             4
+ WEAK_TIE           0             0             0             5
+ WEEKEND            0             0             0             0             0
+
+
+     PARAMETER SPECIFICATION FOR BETWEEN
+
+
+           NU
+              WB            PEERS         FAMILY        WEAK_TIE      A
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           LAMBDA
+              S1            S2            S3            WB            PEERS
+              ________      ________      ________      ________      ________
+ WB                 0             0             0             0             0
+ PEERS              0             0             0             0             0
+ FAMILY             0             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ A                  0             0             0             0             0
+
+
+           LAMBDA
+              FAMILY        WEAK_TIE      A
+              ________      ________      ________
+ WB                 0             0             0
+ PEERS              0             0             0
+ FAMILY             0             0             0
+ WEAK_TIE           0             0             0
+ A                  0             0             0
+
+
+           THETA
+              WB            PEERS         FAMILY        WEAK_TIE      A
+              ________      ________      ________      ________      ________
+ WB                 0
+ PEERS              0             0
+ FAMILY             0             0             0
+ WEAK_TIE           0             0             0             0
+ A                  0             0             0             0             0
+
+
+           ALPHA
+              S1            S2            S3            WB            PEERS
+              ________      ________      ________      ________      ________
+                    6             7             8             9            10
+
+
+           ALPHA
+              FAMILY        WEAK_TIE      A
+              ________      ________      ________
+                   11            12             0
+
+
+           BETA
+              S1            S2            S3            WB            PEERS
+              ________      ________      ________      ________      ________
+ S1                 0             0             0             0             0
+ S2                 0             0             0             0             0
+ S3                 0             0             0             0             0
+ WB                 0             0             0             0            16
+ PEERS              0             0             0             0             0
+ FAMILY             0             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ A                  0             0             0             0             0
+
+
+           BETA
+              FAMILY        WEAK_TIE      A
+              ________      ________      ________
+ S1                 0             0            13
+ S2                 0             0            14
+ S3                 0             0            15
+ WB                17            18            19
+ PEERS              0             0             0
+ FAMILY             0             0             0
+ WEAK_TIE           0             0             0
+ A                  0             0             0
+
+
+           PSI
+              S1            S2            S3            WB            PEERS
+              ________      ________      ________      ________      ________
+ S1                20
+ S2                21            22
+ S3                23            24            25
+ WB                26            27            28            29
+ PEERS              0             0             0             0            30
+ FAMILY             0             0             0             0             0
+ WEAK_TIE           0             0             0             0             0
+ A                  0             0             0             0             0
+
+
+           PSI
+              FAMILY        WEAK_TIE      A
+              ________      ________      ________
+ FAMILY            31
+ WEAK_TIE           0            32
+ A                  0             0             0
+
+
+     STARTING VALUES FOR WITHIN
+
+
+           NU
+              WB            PEERS         FAMILY        WEAK_TIE      WEEKEND
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              WB            PEERS         FAMILY        WEAK_TIE      WEEKEND
+              ________      ________      ________      ________      ________
+ WB             1.000         0.000         0.000         0.000         0.000
+ PEERS          0.000         1.000         0.000         0.000         0.000
+ FAMILY         0.000         0.000         1.000         0.000         0.000
+ WEAK_TIE       0.000         0.000         0.000         1.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         1.000
+
+
+           THETA
+              WB            PEERS         FAMILY        WEAK_TIE      WEEKEND
+              ________      ________      ________      ________      ________
+ WB             0.000
+ PEERS          0.000         0.000
+ FAMILY         0.000         0.000         0.000
+ WEAK_TIE       0.000         0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           ALPHA
+              WB            PEERS         FAMILY        WEAK_TIE      WEEKEND
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              WB            PEERS         FAMILY        WEAK_TIE      WEEKEND
+              ________      ________      ________      ________      ________
+ WB             0.000         0.000         0.000         0.000         0.000
+ PEERS          0.000         0.000         0.000         0.000         0.000
+ FAMILY         0.000         0.000         0.000         0.000         0.000
+ WEAK_TIE       0.000         0.000         0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              WB            PEERS         FAMILY        WEAK_TIE      WEEKEND
+              ________      ________      ________      ________      ________
+ WB             0.225
+ PEERS          0.000         0.118
+ FAMILY         0.000         0.000         0.076
+ WEAK_TIE       0.000         0.000         0.000         0.093
+ WEEKEND        0.000         0.000         0.000         0.000         0.095
+
+
+     STARTING VALUES FOR BETWEEN
+
+
+           NU
+              WB            PEERS         FAMILY        WEAK_TIE      A
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              S1            S2            S3            WB            PEERS
+              ________      ________      ________      ________      ________
+ WB             0.000         0.000         0.000         1.000         0.000
+ PEERS          0.000         0.000         0.000         0.000         1.000
+ FAMILY         0.000         0.000         0.000         0.000         0.000
+ WEAK_TIE       0.000         0.000         0.000         0.000         0.000
+ A              0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              FAMILY        WEAK_TIE      A
+              ________      ________      ________
+ WB             0.000         0.000         0.000
+ PEERS          0.000         0.000         0.000
+ FAMILY         1.000         0.000         0.000
+ WEAK_TIE       0.000         1.000         0.000
+ A              0.000         0.000         1.000
+
+
+           THETA
+              WB            PEERS         FAMILY        WEAK_TIE      A
+              ________      ________      ________      ________      ________
+ WB             0.000
+ PEERS          0.000         0.000
+ FAMILY         0.000         0.000         0.000
+ WEAK_TIE       0.000         0.000         0.000         0.000
+ A              0.000         0.000         0.000         0.000         0.000
+
+
+           ALPHA
+              S1            S2            S3            WB            PEERS
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         3.014         0.618
+
+
+           ALPHA
+              FAMILY        WEAK_TIE      A
+              ________      ________      ________
+                0.188         0.248         0.000
+
+
+           BETA
+              S1            S2            S3            WB            PEERS
+              ________      ________      ________      ________      ________
+ S1             0.000         0.000         0.000         0.000         0.000
+ S2             0.000         0.000         0.000         0.000         0.000
+ S3             0.000         0.000         0.000         0.000         0.000
+ WB             0.000         0.000         0.000         0.000         0.000
+ PEERS          0.000         0.000         0.000         0.000         0.000
+ FAMILY         0.000         0.000         0.000         0.000         0.000
+ WEAK_TIE       0.000         0.000         0.000         0.000         0.000
+ A              0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              FAMILY        WEAK_TIE      A
+              ________      ________      ________
+ S1             0.000         0.000         0.000
+ S2             0.000         0.000         0.000
+ S3             0.000         0.000         0.000
+ WB             0.000         0.000         0.000
+ PEERS          0.000         0.000         0.000
+ FAMILY         0.000         0.000         0.000
+ WEAK_TIE       0.000         0.000         0.000
+ A              0.000         0.000         0.000
+
+
+           PSI
+              S1            S2            S3            WB            PEERS
+              ________      ________      ________      ________      ________
+ S1             1.000
+ S2             0.000         1.000
+ S3             0.000         0.000         1.000
+ WB             0.000         0.000         0.000         0.225
+ PEERS          0.000         0.000         0.000         0.000         0.118
+ FAMILY         0.000         0.000         0.000         0.000         0.000
+ WEAK_TIE       0.000         0.000         0.000         0.000         0.000
+ A              0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              FAMILY        WEAK_TIE      A
+              ________      ________      ________
+ FAMILY         0.076
+ WEAK_TIE       0.000         0.093
+ A              0.000         0.000         0.192
+
+
+
+     PRIORS FOR ALL PARAMETERS            PRIOR MEAN      PRIOR VARIANCE     PRIOR STD. DEV.
+
+     Parameter 1~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 2~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 3~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 4~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 5~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 6~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 7~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 8~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 9~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 10~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 11~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 12~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 13~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 14~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 15~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 16~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 17~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 18~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 19~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 20~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 21~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 22~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 23~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 24~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 25~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 26~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 27~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 28~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 29~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 30~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 31~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 32~IG(-1.000,0.000)         infinity            infinity            infinity
+
+
+TECHNICAL 8 OUTPUT
+
+
+   TECHNICAL 8 OUTPUT FOR BAYES ESTIMATION
+
+     CHAIN    BSEED
+     1        0
+     2        285380
+
+                     POTENTIAL       PARAMETER WITH
+     ITERATION    SCALE REDUCTION      HIGHEST PSR
+     100              1.365               14
+     200              1.094               14
+     300              1.014               15
+     400              1.008               25
+     500              1.022               8
+     600              1.018               8
+     700              1.011               6
+     800              1.014               8
+     900              1.013               8
+     1000             1.018               14
+     1100             1.012               14
+     1200             1.020               14
+     1300             1.006               22
+     1400             1.005               14
+     1500             1.006               13
+     1600             1.005               6
+     1700             1.004               6
+     1800             1.004               6
+     1900             1.006               6
+     2000             1.004               6
+     2100             1.006               6
+     2200             1.007               6
+     2300             1.005               6
+     2400             1.006               6
+     2500             1.004               6
+     2600             1.006               6
+     2700             1.005               6
+     2800             1.005               6
+     2900             1.007               6
+     3000             1.006               6
+     3100             1.004               25
+     3200             1.004               25
+     3300             1.005               25
+     3400             1.005               25
+     3500             1.003               25
+     3600             1.003               25
+     3700             1.003               25
+     3800             1.002               25
+     3900             1.002               25
+     4000             1.002               25
+     4100             1.002               25
+     4200             1.002               25
+     4300             1.002               25
+     4400             1.002               9
+     4500             1.002               9
+     4600             1.003               9
+     4700             1.002               9
+     4800             1.002               9
+     4900             1.001               9
+     5000             1.001               7
+     5100             1.001               7
+     5200             1.002               7
+     5300             1.001               7
+     5400             1.003               7
+     5500             1.003               7
+     5600             1.002               7
+     5700             1.004               7
+     5800             1.004               7
+     5900             1.003               7
+     6000             1.002               7
+     6100             1.003               15
+     6200             1.002               15
+     6300             1.002               15
+     6400             1.001               13
+     6500             1.002               7
+     6600             1.002               7
+     6700             1.002               7
+     6800             1.001               7
+     6900             1.001               1
+     7000             1.001               1
+     7100             1.001               15
+     7200             1.001               15
+     7300             1.001               15
+     7400             1.001               15
+     7500             1.001               15
+     7600             1.001               15
+     7700             1.002               15
+     7800             1.001               15
+     7900             1.002               14
+     8000             1.002               14
+     8100             1.002               14
+     8200             1.003               14
+     8300             1.002               14
+     8400             1.002               14
+     8500             1.002               14
+     8600             1.002               15
+     8700             1.002               14
+     8800             1.002               15
+     8900             1.001               14
+     9000             1.001               15
+     9100             1.001               14
+     9200             1.001               14
+     9300             1.001               14
+     9400             1.001               14
+     9500             1.001               14
+     9600             1.001               14
+     9700             1.001               14
+     9800             1.002               14
+     9900             1.002               14
+     10000            1.002               14
+
+
+     Beginning Time:  00:46:14
+        Ending Time:  00:57:08
+       Elapsed Time:  00:10:54
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2020 Muthen & Muthen

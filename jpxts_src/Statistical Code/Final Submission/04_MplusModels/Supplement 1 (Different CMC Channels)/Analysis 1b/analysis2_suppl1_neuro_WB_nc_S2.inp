@@ -1,0 +1,40 @@
+TITLE: Analysis 2+3
+DATA: FILE = analysis2_suppl1_S2.dat;
+VARIABLE:
+NAMES = ID WB content stressed lonely
+TVC TCE SN
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = WB
+TVC TCE SN
+weekend N;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = N;
+MISSING = .;
+DEFINE: CENTER N (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Well-being is predicted by TVC, the slope is random
+S1 | WB ON TVC;
+! Well-being is predicted by TCE, the slope is random
+S2 | WB ON TCE;
+! Well-being is predicted by SN, the slope is random
+S3 | WB ON SN;
+! Control for weekend
+WB ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+WB S1-S3 WITH WB S1-S3;
+! The intercept is predicted by TVC
+WB ON TVC;
+! The intercept is predicted by TCE
+WB ON TCE;
+! The intercept is predicted by SN
+WB ON SN;
+! The intercept is predicted by neuroticism
+WB ON N;
+! The slopes are predicted by neuroticism
+S1-S3 ON N;
+OUTPUT: STDYX STDY TECH8;

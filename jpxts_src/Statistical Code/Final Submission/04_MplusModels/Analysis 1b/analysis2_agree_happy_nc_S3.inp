@@ -1,0 +1,40 @@
+TITLE: Analysis 2+3
+DATA: FILE = analysis2_S3.dat;
+VARIABLE:
+NAMES = ID AB angry worried happy sad WB stressed lonely
+FTF CMC mixed
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = happy
+FTF CMC mixed
+weekend A;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = A;
+MISSING = .;
+DEFINE: CENTER A (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Happiness is predicted by FtF interactions, the slope is random
+S1 | happy ON FTF;
+! Happiness is predicted by CMC, the slope is random
+S2 | happy ON CMC;
+! Happiness is predicted by mixed episodes, the slope is random
+S3 | happy ON mixed;
+! Control for weekend
+happy ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+happy S1-S3 WITH happy S1-S3;
+! The intercept is predicted by FtF interactions
+happy ON FTF;
+! The intercept is predicted by CMC
+happy ON CMC;
+! The intercept is predicted by mixed episodes
+happy ON mixed;
+! The intercept is predicted by agreeableness
+happy ON A;
+! The slopes are predicted by agreeableness
+S1-S3 ON A;
+OUTPUT: STDYX STDY TECH8;

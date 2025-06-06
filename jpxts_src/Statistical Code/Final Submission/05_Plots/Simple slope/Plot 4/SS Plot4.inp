@@ -1,0 +1,49 @@
+TITLE: Analysis 5
+DATA: FILE IS analysis2.dat;
+VARIABLE:
+NAMES ARE ID WB FTF CMC mixed peers family weak_ties N
+gender ethnicity SES weekend;
+USEVARIABLES ARE WB CMC mixed family weak_ties weekend cxf cxw mxf mxw;
+CLUSTER IS ID;
+WITHIN ARE CMC mixed family weak_ties weekend cxf cxw mxf mxw;
+MISSING = .;
+DEFINE:
+cxf=CMC*family;
+cxw=CMC*weak_ties;
+mxf=mixed*family;
+mxw=mixed*weak_ties;
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+WB;
+S1 | WB ON CMC; !Well-being is predicted by CMC, the slope is random
+S2 | WB ON mixed; !Well-being is predicted by mixed episodes, the slope is random
+S3 | WB ON family; !Well-being is predicted by interactions with family, the slope is random
+S4 | WB ON weak_ties; !Well-being is predicted by interactions with weak ties, the slope is random
+S5 | WB ON cxf; !Well-being is predicted by CMC*family, the slope is random
+S6 | WB ON cxw; !Well-being is predicted by CMC*weak ties, the slope is random
+S7 | WB ON mxf; !Well-being is predicted by mixed*family, the slope is random
+S8 | WB ON mxw;!Well-being is predicted by mixed*weak ties, the slope is random
+WB ON weekend; !Control for weekend on the within-person level		
+%BETWEEN%
+[WB] (alpha);
+[S1] (slope1);
+[S4] (slope4);
+[S6] (slope6);
+[S2];
+[S3];
+[S5];
+[S7];
+[S8];
+WB S1-S8; WB S1-S8 WITH WB S1-S8;
+MODEL CONSTRAINT:
+PLOT(P W);
+LOOP(XAXIS,0,1,1);
+P = alpha + slope1*XAXIS;
+W = alpha + slope4 + (slope1 + slope6)*XAXIS;
+NEW (SP SW);
+SP = slope1;
+SW = slope1 + slope6;
+PLOT: TYPE = PLOT2;
+OUTPUT: STDYX STDY TECH8;

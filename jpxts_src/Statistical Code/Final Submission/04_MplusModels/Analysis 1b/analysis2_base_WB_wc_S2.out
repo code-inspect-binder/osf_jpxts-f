@@ -1,0 +1,1043 @@
+Mplus VERSION 8.5 (Mac)
+MUTHEN & MUTHEN
+03/16/2022   1:17 AM
+
+INPUT INSTRUCTIONS
+
+  TITLE: Analysis 2+3
+  DATA: FILE = analysis2_S2.dat;
+  VARIABLE:
+  NAMES = ID WB content stressed lonely
+  FTF CMC mixed
+  E A C N O gender ethnicity SES weekend;
+  USEVARIABLES = WB
+  FTF CMC mixed
+  weekend gender ethnicity SES;
+  CLUSTER = ID;
+  WITHIN = weekend;
+  BETWEEN = gender ethnicity SES;
+  MISSING = .;
+  ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+  BITERATIONS = (10000); PROCESSORS = 2;
+  MODEL:
+  %WITHIN%
+  ! Well-being is predicted by FtF interactions, the slope is random
+  S1 | WB ON FTF;
+  ! Well-being is predicted by CMC, the slope is random
+  S2 | WB ON CMC;
+  ! Well-being is predicted by mixed episodes, the slope is random
+  S3 | WB ON mixed;
+  ! Control for weekend
+  WB ON weekend;
+  %BETWEEN%
+  ! Covariance between intercept and slopes
+  WB S1-S3 WITH WB S1-S3;
+  ! The intercept is predicted by FtF interactions
+  WB ON FTF;
+  ! The intercept is predicted by CMC
+  WB ON CMC;
+  ! The intercept is predicted by mixed episodes
+  WB ON mixed;
+  ! Control for demographic variables
+  WB ON gender ethnicity SES;
+  OUTPUT: STDYX STDY TECH8;
+
+
+
+*** WARNING in VARIABLE command
+  Note that only the first 8 characters of variable names are used in the output.
+  Shorten variable names to avoid any confusion.
+*** WARNING in MODEL command
+  In the MODEL command, the x variable on the WITHIN level has been turned into a
+  y variable to enable latent variable decomposition.  This variable will be treated
+  as a y-variable on both levels:  FTF
+*** WARNING in MODEL command
+  In the MODEL command, the x variable on the WITHIN level has been turned into a
+  y variable to enable latent variable decomposition.  This variable will be treated
+  as a y-variable on both levels:  CMC
+*** WARNING in MODEL command
+  In the MODEL command, the x variable on the WITHIN level has been turned into a
+  y variable to enable latent variable decomposition.  This variable will be treated
+  as a y-variable on both levels:  MIXED
+*** WARNING
+  One or more individual-level variables have no variation within a
+  cluster for the following clusters.
+
+     Variable   Cluster IDs with no within-cluster variation
+
+      WB          384 171 453
+      FTF         384 21 710 526 723 703 741 605 679 599 368 326 307 828 102 680 296 105 134
+      CMC         384 751 723 157 605 350 679 603 118 209 289 316 728 783 107 442 644 491 836
+                  179 320 501 517 177 202
+      MIXED       384 21 171 723 605 350 679 382 438 603 268 5 3 489 165 453 621 599 238 107 38
+                  417 155 442 362 592 618 829 41 707 677 706 255 821 178 837 785 628 32 427 737
+                  690 663 371 734 836 179 176 752 281 294 9 428 736 776 320 614 40 501 226 506
+                  517 630 116 130 719 578 401 602 561 177 377 492 576 87 272 185 286 520 667 429
+                  696
+      WEEKEND     751 39 157 605 350 293 197 268 3 209 849 668
+
+*** WARNING
+  Data set contains cases with missing on x-variables.
+  These cases were not included in the analysis.
+  Number of cases with missing on x-variables:  13796
+   6 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+Analysis 2+3
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                       13122
+
+Number of dependent variables                                    4
+Number of independent variables                                  4
+Number of continuous latent variables                            3
+
+Observed dependent variables
+
+  Continuous
+   WB          FTF         CMC         MIXED
+
+Observed independent variables
+   WEEKEND     GENDER      ETHNICIT    SES
+
+Continuous latent variables
+   S1          S2          S3
+
+Variables with special functions
+
+  Cluster variable      ID
+
+  Within variables
+   WEEKEND
+
+  Between variables
+   GENDER      ETHNICIT    SES
+
+
+Estimator                                                    BAYES
+Specifications for Bayesian Estimation
+  Point estimate                                            MEDIAN
+  Number of Markov chain Monte Carlo (MCMC) chains               2
+  Random seed for the first chain                                0
+  Starting value information                           UNPERTURBED
+  Algorithm used for Markov chain Monte Carlo           GIBBS(PX1)
+  Convergence criterion                                  0.500D-01
+  Maximum number of iterations                               50000
+  K-th iteration used for thinning                               1
+
+Input data file(s)
+  analysis2_S2.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of clusters                        424
+
+       Size (s)    Cluster ID with Size s
+
+          1        33 46 189 259 301 304 336 450 818 831
+          2        384 21 710 751 171
+          3        526 723 703
+          4        39 157 741 605 350 679
+          5        504 382 293 438 603 197 215 268
+          6        498 5 3
+          7        650 440 352 118 856
+          8        489 277 165
+          9        626 209 806 453 621
+         10        599 238 289 316
+         11        368 326 276 307 849 728
+         12        783 502 747 777 107
+         13        38
+         14        443 668
+         15        417 847 155
+         16        442 657 29 563 220 828 212
+         17        126 102 34
+         18        698 480 362 592 672 644
+         19        314 618 343 829 191 111
+         20        509 363 627 41 194 615 839 147 788 463
+         21        43 707 10 483 216 677 58
+         22        318 370 267 380 706 244 298 608
+         23        72 217 255 23 390 821 680 178 685 837 123 369 36
+         24        785 256 754 628 206 137
+         25        35 651 302 528 32 427 737 144 122 690 241 844 845 854
+         26        45 398 451 149 653 243 663 371 91 772 491 734
+         27        470 715 435 836 190 179 639
+         28        548 305 1 766 798 296 812 782 542 670 176
+         29        317 158 133 471 67 713 814 700 512 143
+         30        531 717 752 533 31 71 817 281 294
+         31        236 432 325 481 108 81 9 566 162 425 575
+         32        631 327 225 505 428 113 757 583 365 770
+         33        683 635 736 467 776 522 320 114 614 40
+         34        70 729 761 279 681 12 501 842 387 411
+         35        226 95 386 159 160 506 146 803 354 841 709 809 222 848
+                   517 630 718
+         36        739 596 116 92 385 421 130 164 756 49 430 562
+         37        771 833 180 744 719 400 578 401
+         38        82 693 221 527 530 22 105 232 495 516
+         39        589 245 808 419 52 249 493 794 795
+         40        838 460 804 167 789 476 641 264 674 101
+         41        454 581 769 134 740
+         42        602 30 656 773 464 127 26 694 561 587 20 142 361 439
+                   622 458
+         43        177 758 665 377 474 551 784 488 459 640
+         44        475 234 492 124 576 695 172 202 87 539 540 186 174 545
+                   106
+         45        652 524 272
+         46        364 405 57 99 732 89 185 286 62 654
+         47        763 558 78 28
+         48        647 726 780 446 824 153 250 66
+         49        136 534 704 716 538 403
+         50        573 699 748
+         51        815 391 520 692
+         52        636 388 138 667
+         53        514 429 319
+         54        63 499 625 444
+         55        738 367 819
+         56        308
+         57        853 569 378 850
+         58        529 696
+         59        323 273
+         60        252 607
+         61        775 659 284
+         62        572 525
+         64        465 767
+         65        366
+         66        141 418
+
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+     Number of missing data patterns             2
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              WB            FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ WB             0.998
+ FTF            0.998         1.000
+ CMC            0.998         1.000         1.000
+ MIXED          0.998         1.000         1.000         1.000
+ WEEKEND        0.998         1.000         1.000         1.000         1.000
+ GENDER         0.998         1.000         1.000         1.000         1.000
+ ETHNICIT       0.998         1.000         1.000         1.000         1.000
+ SES            0.998         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              GENDER        ETHNICIT      SES
+              ________      ________      ________
+ GENDER         1.000
+ ETHNICIT       1.000         1.000
+ SES            1.000         1.000         1.000
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     WB                    2.968      -0.497       1.000    1.19%       2.333      3.000      3.000
+           13099.000       0.460      -0.144       4.000    9.86%       3.333      3.667
+     FTF                   0.312       0.814       0.000   68.85%       0.000      0.000      0.000
+           13122.000       0.214      -1.338       1.000   31.15%       0.000      1.000
+     CMC                   0.274       1.011       0.000   72.57%       0.000      0.000      0.000
+           13122.000       0.199      -0.977       1.000   27.43%       0.000      1.000
+     MIXED                 0.170       1.757       0.000   83.00%       0.000      0.000      0.000
+           13122.000       0.141       1.087       1.000   17.00%       0.000      0.000
+     WEEKEND               0.287       0.943       0.000   71.32%       0.000      0.000      0.000
+           13122.000       0.205      -1.112       1.000   28.68%       0.000      1.000
+     GENDER                0.606      -0.434       0.000   39.39%       0.000      1.000      1.000
+             424.000       0.239      -1.811       1.000   60.61%       1.000      1.000
+     ETHNICITY             0.682      -0.780       0.000   31.84%       0.000      1.000      1.000
+             424.000       0.217      -1.392       1.000   68.16%       1.000      1.000
+     SES                   0.877      -2.301       0.000   12.26%       1.000      1.000      1.000
+             424.000       0.108       3.294       1.000   87.74%       1.000      1.000
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+     USE THE FBITERATIONS OPTION TO INCREASE THE NUMBER OF ITERATIONS BY A FACTOR
+     OF AT LEAST TWO TO CHECK CONVERGENCE AND THAT THE PSR VALUE DOES NOT INCREASE.
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                              31
+
+Information Criteria
+
+          Deviance (DIC)                        59214.432
+          Estimated Number of Parameters (pD)    1671.529
+
+
+
+MODEL RESULTS
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within Level
+
+ WB         ON
+    WEEKEND            0.133       0.010      0.000       0.114       0.153      *
+
+ Variances
+    FTF                0.192       0.002      0.000       0.188       0.197      *
+    CMC                0.163       0.002      0.000       0.159       0.167      *
+    MIXED              0.120       0.002      0.000       0.117       0.123      *
+
+ Residual Variances
+    WB                 0.251       0.003      0.000       0.244       0.257      *
+
+Between Level
+
+ WB         ON
+    FTF                0.109       0.222      0.310      -0.321       0.556
+    CMC               -0.238       0.156      0.062      -0.548       0.066
+    MIXED              0.263       0.176      0.068      -0.077       0.614
+    GENDER            -0.026       0.044      0.275      -0.113       0.062
+    ETHNICITY         -0.096       0.046      0.020      -0.186      -0.004      *
+    SES               -0.107       0.067      0.055      -0.241       0.026
+
+ WB       WITH
+    S1                -0.032       0.008      0.000      -0.048      -0.018      *
+    S2                 0.000       0.007      0.478      -0.014       0.013
+    S3                -0.023       0.009      0.006      -0.042      -0.005      *
+
+ S1       WITH
+    S2                 0.002       0.005      0.319      -0.006       0.013
+    S3                 0.031       0.007      0.000       0.018       0.047      *
+
+ S2       WITH
+    S3                 0.014       0.007      0.004       0.003       0.030      *
+
+ Means
+    FTF                0.311       0.008      0.000       0.294       0.327      *
+    CMC                0.279       0.010      0.000       0.259       0.299      *
+    MIXED              0.173       0.008      0.000       0.157       0.189      *
+    S1                 0.235       0.016      0.000       0.203       0.267      *
+    S2                 0.022       0.015      0.073      -0.008       0.053
+    S3                 0.207       0.021      0.000       0.167       0.248      *
+
+ Intercepts
+    WB                 3.071       0.137      0.000       2.797       3.337      *
+
+ Variances
+    FTF                0.022       0.002      0.000       0.018       0.026      *
+    CMC                0.037       0.003      0.000       0.031       0.043      *
+    MIXED              0.023       0.002      0.000       0.019       0.027      *
+    S1                 0.035       0.008      0.000       0.022       0.052      *
+    S2                 0.016       0.006      0.000       0.007       0.029      *
+    S3                 0.048       0.011      0.000       0.029       0.072      *
+
+ Residual Variances
+    WB                 0.185       0.014      0.000       0.160       0.216      *
+
+
+STANDARDIZED MODEL RESULTS
+
+
+STDYX Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | WB ON
+    FTF                0.189       0.010      0.000       0.168       0.209      *
+
+ S2 | WB ON
+    CMC                0.017       0.011      0.054      -0.004       0.039
+
+ S3 | WB ON
+    MIXED              0.130       0.011      0.000       0.108       0.152      *
+
+ WB         ON
+    WEEKEND            0.105       0.008      0.000       0.089       0.120      *
+
+ Variances
+    FTF                1.000       0.000      0.000       1.000       1.000
+    CMC                1.000       0.000      0.000       1.000       1.000
+    MIXED              1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    WB                 0.890       0.008      0.000       0.871       0.905      *
+
+Between Level
+
+ WB         ON
+    FTF                0.037       0.074      0.310      -0.108       0.183
+    CMC               -0.103       0.067      0.062      -0.235       0.028
+    MIXED              0.090       0.059      0.068      -0.026       0.206
+    GENDER            -0.020       0.034      0.275      -0.086       0.047
+    ETHNICITY         -0.072       0.035      0.020      -0.139      -0.003      *
+    SES               -0.059       0.037      0.055      -0.131       0.014
+
+ WB       WITH
+    S1                -0.403       0.090      0.000      -0.575      -0.223      *
+    S2                -0.007       0.130      0.478      -0.268       0.244
+    S3                -0.252       0.097      0.006      -0.438      -0.058      *
+
+ S1       WITH
+    S2                 0.099       0.201      0.319      -0.342       0.438
+    S3                 0.769       0.083      0.000       0.581       0.909      *
+
+ S2       WITH
+    S3                 0.539       0.169      0.004       0.150       0.820      *
+
+ Means
+    FTF                2.088       0.111      0.000       1.877       2.313      *
+    CMC                1.458       0.081      0.000       1.301       1.616      *
+    MIXED              1.153       0.073      0.000       1.013       1.299      *
+    S1                 1.256       0.169      0.000       0.978       1.641      *
+    S2                 0.179       0.135      0.073      -0.067       0.459
+    S3                 0.948       0.148      0.000       0.700       1.281      *
+
+ Intercepts
+    WB                 6.978       0.410      0.000       6.118       7.733      *
+
+ Variances
+    FTF                1.000       0.000      0.000       1.000       1.000
+    CMC                1.000       0.000      0.000       1.000       1.000
+    MIXED              1.000       0.000      0.000       1.000       1.000
+    S1                 1.000       0.000      0.000       1.000       1.000
+    S2                 1.000       0.000      0.000       1.000       1.000
+    S3                 1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    WB                 0.956       0.021      0.000       0.905       0.985      *
+
+
+STDY Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | WB ON
+    FTF                0.189       0.010      0.000       0.168       0.209      *
+
+ S2 | WB ON
+    CMC                0.017       0.011      0.054      -0.004       0.039
+
+ S3 | WB ON
+    MIXED              0.130       0.011      0.000       0.108       0.152      *
+
+ WB         ON
+    WEEKEND            0.251       0.018      0.000       0.213       0.287      *
+
+ Variances
+    FTF                1.000       0.000      0.000       1.000       1.000
+    CMC                1.000       0.000      0.000       1.000       1.000
+    MIXED              1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    WB                 0.890       0.008      0.000       0.871       0.905      *
+
+Between Level
+
+ WB         ON
+    FTF                0.037       0.074      0.310      -0.108       0.183
+    CMC               -0.103       0.067      0.062      -0.235       0.028
+    MIXED              0.090       0.059      0.068      -0.026       0.206
+    GENDER            -0.059       0.101      0.275      -0.256       0.139
+    ETHNICITY         -0.217       0.104      0.020      -0.418      -0.009      *
+    SES               -0.243       0.152      0.055      -0.540       0.058
+
+ WB       WITH
+    S1                -0.403       0.090      0.000      -0.575      -0.223      *
+    S2                -0.007       0.130      0.478      -0.268       0.244
+    S3                -0.252       0.097      0.006      -0.438      -0.058      *
+
+ S1       WITH
+    S2                 0.099       0.201      0.319      -0.342       0.438
+    S3                 0.769       0.083      0.000       0.581       0.909      *
+
+ S2       WITH
+    S3                 0.539       0.169      0.004       0.150       0.820      *
+
+ Means
+    FTF                2.088       0.111      0.000       1.877       2.313      *
+    CMC                1.458       0.081      0.000       1.301       1.616      *
+    MIXED              1.153       0.073      0.000       1.013       1.299      *
+    S1                 1.256       0.169      0.000       0.978       1.641      *
+    S2                 0.179       0.135      0.073      -0.067       0.459
+    S3                 0.948       0.148      0.000       0.700       1.281      *
+
+ Intercepts
+    WB                 6.978       0.410      0.000       6.118       7.733      *
+
+ Variances
+    FTF                1.000       0.000      0.000       1.000       1.000
+    CMC                1.000       0.000      0.000       1.000       1.000
+    MIXED              1.000       0.000      0.000       1.000       1.000
+    S1                 1.000       0.000      0.000       1.000       1.000
+    S2                 1.000       0.000      0.000       1.000       1.000
+    S3                 1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    WB                 0.956       0.021      0.000       0.905       0.985      *
+
+
+R-SQUARE
+
+Within-Level R-Square Averaged Across Clusters
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    WB                 0.110       0.008      0.000       0.095       0.129
+
+Between Level
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    WB                 0.044       0.021      0.000       0.015       0.095
+
+
+TECHNICAL 1 OUTPUT
+
+
+     PARAMETER SPECIFICATION FOR WITHIN
+
+
+           NU
+              WB            FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           LAMBDA
+              WB            FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ WB                 0             0             0             0             0
+ FTF                0             0             0             0             0
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           THETA
+              WB            FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ WB                 0
+ FTF                0             0
+ CMC                0             0             0
+ MIXED              0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           ALPHA
+              WB            FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           BETA
+              WB            FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ WB                 0             0             0             0             1
+ FTF                0             0             0             0             0
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           PSI
+              WB            FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ WB                 2
+ FTF                0             3
+ CMC                0             0             4
+ MIXED              0             0             0             5
+ WEEKEND            0             0             0             0             0
+
+
+     PARAMETER SPECIFICATION FOR BETWEEN
+
+
+           NU
+              WB            FTF           CMC           MIXED         GENDER
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           NU
+              ETHNICIT      SES
+              ________      ________
+                    0             0
+
+
+           LAMBDA
+              S1            S2            S3            WB            FTF
+              ________      ________      ________      ________      ________
+ WB                 0             0             0             0             0
+ FTF                0             0             0             0             0
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ GENDER             0             0             0             0             0
+ ETHNICIT           0             0             0             0             0
+ SES                0             0             0             0             0
+
+
+           LAMBDA
+              CMC           MIXED         GENDER        ETHNICIT      SES
+              ________      ________      ________      ________      ________
+ WB                 0             0             0             0             0
+ FTF                0             0             0             0             0
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ GENDER             0             0             0             0             0
+ ETHNICIT           0             0             0             0             0
+ SES                0             0             0             0             0
+
+
+           THETA
+              WB            FTF           CMC           MIXED         GENDER
+              ________      ________      ________      ________      ________
+ WB                 0
+ FTF                0             0
+ CMC                0             0             0
+ MIXED              0             0             0             0
+ GENDER             0             0             0             0             0
+ ETHNICIT           0             0             0             0             0
+ SES                0             0             0             0             0
+
+
+           THETA
+              ETHNICIT      SES
+              ________      ________
+ ETHNICIT           0
+ SES                0             0
+
+
+           ALPHA
+              S1            S2            S3            WB            FTF
+              ________      ________      ________      ________      ________
+                    6             7             8             9            10
+
+
+           ALPHA
+              CMC           MIXED         GENDER        ETHNICIT      SES
+              ________      ________      ________      ________      ________
+                   11            12             0             0             0
+
+
+           BETA
+              S1            S2            S3            WB            FTF
+              ________      ________      ________      ________      ________
+ S1                 0             0             0             0             0
+ S2                 0             0             0             0             0
+ S3                 0             0             0             0             0
+ WB                 0             0             0             0            13
+ FTF                0             0             0             0             0
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ GENDER             0             0             0             0             0
+ ETHNICIT           0             0             0             0             0
+ SES                0             0             0             0             0
+
+
+           BETA
+              CMC           MIXED         GENDER        ETHNICIT      SES
+              ________      ________      ________      ________      ________
+ S1                 0             0             0             0             0
+ S2                 0             0             0             0             0
+ S3                 0             0             0             0             0
+ WB                14            15            16            17            18
+ FTF                0             0             0             0             0
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ GENDER             0             0             0             0             0
+ ETHNICIT           0             0             0             0             0
+ SES                0             0             0             0             0
+
+
+           PSI
+              S1            S2            S3            WB            FTF
+              ________      ________      ________      ________      ________
+ S1                19
+ S2                20            21
+ S3                22            23            24
+ WB                25            26            27            28
+ FTF                0             0             0             0            29
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ GENDER             0             0             0             0             0
+ ETHNICIT           0             0             0             0             0
+ SES                0             0             0             0             0
+
+
+           PSI
+              CMC           MIXED         GENDER        ETHNICIT      SES
+              ________      ________      ________      ________      ________
+ CMC               30
+ MIXED              0            31
+ GENDER             0             0             0
+ ETHNICIT           0             0             0             0
+ SES                0             0             0             0             0
+
+
+     STARTING VALUES FOR WITHIN
+
+
+           NU
+              WB            FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              WB            FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ WB             1.000         0.000         0.000         0.000         0.000
+ FTF            0.000         1.000         0.000         0.000         0.000
+ CMC            0.000         0.000         1.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         1.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         1.000
+
+
+           THETA
+              WB            FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ WB             0.000
+ FTF            0.000         0.000
+ CMC            0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           ALPHA
+              WB            FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              WB            FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ WB             0.000         0.000         0.000         0.000         0.000
+ FTF            0.000         0.000         0.000         0.000         0.000
+ CMC            0.000         0.000         0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              WB            FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ WB             0.230
+ FTF            0.000         0.107
+ CMC            0.000         0.000         0.100
+ MIXED          0.000         0.000         0.000         0.071
+ WEEKEND        0.000         0.000         0.000         0.000         0.102
+
+
+     STARTING VALUES FOR BETWEEN
+
+
+           NU
+              WB            FTF           CMC           MIXED         GENDER
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           NU
+              ETHNICIT      SES
+              ________      ________
+                0.000         0.000
+
+
+           LAMBDA
+              S1            S2            S3            WB            FTF
+              ________      ________      ________      ________      ________
+ WB             0.000         0.000         0.000         1.000         0.000
+ FTF            0.000         0.000         0.000         0.000         1.000
+ CMC            0.000         0.000         0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         0.000         0.000
+ GENDER         0.000         0.000         0.000         0.000         0.000
+ ETHNICIT       0.000         0.000         0.000         0.000         0.000
+ SES            0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              CMC           MIXED         GENDER        ETHNICIT      SES
+              ________      ________      ________      ________      ________
+ WB             0.000         0.000         0.000         0.000         0.000
+ FTF            0.000         0.000         0.000         0.000         0.000
+ CMC            1.000         0.000         0.000         0.000         0.000
+ MIXED          0.000         1.000         0.000         0.000         0.000
+ GENDER         0.000         0.000         1.000         0.000         0.000
+ ETHNICIT       0.000         0.000         0.000         1.000         0.000
+ SES            0.000         0.000         0.000         0.000         1.000
+
+
+           THETA
+              WB            FTF           CMC           MIXED         GENDER
+              ________      ________      ________      ________      ________
+ WB             0.000
+ FTF            0.000         0.000
+ CMC            0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         0.000
+ GENDER         0.000         0.000         0.000         0.000         0.000
+ ETHNICIT       0.000         0.000         0.000         0.000         0.000
+ SES            0.000         0.000         0.000         0.000         0.000
+
+
+           THETA
+              ETHNICIT      SES
+              ________      ________
+ ETHNICIT       0.000
+ SES            0.000         0.000
+
+
+           ALPHA
+              S1            S2            S3            WB            FTF
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         2.968         0.312
+
+
+           ALPHA
+              CMC           MIXED         GENDER        ETHNICIT      SES
+              ________      ________      ________      ________      ________
+                0.274         0.170         0.000         0.000         0.000
+
+
+           BETA
+              S1            S2            S3            WB            FTF
+              ________      ________      ________      ________      ________
+ S1             0.000         0.000         0.000         0.000         0.000
+ S2             0.000         0.000         0.000         0.000         0.000
+ S3             0.000         0.000         0.000         0.000         0.000
+ WB             0.000         0.000         0.000         0.000         0.000
+ FTF            0.000         0.000         0.000         0.000         0.000
+ CMC            0.000         0.000         0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         0.000         0.000
+ GENDER         0.000         0.000         0.000         0.000         0.000
+ ETHNICIT       0.000         0.000         0.000         0.000         0.000
+ SES            0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              CMC           MIXED         GENDER        ETHNICIT      SES
+              ________      ________      ________      ________      ________
+ S1             0.000         0.000         0.000         0.000         0.000
+ S2             0.000         0.000         0.000         0.000         0.000
+ S3             0.000         0.000         0.000         0.000         0.000
+ WB             0.000         0.000         0.000         0.000         0.000
+ FTF            0.000         0.000         0.000         0.000         0.000
+ CMC            0.000         0.000         0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         0.000         0.000
+ GENDER         0.000         0.000         0.000         0.000         0.000
+ ETHNICIT       0.000         0.000         0.000         0.000         0.000
+ SES            0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              S1            S2            S3            WB            FTF
+              ________      ________      ________      ________      ________
+ S1             1.000
+ S2             0.000         1.000
+ S3             0.000         0.000         1.000
+ WB             0.000         0.000         0.000         0.230
+ FTF            0.000         0.000         0.000         0.000         0.107
+ CMC            0.000         0.000         0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         0.000         0.000
+ GENDER         0.000         0.000         0.000         0.000         0.000
+ ETHNICIT       0.000         0.000         0.000         0.000         0.000
+ SES            0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              CMC           MIXED         GENDER        ETHNICIT      SES
+              ________      ________      ________      ________      ________
+ CMC            0.100
+ MIXED          0.000         0.071
+ GENDER         0.000         0.000         0.112
+ ETHNICIT       0.000         0.000         0.000         0.111
+ SES            0.000         0.000         0.000         0.000         0.059
+
+
+
+     PRIORS FOR ALL PARAMETERS            PRIOR MEAN      PRIOR VARIANCE     PRIOR STD. DEV.
+
+     Parameter 1~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 2~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 3~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 4~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 5~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 6~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 7~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 8~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 9~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 10~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 11~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 12~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 13~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 14~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 15~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 16~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 17~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 18~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 19~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 20~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 21~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 22~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 23~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 24~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 25~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 26~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 27~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 28~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 29~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 30~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 31~IG(-1.000,0.000)         infinity            infinity            infinity
+
+
+TECHNICAL 8 OUTPUT
+
+
+   TECHNICAL 8 OUTPUT FOR BAYES ESTIMATION
+
+     CHAIN    BSEED
+     1        0
+     2        285380
+
+                     POTENTIAL       PARAMETER WITH
+     ITERATION    SCALE REDUCTION      HIGHEST PSR
+     100              1.315               26
+     200              1.082               24
+     300              1.152               21
+     400              1.157               24
+     500              1.087               8
+     600              1.043               23
+     700              1.046               23
+     800              1.061               21
+     900              1.091               21
+     1000             1.128               21
+     1100             1.138               21
+     1200             1.093               21
+     1300             1.036               21
+     1400             1.014               21
+     1500             1.014               23
+     1600             1.016               23
+     1700             1.023               22
+     1800             1.008               21
+     1900             1.013               27
+     2000             1.015               27
+     2100             1.029               21
+     2200             1.040               21
+     2300             1.025               21
+     2400             1.017               21
+     2500             1.014               21
+     2600             1.015               26
+     2700             1.006               26
+     2800             1.007               21
+     2900             1.008               23
+     3000             1.010               27
+     3100             1.011               27
+     3200             1.004               27
+     3300             1.004               6
+     3400             1.002               19
+     3500             1.002               21
+     3600             1.005               21
+     3700             1.008               21
+     3800             1.010               21
+     3900             1.011               21
+     4000             1.011               21
+     4100             1.010               21
+     4200             1.010               21
+     4300             1.012               21
+     4400             1.015               21
+     4500             1.018               21
+     4600             1.018               21
+     4700             1.022               21
+     4800             1.021               21
+     4900             1.020               21
+     5000             1.020               21
+     5100             1.023               21
+     5200             1.026               21
+     5300             1.023               21
+     5400             1.023               21
+     5500             1.023               21
+     5600             1.021               21
+     5700             1.019               21
+     5800             1.017               21
+     5900             1.014               21
+     6000             1.013               21
+     6100             1.014               20
+     6200             1.013               20
+     6300             1.012               20
+     6400             1.011               20
+     6500             1.009               20
+     6600             1.010               24
+     6700             1.008               20
+     6800             1.009               24
+     6900             1.010               19
+     7000             1.013               19
+     7100             1.018               19
+     7200             1.021               19
+     7300             1.024               19
+     7400             1.025               19
+     7500             1.024               19
+     7600             1.020               19
+     7700             1.014               19
+     7800             1.012               19
+     7900             1.018               19
+     8000             1.018               19
+     8100             1.014               19
+     8200             1.011               19
+     8300             1.009               19
+     8400             1.008               7
+     8500             1.008               7
+     8600             1.007               7
+     8700             1.009               7
+     8800             1.010               7
+     8900             1.010               7
+     9000             1.010               7
+     9100             1.010               7
+     9200             1.010               25
+     9300             1.009               25
+     9400             1.008               25
+     9500             1.010               7
+     9600             1.010               7
+     9700             1.011               7
+     9800             1.012               7
+     9900             1.012               7
+     10000            1.014               7
+
+
+     Beginning Time:  01:17:29
+        Ending Time:  01:21:43
+       Elapsed Time:  00:04:14
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2020 Muthen & Muthen

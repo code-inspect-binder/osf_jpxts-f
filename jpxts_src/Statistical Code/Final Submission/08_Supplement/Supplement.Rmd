@@ -1,0 +1,1791 @@
+---
+title: "Well-Being in Social Interactions"
+output:
+  html_document:
+    theme: spacelab
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, error = FALSE, message = FALSE, warning = FALSE)
+options(knitr.kable.NA = "")
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(magrittr)
+library(ggplot2)
+library(mgsub)
+library(numform)
+library(metafor)
+library(knitr)
+library(kableExtra)
+library(jtools)
+library(gridExtra)
+library(MplusAutomation)
+
+# Read in data
+Values_Base <- read.csv("Values_Base.csv")
+Values_Personality <- read.csv("Values_Personality.csv")
+
+Values_Base_Demog <- read.csv("Values_Base_Demog.csv")
+Values_Personality_Demog <- read.csv("Values_Personality_Demog.csv")
+
+Values_Base_Suppl1 <- read.csv("Values_Base_Suppl1.csv")
+Values_Personality_Suppl1 <- read.csv("Values_Personality_Suppl1.csv")
+
+Values_Base_Suppl2 <- read.csv("Values_Base_Suppl2.csv")
+Values_Personality_Suppl2 <- read.csv("Values_Personality_Suppl2.csv")
+
+Values_Base_Suppl3 <- read.csv("Values_Base_Suppl3.csv")
+Values_Personality_Suppl3 <- read.csv("Values_Personality_Suppl3.csv")
+
+```
+
+```{r}
+# Define functions
+
+# Function to format p-values of unstandardized models
+p_value1 <- function(output, header, param, est, lower_2.5ci, upper_2.5ci, pval) {
+  variable <- NULL
+  for(i in 1:length(output)) {
+    # Within- and between-person effects, simple effects of personality traits, and cross-level interactions: estimates and CIs with 3 decimal places, bold if p < .005
+    if (output[i] == "unstandardized" &
+        !(header[i] %in% c("Variances", "Residual.Variances")) &
+        !(grepl(".WITH", header[i])) &
+        !(header[i] == "Intercepts" & param[i] == "WB") &
+        !(header[i] == "Means")) {
+      variable[i] <- ifelse(pval[i] < 0.005,
+           paste0("**", format(round(est[i], 3), nsmall = 3), " [", format(round(lower_2.5ci[i], 3), nsmall = 3), ", ", format(round(upper_2.5ci[i], 3), nsmall = 3), "]**"),
+           paste0(format(round(est[i], 3), nsmall = 3), " [", format(round(lower_2.5ci[i], 3), nsmall = 3), ", ", format(round(upper_2.5ci[i], 3), nsmall = 3), "]"))
+    # Number of participants: 0 decimal places and big mark
+    } else if (output[i] == "N") {
+      variable[i] <- format(round(est[i], 0), nsmall = 0, big.mark = ",")
+    # All other effects (i.e., variances, covariances, intercept of the DV, means, R2): estimates and CIs with 3 decimal places
+    } else {
+      variable[i] <- paste0(format(round(est[i], 3), nsmall = 3), " [", format(round(lower_2.5ci[i], 3), nsmall = 3), ", ", format(round(upper_2.5ci[i], 3), nsmall = 3), "]")
+    }
+  }
+  return(variable)
+}
+
+# Function to create unstandardized models
+create_table <- function(Values_Base, Values_Personality, analysis, DV1, DV2) {
+  
+  # Names of variables in Mplus output files
+  par <- if (analysis == "analysis1") {
+    c("INT")
+  } else if (analysis == "analysis2") {
+    c("FTF", "CMC", "MIXED")
+  } else if (analysis %in% c("analysis3", "analysis3: multiple partners")) {
+    c("PEERS", "FAMILY", "WEAK_TIES")
+  } else if (analysis == "analysis4") {
+    c("CMC", "MIXED", "FAMILY", "WEAK_TIES")
+  } else if (analysis == "analysis5") {
+    c("CMC", "MIXED", "FAMILY", "WEAK_TIES", "CXF", "CXW", "MXF", "MXW")
+  } else if (analysis == "analysis2: TVC, TCE, SN") {
+    c("TVC", "TCE", "SN")
+  } else if (analysis == "analysis4: TVC, TCE, SN") {
+    c("TCE", "SN", "FAMILY", "WEAK_TIES")
+  } else if (analysis == "analysis5: TVC, TCE, SN") {
+    c("TCE", "SN", "FAMILY", "WEAK_TIES", "TXF", "TXW", "SXF", "SXW")
+  } else if (analysis == "analysis3: significant others") {
+    c("FR", "SO", "FAMILY", "WEAK_TIES")
+  } else if (analysis == "analysis4: significant others") {
+    c("CMC", "MIXED", "SO", "FAMILY", "WEAK_TIES")
+  } else if (analysis == "analysis5: significant others") {
+    c("CMC", "MIXED", "SO", "FAMILY", "WEAK_TIES", "CXS", "CXF", "CXW", "MXS", "MXF", "MXW")
+  }
+  
+  # Names of variables in HTML Supplement
+  names_slopes <- if (analysis == "analysis1") {
+    c("Social interaction")
+  } else if (analysis == "analysis2") {
+    c("FtF", "CMC", "Mixed")
+  } else if (analysis %in% c("analysis3", "analysis3: multiple partners")) {
+    c("Close peers", "Family", "Weak ties")
+  } else if (analysis == "analysis4") {
+    c("CMC", "Mixed", "Family", "Weak ties")
+  } else if (analysis == "analysis5") {
+    c("CMC", "Mixed", "Family", "Weak ties", "CMC * Family", "CMC * Weak ties", "Mixed * Family", "Mixed * Weak ties")
+  } else if (analysis == "analysis2: TVC, TCE, SN") {
+    c("TVC", "TCE", "SNS")
+  } else if (analysis == "analysis4: TVC, TCE, SN") {
+    c("TCE", "SNS", "Family", "Weak ties")
+  } else if (analysis == "analysis5: TVC, TCE, SN") {
+    c("TCE", "SNS", "Family", "Weak ties", "TCE * Family", "TCE * Weak ties", "SNS * Family", "SNS * Weak ties")
+  } else if (analysis == "analysis3: significant others") {
+    c("Friends and roommates", "Significant others", "Family", "Weak ties")
+  } else if (analysis == "analysis4: significant others") {
+    c("CMC", "Mixed", "Significant others", "Family", "Weak ties")
+  } else if (analysis == "analysis5: significant others") {
+    c("CMC", "Mixed", "Significant others", "Family", "Weak ties", "CMC * Significant others", "CMC * Family", "CMC * Weak ties", "Mixed * Significant others", "Mixed * Family", "Mixed * Weak ties")
+  }
+  
+  ## Baseline models
+  # Extract unstandardized parameters, R2, and N from baseline models
+  dat1 <- Values_Base[which(Values_Base$analysis == analysis &
+                              ((Values_Base$study %in% c("S1", "S2") & Values_Base$DV == DV1) |
+                                 (Values_Base$study == "S3" & Values_Base$DV == DV2)) &
+                            Values_Base$output %in% c("unstandardized", "r2", "N")), ]
+  # Rename parameter headers to match coefficients from baseline models with coefficients from personality models
+  dat1$paramHeader[dat1$paramHeader == "Means" & dat1$param %in% paste0("S", seq(1:11))] <- "Intercepts"
+  dat1$paramHeader[dat1$paramHeader == "Variances" & dat1$param %in% paste0("S", seq(1:11))] <- "Residual.Variances"
+  dat1$paramHeader[dat1$paramHeader == "Means" & dat1$param == "WB"] <- "Intercepts"
+  dat1$paramHeader[dat1$paramHeader == "Variances" & dat1$param == "WB"] <- "Residual.Variances"
+  # Apply function to format p-values
+  dat1$est <-  p_value1(dat1$output, dat1$paramHeader, dat1$param, dat1$est, dat1$lower_2.5ci, dat1$upper_2.5ci, dat1$pval)
+  # Choose variables
+  dat1 <- dat1[, c("analysis", "study", "BetweenWithin", "paramHeader", "param", "est")]
+  
+  ## Personality models
+  # Extract unstandardized parameters, R2, and N from personality models
+  dat2 <- Values_Personality[which(Values_Personality$analysis == analysis &
+                                     ((Values_Personality$study %in% c("S1", "S2") & Values_Personality$DV == DV1) |
+                                        (Values_Personality$study == "S3" & Values_Personality$DV == DV2)) & 
+                                    Values_Personality$output %in% c("unstandardized", "r2", "N")), ]
+  # Apply function to format p-values
+  dat2$est <-  p_value1(dat2$output, dat2$paramHeader, dat2$param, dat2$est, dat2$lower_2.5ci, dat2$upper_2.5ci, dat2$pval)
+  # Choose variables
+  dat2 <- dat2[, c("analysis", "study", "BetweenWithin", "paramHeader", "param", "est", "pers")]
+  # Change to wide format (i.e., one column per personality trait)
+  dat2 <- tidyr::pivot_wider(dat2, names_from = "pers", values_from = "est")
+  
+  ## Join baseline models and personality models
+  final <- dplyr::full_join(dat2, dat1, by = c("analysis", "study", "BetweenWithin", "paramHeader", "param"))
+  final$BetweenWithin[final$BetweenWithin == "Within-Level R-Square Averaged Across Clusters"] <- "Within"
+  # Create parameter variable by combining parameter headers and parameters from Mplus output files
+  final$Parameter <- ifelse(is.na(final$paramHeader), paste(final$param), paste(final$paramHeader, final$param))
+  
+  ## Rename parameters
+  
+  # Within-person effects
+  final$Parameter[final$Parameter == "WB.ON WEEKEND"] <- "Weekend WP"
+  
+  final$Parameter[final$Parameter == paste("Variances", par[1]) & final$BetweenWithin == "Within"] <- paste(names_slopes[1], "WP variance")
+  final$Parameter[final$Parameter == paste("Variances", par[2]) & final$BetweenWithin == "Within"] <- paste(names_slopes[2], "WP variance")
+  final$Parameter[final$Parameter == paste("Variances", par[3]) & final$BetweenWithin == "Within"] <- paste(names_slopes[3], "WP variance")
+  final$Parameter[final$Parameter == paste("Variances", par[4]) & final$BetweenWithin == "Within"] <- paste(names_slopes[4], "WP variance")
+  
+  final$Parameter[final$Parameter == "Residual.Variances WB" & final$BetweenWithin == "Within"] <- "Well-being WP residual variance"
+  
+  # Cross-level interactions
+  final$Parameter[final$Parameter == "S1.ON P"] <- paste("Personality trait *", names_slopes[1], "WP")
+  final$Parameter[final$Parameter == "S2.ON P"] <- paste("Personality trait *", names_slopes[2], "WP")
+  final$Parameter[final$Parameter == "S3.ON P"] <- paste("Personality trait *", names_slopes[3], "WP")
+  final$Parameter[final$Parameter == "S4.ON P"] <- paste("Personality trait *", names_slopes[4], "WP")
+  final$Parameter[final$Parameter == "S5.ON P"] <- paste("Personality trait *", names_slopes[5], "WP")
+  final$Parameter[final$Parameter == "S6.ON P"] <- paste("Personality trait *", names_slopes[6], "WP")
+  final$Parameter[final$Parameter == "S7.ON P"] <- paste("Personality trait *", names_slopes[7], "WP")
+  final$Parameter[final$Parameter == "S8.ON P"] <- paste("Personality trait *", names_slopes[8], "WP")
+  final$Parameter[final$Parameter == "S9.ON P"] <- paste("Personality trait *", names_slopes[9], "WP")
+  final$Parameter[final$Parameter == "S10.ON P"] <- paste("Personality trait *", names_slopes[10], "WP")
+  final$Parameter[final$Parameter == "S11.ON P"] <- paste("Personality trait *", names_slopes[11], "WP")
+  
+  # Between-person effects
+  final$Parameter[final$Parameter == paste("WB.ON", par[1])] <- paste(names_slopes[1], "BP")
+  final$Parameter[final$Parameter == paste("WB.ON", par[2])] <- paste(names_slopes[2], "BP")
+  final$Parameter[final$Parameter == paste("WB.ON", par[3])] <- paste(names_slopes[3], "BP")
+  final$Parameter[final$Parameter == paste("WB.ON", par[4])] <- paste(names_slopes[4], "BP")
+  
+  final$Parameter[final$Parameter == "WB.ON P"] <- "Personality trait"
+  final$Parameter[final$Parameter == "WB.ON GENDER"] <- "Gender"
+  final$Parameter[final$Parameter == "WB.ON ETHNICITY"] <- "Ethnicity"
+  final$Parameter[final$Parameter == "WB.ON SES"] <- "SES"
+  
+  # Intercept - slope covariances
+  final$Parameter[grepl(".WITH", final$Parameter)] <-
+    paste(mgsub::mgsub(final$Parameter[grepl(".WITH", final$Parameter)],
+                       c("WB", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", ".WITH"),
+                       c("Well-being",
+                       paste(names_slopes[1], "WP"),
+                       paste(names_slopes[2], "WP"),
+                       paste(names_slopes[3], "WP"),
+                       paste(names_slopes[4], "WP"),
+                       paste(names_slopes[5], "WP"),
+                       paste(names_slopes[6], "WP"),
+                       paste(names_slopes[7], "WP"),
+                       paste(names_slopes[8], "WP"),
+                       paste(names_slopes[9], "WP"),
+                       paste(names_slopes[10], "WP"),
+                       paste(names_slopes[11], "WP"),
+                       " -")),
+          "covariance")
+  
+  # BP means and intercepts
+  final$Parameter[final$Parameter == paste("Means", par[1])] <- paste(names_slopes[1], "BP mean")
+  final$Parameter[final$Parameter == paste("Means", par[2])] <- paste(names_slopes[2], "BP mean")
+  final$Parameter[final$Parameter == paste("Means", par[3])] <- paste(names_slopes[3], "BP mean")
+  final$Parameter[final$Parameter == paste("Means", par[4])] <- paste(names_slopes[4], "BP mean")
+  
+  final$Parameter[final$Parameter == "Intercepts WB"] <- "Intercept well-being"
+  
+  final$Parameter[final$Parameter == "Intercepts S1"] <- paste(names_slopes[1], "WP")
+  final$Parameter[final$Parameter == "Intercepts S2"] <- paste(names_slopes[2], "WP")
+  final$Parameter[final$Parameter == "Intercepts S3"] <- paste(names_slopes[3], "WP")
+  final$Parameter[final$Parameter == "Intercepts S4"] <- paste(names_slopes[4], "WP")
+  final$Parameter[final$Parameter == "Intercepts S5"] <- paste(names_slopes[5], "WP")
+  final$Parameter[final$Parameter == "Intercepts S6"] <- paste(names_slopes[6], "WP")
+  final$Parameter[final$Parameter == "Intercepts S7"] <- paste(names_slopes[7], "WP")
+  final$Parameter[final$Parameter == "Intercepts S8"] <- paste(names_slopes[8], "WP")
+  final$Parameter[final$Parameter == "Intercepts S9"] <- paste(names_slopes[9], "WP")
+  final$Parameter[final$Parameter == "Intercepts S10"] <- paste(names_slopes[10], "WP")
+  final$Parameter[final$Parameter == "Intercepts S11"] <- paste(names_slopes[11], "WP")
+  
+  # BP variances and residual variances
+  final$Parameter[final$Parameter == paste("Variances", par[1]) & final$BetweenWithin == "Between"] <- paste(names_slopes[1], "BP variance")
+  final$Parameter[final$Parameter == paste("Variances", par[2]) & final$BetweenWithin == "Between"] <- paste(names_slopes[2], "BP variance")
+  final$Parameter[final$Parameter == paste("Variances", par[3]) & final$BetweenWithin == "Between"] <- paste(names_slopes[3], "BP variance")
+  final$Parameter[final$Parameter == paste("Variances", par[4]) & final$BetweenWithin == "Between"] <- paste(names_slopes[4], "BP variance")
+  
+  final$Parameter[final$Parameter == "Residual.Variances WB" & final$BetweenWithin == "Between"] <- "Intercept well-being residual variance"
+  
+  final$Parameter[final$Parameter == "Residual.Variances S1"] <- paste("Slope", names_slopes[1], "WP residual variance")
+  final$Parameter[final$Parameter == "Residual.Variances S2"] <- paste("Slope", names_slopes[2], "WP residual variance")
+  final$Parameter[final$Parameter == "Residual.Variances S3"] <- paste("Slope", names_slopes[3], "WP residual variance")
+  final$Parameter[final$Parameter == "Residual.Variances S4"] <- paste("Slope", names_slopes[4], "WP residual variance")
+  final$Parameter[final$Parameter == "Residual.Variances S5"] <- paste("Slope", names_slopes[5], "WP residual variance")
+  final$Parameter[final$Parameter == "Residual.Variances S6"] <- paste("Slope", names_slopes[6], "WP residual variance")
+  final$Parameter[final$Parameter == "Residual.Variances S7"] <- paste("Slope", names_slopes[7], "WP residual variance")
+  final$Parameter[final$Parameter == "Residual.Variances S8"] <- paste("Slope", names_slopes[8], "WP residual variance")
+  final$Parameter[final$Parameter == "Residual.Variances S9"] <- paste("Slope", names_slopes[9], "WP residual variance")
+  final$Parameter[final$Parameter == "Residual.Variances S10"] <- paste("Slope", names_slopes[10], "WP residual variance")
+  final$Parameter[final$Parameter == "Residual.Variances S11"] <- paste("Slope", names_slopes[11], "WP residual variance")
+  
+  # R2
+  final$Parameter[final$Parameter == "WB" & final$BetweenWithin == "Within"] <- "R2 within"
+  final$Parameter[final$Parameter == "WB" & final$BetweenWithin == "Between"] <- "R2 between"
+  final$Parameter[final$Parameter == "S1"] <- paste("R2", names_slopes[1], "WP")
+  final$Parameter[final$Parameter == "S2"] <- paste("R2", names_slopes[2], "WP")
+  final$Parameter[final$Parameter == "S3"] <- paste("R2", names_slopes[3], "WP")
+  final$Parameter[final$Parameter == "S4"] <- paste("R2", names_slopes[4], "WP")
+  final$Parameter[final$Parameter == "S5"] <- paste("R2", names_slopes[5], "WP")
+  final$Parameter[final$Parameter == "S6"] <- paste("R2", names_slopes[6], "WP")
+  final$Parameter[final$Parameter == "S7"] <- paste("R2", names_slopes[7], "WP")
+  final$Parameter[final$Parameter == "S8"] <- paste("R2", names_slopes[8], "WP")
+  final$Parameter[final$Parameter == "S9"] <- paste("R2", names_slopes[9], "WP")
+  final$Parameter[final$Parameter == "S10"] <- paste("R2", names_slopes[10], "WP")
+  final$Parameter[final$Parameter == "S11"] <- paste("R2", names_slopes[11], "WP")
+  
+  # N
+  final$Parameter[final$Parameter == "NClusters"] <- "Number of participants"
+  final$Parameter[final$Parameter == "Observations"] <- "Number of observations"
+  
+  ## Order parameters for unstandardized models
+  within_start <- paste(names_slopes, "WP") # within-person effects
+  between1_start <- paste(names_slopes, "BP") # between-person effects
+  between2_start <- c("Personality trait") # simple effects of personality traits
+  between3_start <- final$Parameter[grepl("^Personality trait * .+", final$Parameter)] # cross-level interactions
+  final <- final[c(which(final$Parameter %in% within_start), # within-person effects
+                 which(!(final$Parameter %in% within_start) & final$BetweenWithin == "Within"), # other parameters on the within-person level
+                 which(final$Parameter %in% between1_start), # between-person effects
+                 which(final$Parameter %in% between2_start), # simple effects of personality traits
+                 which(final$Parameter %in% between3_start), # cross-level interactions
+                 which(!(final$Parameter %in% c(within_start, between1_start, between2_start, between3_start)) & (final$BetweenWithin == "Between" | is.na(final$BetweenWithin)))), ] # other parameters on the between-person level
+  
+  # Order by study
+  final <- final[order(final$study), ]
+  # Choose variables
+  final <- final[, c("study", "BetweenWithin", "Parameter", "est", "bfi_e", "bfi_a", "bfi_c", "bfi_n", "bfi_o")]
+  # Rename variables
+  names(final)[4:9] <- c("Baseline", "Extraversion", "Agreeableness", "Conscientiousness", "Neuroticism", "Openness")
+  # Return table
+  return(final)
+}
+
+## Meta-analysis
+# Function to format p-values of meta-analysis
+p_value2 <- function(est, lower_2.5ci, upper_2.5ci, pval) {
+  # Estimates and CIs with 3 decimal places, no leading zero, bold if p < .01
+  ifelse(pval < 0.01, paste0("**", numform::f_num(est, digits = 3), " [", numform::f_num(lower_2.5ci, digits = 3), ", ", numform::f_num(upper_2.5ci, digits = 3), "]**"),
+         paste0(numform::f_num(est, digits = 3), " [", numform::f_num(lower_2.5ci, digits = 3), ", ", numform::f_num(upper_2.5ci, digits = 3), "]"))
+}
+
+# Function to meta-analyze the standardized parameters
+meta_analysis <- function(Values_Base, Values_Personality, analysis, DV1, DV2) {
+  
+  # Names of variables in Mplus output files
+  par <- if (analysis == "analysis1") {
+    c("INT")
+  } else if (analysis == "analysis2") {
+    c("FTF", "CMC", "MIXED")
+  } else if (analysis %in% c("analysis3", "analysis3: multiple partners")) {
+    c("PEERS", "FAMILY", "WEAK_TIES")
+  } else if (analysis == "analysis4") {
+    c("CMC", "MIXED", "FAMILY", "WEAK_TIES")
+  } else if (analysis == "analysis5") {
+    c("CMC", "MIXED", "FAMILY", "WEAK_TIES", "CXF", "CXW", "MXF", "MXW")
+  } else if (analysis == "analysis2: TVC, TCE, SN") {
+    c("TVC", "TCE", "SN")
+  } else if (analysis == "analysis4: TVC, TCE, SN") {
+    c("TCE", "SN", "FAMILY", "WEAK_TIES")
+  } else if (analysis == "analysis5: TVC, TCE, SN") {
+    c("TCE", "SN", "FAMILY", "WEAK_TIES", "TXF", "TXW", "SXF", "SXW")
+  } else if (analysis == "analysis3: significant others") {
+    c("FR", "SO", "FAMILY", "WEAK_TIES")
+  } else if (analysis == "analysis4: significant others") {
+    c("CMC", "MIXED", "SO", "FAMILY", "WEAK_TIES")
+  } else if (analysis == "analysis5: significant others") {
+    c("CMC", "MIXED", "SO", "FAMILY", "WEAK_TIES", "CXS", "CXF", "CXW", "MXS", "MXF", "MXW")
+  }
+  
+  # Names of variables in HTML Supplement
+  names_slopes <- if (analysis == "analysis1") {
+    c("Social interaction")
+  } else if (analysis == "analysis2") {
+    c("FtF", "CMC", "Mixed")
+  } else if (analysis %in% c("analysis3", "analysis3: multiple partners")) {
+    c("Close peers", "Family", "Weak ties")
+  } else if (analysis == "analysis4") {
+    c("CMC", "Mixed", "Family", "Weak ties")
+  } else if (analysis == "analysis5") {
+    c("CMC", "Mixed", "Family", "Weak ties", "CMC * Family", "CMC * Weak ties", "Mixed * Family", "Mixed * Weak ties")
+  } else if (analysis == "analysis2: TVC, TCE, SN") {
+    c("TVC", "TCE", "SNS")
+  } else if (analysis == "analysis4: TVC, TCE, SN") {
+    c("TCE", "SNS", "Family", "Weak ties")
+  } else if (analysis == "analysis5: TVC, TCE, SN") {
+    c("TCE", "SNS", "Family", "Weak ties", "TCE * Family", "TCE * Weak ties", "SNS * Family", "SNS * Weak ties")
+  } else if (analysis == "analysis3: significant others") {
+    c("Friends and roommates", "Significant others", "Family", "Weak ties")
+  } else if (analysis == "analysis4: significant others") {
+    c("CMC", "Mixed", "Significant others", "Family", "Weak ties")
+  } else if (analysis == "analysis5: significant others") {
+    c("CMC", "Mixed", "Significant others", "Family", "Weak ties", "CMC * Significant others", "CMC * Family", "CMC * Weak ties", "Mixed * Significant others", "Mixed * Family", "Mixed * Weak ties")
+  }
+  
+  n <- length(par) # number of effects
+  header <- paste0("S", seq(1:n), "|WB.ON") # header of within-person effects
+  header2 <- paste0("S", seq(1:n), ".ON") # header of cross-level interactions
+  perso <- c("bfi_e", "bfi_a", "bfi_c", "bfi_n", "bfi_o") # names of personality traits
+  
+  # Extract standardized parameters from baseline models
+  dat1 <- Values_Base[which(Values_Base$analysis == analysis &
+                              ((Values_Base$study %in% c("S1", "S2") & Values_Base$DV == DV1) |
+                                 (Values_Base$study == "S3" & Values_Base$DV == DV2)) &
+                            Values_Base$output == "standardized"), ]
+  
+  # Extract within-person variances of predictors from unstandardized models (only included in analyses 1, 2, and 3)
+  if (analysis %in% c("analysis1", "analysis2", "analysis3", "analysis2: TVC, TCE, SN", "analysis3: multiple partners", "analysis3: significant others")) {
+    variances <- Values_Base$est[which(Values_Base$analysis == analysis &
+                                         ((Values_Base$study %in% c("S1", "S2") & Values_Base$DV == DV1) |
+                                            (Values_Base$study == "S3" & Values_Base$DV == DV2)) & 
+                                         Values_Base$output == "unstandardized" & 
+                                         Values_Base$paramHeader == "Variances" & Values_Base$param %in% par & Values_Base$BetweenWithin == "Within")]
+    
+    rows <- which(dat1$paramHeader %in% header & dat1$param %in% par) # within-person effects
+    # Divide estimates, posterior sd, lower CI, and upper CI of the within-person effects by the within-person SDs of the predictors
+    # to obtain coefficients that are standardized with respect to the DV only
+    dat1$est[rows] <- dat1$est[rows] / sqrt(variances)
+    dat1$posterior_sd[rows] <- dat1$posterior_sd[rows] / sqrt(variances)
+    dat1$lower_2.5ci[rows] <- dat1$lower_2.5ci[rows] / sqrt(variances)
+    dat1$upper_2.5ci[rows] <- dat1$upper_2.5ci[rows] / sqrt(variances)
+  }
+  
+  # Extract coefficients which are standardized with respect to the DV only (only included in analyses 4 and 5)
+  if (analysis %in% c("analysis4", "analysis5", "analysis4: TVC, TCE, SN", "analysis5: TVC, TCE, SN", "analysis4: significant others", "analysis5: significant others")) {
+    stdy <- Values_Base[which(Values_Base$analysis == analysis &
+                                ((Values_Base$study %in% c("S1", "S2") & Values_Base$DV == DV1) |
+                                   (Values_Base$study == "S3" & Values_Base$DV == DV2)) &
+                            Values_Base$output == "y.standardized"), ]
+    
+    rows <- which(dat1$paramHeader %in% header & dat1$param %in% par) # within-person effects
+    # Replace fully standardized within-person effects by the coefficients that are standardized with respect to the DV only
+    dat1$est[rows] <- stdy$est[rows]
+    dat1$posterior_sd[rows] <- stdy$posterior_sd[rows]
+    dat1$pval[rows] <- stdy$pval[rows]
+    dat1$lower_2.5ci[rows] <- stdy$lower_2.5ci[rows]
+    dat1$upper_2.5ci[rows] <- stdy$upper_2.5ci[rows]
+  }
+  
+  # Extract standardized parameters from personality models
+  dat2 <- Values_Personality[which(Values_Personality$analysis == analysis &
+                                     ((Values_Personality$study %in% c("S1", "S2") & Values_Personality$DV == DV1) |
+                                        (Values_Personality$study == "S3" & Values_Personality$DV == DV2)) &
+                                     Values_Personality$output == "standardized"), ]
+  
+  # Extract within-person variances of predictors from unstandardized models (only included in analyses 1, 2, and 3)
+  if (analysis %in% c("analysis1", "analysis2", "analysis3", "analysis2: TVC, TCE, SN", "analysis3: multiple partners", "analysis3: significant others")) {
+    variances <- Values_Personality$est[which(Values_Personality$analysis == analysis &
+                                                ((Values_Personality$study %in% c("S1", "S2") & Values_Personality$DV == DV1) |
+                                                   (Values_Personality$study == "S3" & Values_Personality$DV == DV2)) & 
+                                                Values_Personality$output == "unstandardized" & 
+                                                Values_Personality$paramHeader == "Variances" & Values_Personality$param %in% par & Values_Personality$BetweenWithin == "Within")]
+    
+    rows <- which(dat2$paramHeader %in% header & dat2$param %in% par) # within-person effects
+    # Divide estimates, posterior sd, lower CI, and upper CI of the within-person effects by the within-person SDs of the predictors
+    # to obtain coefficients that are standardized with respect to the DV only
+    dat2$est[rows] <- dat2$est[rows] / sqrt(variances)
+    dat2$posterior_sd[rows] <- dat2$posterior_sd[rows] / sqrt(variances)
+    dat2$lower_2.5ci[rows] <- dat2$lower_2.5ci[rows] / sqrt(variances)
+    dat2$upper_2.5ci[rows] <- dat2$upper_2.5ci[rows] / sqrt(variances)
+  }
+  
+  # Extract coefficients which are standardized with respect to the DV only (only included in analyses 4 and 5)
+  if (analysis %in% c("analysis4", "analysis5", "analysis4: TVC, TCE, SN", "analysis5: TVC, TCE, SN", "analysis4: significant others", "analysis5: significant others")) {
+    stdy <- Values_Personality[which(Values_Personality$analysis == analysis &
+                                       ((Values_Personality$study %in% c("S1", "S2") & Values_Personality$DV == DV1) |
+                                          (Values_Personality$study == "S3" & Values_Personality$DV == DV2)) &
+                                       Values_Personality$output == "y.standardized"), ]
+    
+    rows <- which(dat2$paramHeader %in% header & dat2$param %in% par) # within-person effects
+    # Replace fully standardized within-person effects by the coefficients that are standardized with respect to the DV only
+    dat2$est[rows] <- stdy$est[rows]
+    dat2$posterior_sd[rows] <- stdy$posterior_sd[rows]
+    dat2$pval[rows] <- stdy$pval[rows]
+    dat2$lower_2.5ci[rows] <- stdy$lower_2.5ci[rows]
+    dat2$upper_2.5ci[rows] <- stdy$upper_2.5ci[rows]
+  }
+  
+  # Meta-analysis
+  simple_effect_category1_wp <- NA
+  simple_effect_category2_wp <- NA
+  simple_effect_category3_wp <- NA
+  simple_effect_category4_wp <- NA
+  simple_effect_category5_wp <- NA
+  simple_effect_category6_wp <- NA
+  simple_effect_category7_wp <- NA
+  simple_effect_category8_wp <- NA
+  simple_effect_category9_wp <- NA
+  simple_effect_category10_wp <- NA
+  simple_effect_category11_wp <- NA
+  
+  simple_effect_category1_bp <- NA
+  simple_effect_category2_bp <- NA
+  simple_effect_category3_bp <- NA
+  simple_effect_category4_bp <- NA
+  
+  simple_effect_pers <- NA
+  
+  interaction_effect_category1_pers <- NA
+  interaction_effect_category2_pers <- NA
+  interaction_effect_category3_pers <- NA
+  interaction_effect_category4_pers <- NA
+  interaction_effect_category5_pers <- NA
+  interaction_effect_category6_pers <- NA
+  interaction_effect_category7_pers <- NA
+  interaction_effect_category8_pers <- NA
+  interaction_effect_category9_pers <- NA
+  interaction_effect_category10_pers <- NA
+  interaction_effect_category11_pers <- NA
+  
+  for(i in 1:6) {
+    if(i == 1) {
+      for(j in 1:n) {
+        
+        # Meta-analyze within-person effects from baseline models
+        wp <- metafor::rma(yi = c(dat1$est[dat1$study == "S1" & dat1$paramHeader == header[j] & dat1$param == par[j]],
+                                  dat1$est[dat1$study == "S2" & dat1$paramHeader == header[j] & dat1$param == par[j]],
+                                  dat1$est[dat1$study == "S3" & dat1$paramHeader == header[j] & dat1$param == par[j]]),
+                           sei = c(dat1$posterior_sd[dat1$study == "S1" & dat1$paramHeader == header[j] & dat1$param == par[j]],
+                                   dat1$posterior_sd[dat1$study == "S2" & dat1$paramHeader == header[j] & dat1$param == par[j]],
+                                   dat1$posterior_sd[dat1$study == "S3" & dat1$paramHeader == header[j] & dat1$param == par[j]]),
+                           method = "FE")
+        if (j == 1) {simple_effect_category1_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 2) {simple_effect_category2_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 3) {simple_effect_category3_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 4) {simple_effect_category4_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 5) {simple_effect_category5_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 6) {simple_effect_category6_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 7) {simple_effect_category7_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 8) {simple_effect_category8_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 9) {simple_effect_category9_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 10) {simple_effect_category10_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 11) {simple_effect_category11_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        
+        # Meta-analyze between-person effects from baseline models (only included in analyses 1, 2, and 3)
+        if (analysis %in% c("analysis1", "analysis2", "analysis3", "analysis2: TVC, TCE, SN", "analysis3: multiple partners", "analysis3: significant others")) {
+          bp <- metafor::rma(yi = c(dat1$est[dat1$study == "S1" & dat1$paramHeader == "WB.ON" & dat1$param == par[j]],
+                                    dat1$est[dat1$study == "S2" & dat1$paramHeader == "WB.ON" & dat1$param == par[j]],
+                                    dat1$est[dat1$study == "S3" & dat1$paramHeader == "WB.ON" & dat1$param == par[j]]),
+                             sei = c(dat1$posterior_sd[dat1$study == "S1" & dat1$paramHeader == "WB.ON" & dat1$param == par[j]],
+                                     dat1$posterior_sd[dat1$study == "S2" & dat1$paramHeader == "WB.ON" & dat1$param == par[j]],
+                                     dat1$posterior_sd[dat1$study == "S3" & dat1$paramHeader == "WB.ON" & dat1$param == par[j]]),
+                             method = "FE")
+          if (j == 1) {simple_effect_category1_bp[i] <- p_value2(bp$b, bp$ci.lb, bp$ci.ub, bp$pval)}
+          if (j == 2) {simple_effect_category2_bp[i] <- p_value2(bp$b, bp$ci.lb, bp$ci.ub, bp$pval)}
+          if (j == 3) {simple_effect_category3_bp[i] <- p_value2(bp$b, bp$ci.lb, bp$ci.ub, bp$pval)}
+          if (j == 4) {simple_effect_category4_bp[i] <- p_value2(bp$b, bp$ci.lb, bp$ci.ub, bp$pval)}
+        }
+      }
+    }
+    if(i %in% c(2:6)) {
+      for(j in 1:n) {
+        
+        # Meta-analyze within-person effects from personality models
+        wp <- metafor::rma(yi = c(dat2$est[dat2$study == "S1" & dat2$pers == perso[i-1] & dat2$paramHeader == header[j] & dat2$param == par[j]],
+                                  dat2$est[dat2$study == "S2" & dat2$pers == perso[i-1] & dat2$paramHeader == header[j] & dat2$param == par[j]],
+                                  dat2$est[dat2$study == "S3" & dat2$pers == perso[i-1] & dat2$paramHeader == header[j] & dat2$param == par[j]]),
+                           sei = c(dat2$posterior_sd[dat2$study == "S1" & dat2$pers == perso[i-1] & dat2$paramHeader == header[j] & dat2$param == par[j]],
+                                   dat2$posterior_sd[dat2$study == "S2" & dat2$pers == perso[i-1] & dat2$paramHeader == header[j] & dat2$param == par[j]],
+                                   dat2$posterior_sd[dat2$study == "S3" & dat2$pers == perso[i-1] & dat2$paramHeader == header[j] & dat2$param == par[j]]),
+                           method = "FE")
+        if (j == 1) {simple_effect_category1_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 2) {simple_effect_category2_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 3) {simple_effect_category3_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 4) {simple_effect_category4_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 5) {simple_effect_category5_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 6) {simple_effect_category6_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 7) {simple_effect_category7_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 8) {simple_effect_category8_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 9) {simple_effect_category9_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 10) {simple_effect_category10_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        if (j == 11) {simple_effect_category11_wp[i] <- p_value2(wp$b, wp$ci.lb, wp$ci.ub, wp$pval)}
+        
+        # Meta-analyze between-person effects from personality models (only included in analyses 1, 2, and 3)
+        if (analysis %in% c("analysis1", "analysis2", "analysis3", "analysis2: TVC, TCE, SN", "analysis3: multiple partners", "analysis3: significant others")) {
+          bp <- metafor::rma(yi = c(dat2$est[dat2$study == "S1" & dat2$pers == perso[i-1] & dat2$paramHeader == "WB.ON" & dat2$param == par[j]],
+                                    dat2$est[dat2$study == "S2" & dat2$pers == perso[i-1] & dat2$paramHeader == "WB.ON" & dat2$param == par[j]],
+                                    dat2$est[dat2$study == "S3" & dat2$pers == perso[i-1] & dat2$paramHeader == "WB.ON" & dat2$param == par[j]]),
+                             sei = c(dat2$posterior_sd[dat2$study == "S1" & dat2$pers == perso[i-1] & dat2$paramHeader == "WB.ON" & dat2$param == par[j]],
+                                     dat2$posterior_sd[dat2$study == "S2" & dat2$pers == perso[i-1] & dat2$paramHeader == "WB.ON" & dat2$param == par[j]],
+                                     dat2$posterior_sd[dat2$study == "S3" & dat2$pers == perso[i-1] & dat2$paramHeader == "WB.ON" & dat2$param == par[j]]),
+                             method = "FE")
+          if (j == 1) {simple_effect_category1_bp[i] <- p_value2(bp$b, bp$ci.lb, bp$ci.ub, bp$pval)}
+          if (j == 2) {simple_effect_category2_bp[i] <- p_value2(bp$b, bp$ci.lb, bp$ci.ub, bp$pval)}
+          if (j == 3) {simple_effect_category3_bp[i] <- p_value2(bp$b, bp$ci.lb, bp$ci.ub, bp$pval)}
+          if (j == 4) {simple_effect_category4_bp[i] <- p_value2(bp$b, bp$ci.lb, bp$ci.ub, bp$pval)}
+        }
+        
+        # Meta-analyze cross-level interactions from personality models
+        interaction <- metafor::rma(yi = c(dat2$est[dat2$study == "S1" & dat2$pers == perso[i-1] & dat2$paramHeader == header2[j] & dat2$param == "P"],
+                                           dat2$est[dat2$study == "S2" & dat2$pers == perso[i-1] & dat2$paramHeader == header2[j] & dat2$param == "P"],
+                                           dat2$est[dat2$study == "S3" & dat2$pers == perso[i-1] & dat2$paramHeader == header2[j] & dat2$param == "P"]),
+                                    sei = c(dat2$posterior_sd[dat2$study == "S1" & dat2$pers == perso[i-1] & dat2$paramHeader == header2[j] & dat2$param == "P"],
+                                            dat2$posterior_sd[dat2$study == "S2" & dat2$pers == perso[i-1] & dat2$paramHeader == header2[j] & dat2$param == "P"],
+                                            dat2$posterior_sd[dat2$study == "S3" & dat2$pers == perso[i-1] & dat2$paramHeader == header2[j] & dat2$param == "P"]),
+                                    method = "FE")
+        if (j == 1) {interaction_effect_category1_pers[i] <- p_value2(interaction$b, interaction$ci.lb, interaction$ci.ub, interaction$pval)}
+        if (j == 2) {interaction_effect_category2_pers[i] <- p_value2(interaction$b, interaction$ci.lb, interaction$ci.ub, interaction$pval)}
+        if (j == 3) {interaction_effect_category3_pers[i] <- p_value2(interaction$b, interaction$ci.lb, interaction$ci.ub, interaction$pval)}
+        if (j == 4) {interaction_effect_category4_pers[i] <- p_value2(interaction$b, interaction$ci.lb, interaction$ci.ub, interaction$pval)}
+        if (j == 5) {interaction_effect_category5_pers[i] <- p_value2(interaction$b, interaction$ci.lb, interaction$ci.ub, interaction$pval)}
+        if (j == 6) {interaction_effect_category6_pers[i] <- p_value2(interaction$b, interaction$ci.lb, interaction$ci.ub, interaction$pval)}
+        if (j == 7) {interaction_effect_category7_pers[i] <- p_value2(interaction$b, interaction$ci.lb, interaction$ci.ub, interaction$pval)}
+        if (j == 8) {interaction_effect_category8_pers[i] <- p_value2(interaction$b, interaction$ci.lb, interaction$ci.ub, interaction$pval)}
+        if (j == 9) {interaction_effect_category9_pers[i] <- p_value2(interaction$b, interaction$ci.lb, interaction$ci.ub, interaction$pval)}
+        if (j == 10) {interaction_effect_category10_pers[i] <- p_value2(interaction$b, interaction$ci.lb, interaction$ci.ub, interaction$pval)}
+        if (j == 11) {interaction_effect_category11_pers[i] <- p_value2(interaction$b, interaction$ci.lb, interaction$ci.ub, interaction$pval)}
+      }
+      
+      # Meta-analyze simple effects of personality traits from personality models
+      personality <- metafor::rma(yi = c(dat2$est[dat2$study == "S1" & dat2$pers == perso[i-1] & dat2$paramHeader == "WB.ON" & dat2$param == "P"],
+                                         dat2$est[dat2$study == "S2" & dat2$pers == perso[i-1] & dat2$paramHeader == "WB.ON" & dat2$param == "P"],
+                                         dat2$est[dat2$study == "S3" & dat2$pers == perso[i-1] & dat2$paramHeader == "WB.ON" & dat2$param == "P"]),
+                                  sei = c(dat2$posterior_sd[dat2$study == "S1" & dat2$pers == perso[i-1] & dat2$paramHeader == "WB.ON" & dat2$param == "P"],
+                                          dat2$posterior_sd[dat2$study == "S2" & dat2$pers == perso[i-1] & dat2$paramHeader == "WB.ON" & dat2$param == "P"],
+                                          dat2$posterior_sd[dat2$study == "S3" & dat2$pers == perso[i-1] & dat2$paramHeader == "WB.ON" & dat2$param == "P"]),
+                                  method = "FE")
+      simple_effect_pers[i] <- p_value2(personality$b, personality$ci.lb, personality$ci.ub, personality$pval)
+    }
+  }
+  
+  ## Combine all effects into one data frame
+  final <- data.frame(rbind(simple_effect_category1_wp, simple_effect_category2_wp, simple_effect_category3_wp, simple_effect_category4_wp,
+                            simple_effect_category5_wp, simple_effect_category6_wp, simple_effect_category7_wp, simple_effect_category8_wp,
+                            simple_effect_category9_wp, simple_effect_category10_wp, simple_effect_category11_wp,
+                            simple_effect_category1_bp, simple_effect_category2_bp, simple_effect_category3_bp, simple_effect_category4_bp,
+                            simple_effect_pers,
+                            interaction_effect_category1_pers, interaction_effect_category2_pers, interaction_effect_category3_pers, interaction_effect_category4_pers,
+                            interaction_effect_category5_pers, interaction_effect_category6_pers, interaction_effect_category7_pers, interaction_effect_category8_pers,
+                            interaction_effect_category9_pers, interaction_effect_category10_pers, interaction_effect_category11_pers))
+  # Count number of missing values per row
+  is.na <- apply(final, 1, function(x){sum(is.na(x))})
+  # Delete empty rows
+  final <- final[-which(is.na > 1), ]
+  # Rename rows
+  if (analysis %in% c("analysis1", "analysis2", "analysis3", "analysis2: TVC, TCE, SN", "analysis3: multiple partners", "analysis3: significant others")) {
+    # Analyses 1, 2, and 3 include within-person effects, between-person effects, simple effects of personality traits, and cross-level interactions
+    row.names(final) <- c(paste(names_slopes, "WP"), paste(names_slopes, "BP"), "Personality trait", paste("Personality trait *", names_slopes, "WP"))
+  } else {
+    # No between-person effects in analyses 4 and 5
+    row.names(final) <- c(paste(names_slopes, "WP"), "Personality trait", paste("Personality trait *", names_slopes, "WP"))
+  }
+  # Rename variables
+  names(final)[1:6] <- c("Baseline", "Extraversion", "Agreeableness", "Conscientiousness", "Neuroticism", "Openness")
+  # Return table
+  return(final)
+}
+
+## Function to create output tables
+create_output <- function(dat, title) {
+  # Tables with 3 studies
+  if(length(unique(dat$study)) == 3) {
+  return(knitr::kable(dat[, c("Parameter", "Baseline", "Extraversion", "Agreeableness", "Conscientiousness", "Neuroticism", "Openness")],
+               format = "html", align = "l", caption = title) %>%
+    kableExtra::kable_styling(font_size = 10) %>%
+    kableExtra::row_spec(0, bold = T, background = "lightgrey") %>%
+    kableExtra::pack_rows(index = c("Study 1" = length(which(dat$study == "S1")),
+                                    "Study 2" = length(which(dat$study == "S2")),
+                                    "Study 3" = length(which(dat$study == "S3")))) %>%
+    kableExtra::scroll_box(width = "1000px", height = "400px")
+  ) 
+  }
+  # Tables with 2 studies
+  if(length(unique(dat$study)) == 2) {
+  return(knitr::kable(dat[, c("Parameter", "Baseline", "Extraversion", "Agreeableness", "Conscientiousness", "Neuroticism", "Openness")],
+               format = "html", align = "l", caption = title) %>%
+    kableExtra::kable_styling(font_size = 10) %>%
+    kableExtra::row_spec(0, bold = T, background = "lightgrey") %>%
+    kableExtra::pack_rows(index = c("Study 1" = length(which(dat$study == "S1")),
+                                    "Study 2" = length(which(dat$study == "S2")))) %>%
+    kableExtra::scroll_box(width = "1000px", height = "400px")
+  )
+  }
+  # Tables with 1 study
+  if(length(unique(dat$study)) == 1) {
+  return(knitr::kable(dat[, c("Parameter", "Baseline", "Extraversion", "Agreeableness", "Conscientiousness", "Neuroticism", "Openness")],
+               format = "html", align = "l", caption = title) %>%
+    kableExtra::kable_styling(font_size = 10) %>%
+    kableExtra::row_spec(0, bold = T, background = "lightgrey") %>%
+    kableExtra::pack_rows(index = c("Study 3" = length(which(dat$study == "S3")))) %>%
+    kableExtra::scroll_box(width = "1000px", height = "400px")
+  )
+  }
+  # Meta-analysis
+  if(length(unique(dat$study)) == 0) {
+  return(knitr::kable(dat, format = "html", align = "l", caption = title) %>%
+    kableExtra::kable_styling(font_size = 10) %>%
+    kableExtra::row_spec(0, bold = T, background = "lightgrey")
+  )
+  }
+}
+
+# Table note for unstandardized models
+table_note1 <- function(abbrevations) {
+  paste("Shown are unstandardized estimates with 95% credible intervals in square brackets.", abbrevations, "WP = within-person; BP = between-person; E = extraversion; A = agreeableness; C = conscientiousness; N = neuroticism; O = openness. All models were estimated in Mplus using the Bayesian estimator with uninformed priors.
+  Coefficients in bold are significant with one-tailed *p* < .005.")
+}
+
+# Table note for meta-analysis
+table_note2 <- function(abbrevations) {
+  paste("Shown are standardized estimates with 95% credible intervals in square brackets. Meta-analytical results are based on a linear fixed-effects meta-analysis of the individual estimates from the three samples.", abbrevations, "WP = within-person; BP = between-person; E = extraversion; A = agreeableness; C = conscientiousness; N = neuroticism; O = openness. All models were estimated in Mplus using the Bayesian estimator with uninformed priors.
+  Coefficients in bold are significant with two-tailed *p* < .01.")
+}
+
+# Abbreviations
+abbreviations1 <- "Social interaction = any kind of social interaction;"
+abbreviations2 <- "FtF = face-to-face interactions; CMC = computer-mediated communication; Mixed = mix of FtF and CMC;"
+abbreviations3 <- "Close peers = interactions with friends, roommates, and/or significant others; Family = interactions with family members; Weak ties = interactions with classmates, co-workers, and/or strangers;"
+abbreviations4 <- "TVC = talking on the phone, videochatting; TCE = texting, chatting, emailing; SNS = interactions on social networking sites;"
+abbreviations5 <- "Friends and roommates = interactions with friends and/or roommates; Significant others = interactions with significant others; Family = interactions with family members; Weak ties = interactions with classmates, co-workers, and/or strangers;"
+abbreviations6 <- "Gender: 0 = male, 1 = female; Ethnicity: 0 = Anglo/White only, 1 = Non-Anglo/White, multi-ethnic; SES: 0 = less than some college, 1 = at least one parent completed some college;"
+
+# Function to create titles for tables in Supplement S4
+title <- function(IV, DV, ref) {
+  paste0(paste("Effect of", IV, "on", DV, ref), ".")
+}
+  
+IV <- c("social interactions", "FtF interactions, CMC, and mixed episodes", "close peers, family, and weak ties", "CMC, mixed episodes, family, and weak ties")
+DV <- c("well-being in S1 and S2 and affect balance in S3", "contentment in S1 and S2 and happiness in S3",
+        "stress in S1, S2, and S3", "loneliness in S1, S2, and S3",
+        "anger in S3", "worries in S3", "sadness in S3")
+ref <- c("(reference category: no social interaction)", c("reference category: FtF interactions with close peers"))
+
+```
+
+# Supplement {.tabset .tabset-fade .tabset-pills}
+
+## S1: Different CMC Channels {.tabset .tabset-fade .tabset-pills}
+
+### Unstandardized Models {.tabset .tabset-fade .tabset-pills}
+
+#### Analysis 1b
+
+```{r}
+create_output(create_table(Values_Base_Suppl1, Values_Personality_Suppl1, "analysis2: TVC, TCE, SN", "well_being", "affect_balance"), "Table S1.1")
+```
+*Note*: Effect of TVC, TCE, and SNS on well-being in S1 and S2 and affect balance in S3 (reference category: no social interaction). `r table_note1(abbreviations4)`
+\
+\
+
+#### Analysis 2a
+
+```{r}
+create_output(create_table(Values_Base_Suppl1, Values_Personality_Suppl1, "analysis4: TVC, TCE, SN", "well_being", "affect_balance"), "Table S1.2")
+```
+*Note*: Effect of TCE, SNS, family, and weak ties on well-being in S1 and S2 and affect balance in S3 (reference category: TVC with close peers). `r table_note1(paste(abbreviations4, abbreviations3))`
+\
+\
+
+#### Analysis 2b
+
+```{r}
+create_output(create_table(Values_Base_Suppl1, Values_Personality_Suppl1, "analysis5: TVC, TCE, SN", "well_being", "affect_balance"), "Table S1.3")
+```
+*Note*: Effect of TCE, SNS, family, and weak ties on well-being in S1 and S2 and affect balance in S3 (reference category: TVC with close peers). `r table_note1(paste(abbreviations4, abbreviations3))`
+\
+\
+
+### Meta-Analysis {.tabset .tabset-fade .tabset-pills}
+
+#### Analysis 1b
+
+```{r}
+create_output(meta_analysis(Values_Base_Suppl1, Values_Personality_Suppl1, "analysis2: TVC, TCE, SN", "well_being", "affect_balance"), "Table S1.4")
+```
+*Note*: Effect of TVC, TCE, and SNS (reference category: no social interaction). `r table_note2(abbreviations4)`
+\
+\
+
+#### Analysis 2a
+
+```{r}
+create_output(meta_analysis(Values_Base_Suppl1, Values_Personality_Suppl1, "analysis4: TVC, TCE, SN", "well_being", "affect_balance"), "Table S1.5")
+```
+*Note*: Effect of TCE, SNS, family, and weak ties (reference category: TVC with close peers). `r table_note2(paste(abbreviations4, abbreviations3))`
+\
+\
+
+#### Analysis 2b
+
+```{r}
+create_output(meta_analysis(Values_Base_Suppl1, Values_Personality_Suppl1, "analysis5: TVC, TCE, SN", "well_being", "affect_balance"), "Table S1.6")
+```
+*Note*: Effect of TCE, SNS, family, and weak ties (reference category: TVC with close peers). `r table_note2(paste(abbreviations4, abbreviations3))`
+\
+\
+
+## S2: Episodes With Mutiple Partners {.tabset .tabset-fade .tabset-pills}
+
+### Unstandardized Models
+
+```{r}
+create_output(create_table(Values_Base_Suppl2, Values_Personality_Suppl2, "analysis3: multiple partners", "well_being", "affect_balance"), "Table S2.1")
+```
+*Note*: Effect of close peers, family, and weak ties on well-being in S1 and S2 and affect balance in S3 (reference category: no social interaction), including episodes with multiple partners. `r table_note1(abbreviations3)`
+\
+\
+
+### Meta-Analysis
+
+```{r}
+create_output(meta_analysis(Values_Base_Suppl2, Values_Personality_Suppl2, "analysis3: multiple partners", "well_being", "affect_balance"), "Table S2.2")
+```
+*Note*: Effect of close peers, family, and weak ties (reference category: no social interaction), including episodes with multiple partners. `r table_note2(abbreviations3)`
+\
+\
+
+## S3: Effect of Significant Others {.tabset .tabset-fade .tabset-pills}
+
+### Unstandardized Models {.tabset .tabset-fade .tabset-pills}
+
+#### Analysis 1c
+
+```{r}
+create_output(create_table(Values_Base_Suppl3, Values_Personality_Suppl3, "analysis3: significant others", "well_being", "affect_balance"), "Table S3.1")
+```
+*Note*: Effect of friends and roommates, significant others, family, and weak ties on well-being in S1 and S2 and affect balance in S3 (reference category: no social interaction). `r table_note1(abbreviations5)`
+\
+\
+
+#### Analysis 2a
+
+```{r}
+create_output(create_table(Values_Base_Suppl3, Values_Personality_Suppl3, "analysis4: significant others", "well_being", "affect_balance"), "Table S3.2")
+```
+*Note*: Effect of CMC, mixed episodes, significant others, family, and weak ties on well-being in S1 and S2 and affect balance in S3 (reference category: FtF interactions with friends and roommates). `r table_note1(paste(abbreviations2, abbreviations5))`
+\
+\
+
+#### Analysis 2b
+
+```{r}
+create_output(create_table(Values_Base_Suppl3, Values_Personality_Suppl3, "analysis5: significant others", "well_being", "affect_balance"), "Table S3.3")
+```
+*Note*: Effect of CMC, mixed episodes, significant others, family, and weak ties on well-being in S1 and S2 and affect balance in S3 (reference category: FtF interactions with friends and roommates). `r table_note1(paste(abbreviations2, abbreviations5))`
+\
+\
+
+### Meta-Analysis {.tabset .tabset-fade .tabset-pills}
+
+#### Analysis 1c
+
+```{r}
+create_output(meta_analysis(Values_Base_Suppl3, Values_Personality_Suppl3, "analysis3: significant others", "well_being", "affect_balance"), "Table S3.4")
+```
+*Note*: Effect of friends and roommates, significant others, family, and weak ties (reference category: no social interaction). `r table_note2(abbreviations5)`
+\
+\
+
+#### Analysis 2a
+
+```{r}
+create_output(meta_analysis(Values_Base_Suppl3, Values_Personality_Suppl3, "analysis4: significant others", "well_being", "affect_balance"), "Table S3.5")
+```
+*Note*: Effect of CMC, mixed episodes, significant others, family, and weak ties (reference category: FtF interactions with friends and roommates). `r table_note2(paste(abbreviations2, abbreviations5))`
+\
+\
+
+#### Analysis 2b
+
+```{r}
+create_output(meta_analysis(Values_Base_Suppl3, Values_Personality_Suppl3, "analysis5: significant others", "well_being", "affect_balance"), "Table S3.6")
+```
+*Note*: Effect of CMC, mixed episodes, significant others, family, and weak ties (reference category: FtF interactions with friends and roommates). `r table_note2(paste(abbreviations2, abbreviations5))`
+\
+\
+
+## S4: Additional Outcomes {.tabset .tabset-fade .tabset-pills}
+
+### Analysis 1a {.tabset .tabset-fade .tabset-pills}
+
+#### Unstandardized Models {.tabset .tabset-fade .tabset-pills}
+
+##### Well-Being / Affect Balance
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis1", "well_being", "affect_balance"), "Table S4.1")
+```
+*Note*: `r title(IV[1], DV[1], ref[1])` `r table_note1(abbreviations1)`
+\
+\
+
+##### Content / Happy
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis1", "content", "happy"), "Table S4.2")
+```
+*Note*: `r title(IV[1], DV[2], ref[1])` `r table_note1(abbreviations1)`
+\
+\
+
+##### Stressed
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis1", "stressed", "stressed"), "Table S4.3")
+```
+*Note*: `r title(IV[1], DV[3], ref[1])` `r table_note1(abbreviations1)`
+\
+\
+
+##### Lonely
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis1", "lonely", "lonely"), "Table S4.4")
+```
+*Note*: `r title(IV[1], DV[4], ref[1])` `r table_note1(abbreviations1)`
+\
+\
+
+##### Angry
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis1", "angry", "angry"), "Table S4.5")
+```
+*Note*: `r title(IV[1], DV[5], ref[1])` `r table_note1(abbreviations1)`
+\
+\
+
+##### Worried
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis1", "worried", "worried"), "Table S4.6")
+```
+*Note*: `r title(IV[1], DV[6], ref[1])` `r table_note1(abbreviations1)`
+\
+\
+
+##### Sad
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis1", "sad", "sad"), "Table S4.7")
+```
+*Note*: `r title(IV[1], DV[7], ref[1])` `r table_note1(abbreviations1)`
+\
+\
+
+#### Meta-Analysis {.tabset .tabset-fade .tabset-pills}
+
+##### Well-Being / Affect Balance
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis1", "well_being", "affect_balance"), "Table S4.8")
+```
+*Note*: Effect of social interactions on well-being and affect balance (reference category: no social interaction). `r table_note2(abbreviations1)`
+\
+\
+
+##### Content / Happy
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis1", "content", "happy"), "Table S4.9")
+```
+*Note*: Effect of social interactions on contentment and happiness (reference category: no social interaction). `r table_note2(abbreviations1)`
+\
+\
+
+##### Stressed
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis1", "stressed", "stressed"), "Table S4.10")
+```
+*Note*: Effect of social interactions on stress (reference category: no social interaction). `r table_note2(abbreviations1)`
+\
+\
+
+##### Lonely
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis1", "lonely", "lonely"), "Table S4.11")
+```
+*Note*: Effect of social interactions on loneliness (reference category: no social interaction). `r table_note2(abbreviations1)`
+\
+\
+
+### Analysis 1b {.tabset .tabset-fade .tabset-pills}
+
+#### Unstandardized Models {.tabset .tabset-fade .tabset-pills}
+
+##### Well-Being / Affect Balance
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis2", "well_being", "affect_balance"), "Table S4.12")
+```
+*Note*: `r title(IV[2], DV[1], ref[1])` `r table_note1(abbreviations2)`
+\
+\
+
+##### Content / Happy
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis2", "content", "happy"), "Table S4.13")
+```
+*Note*: `r title(IV[2], DV[2], ref[1])` `r table_note1(abbreviations2)`
+\
+\
+
+##### Stressed
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis2", "stressed", "stressed"), "Table S4.14")
+```
+*Note*: `r title(IV[2], DV[3], ref[1])` `r table_note1(abbreviations2)`
+\
+\
+
+##### Lonely
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis2", "lonely", "lonely"), "Table S4.15")
+```
+*Note*: `r title(IV[2], DV[4], ref[1])` `r table_note1(abbreviations2)`
+\
+\
+
+##### Angry
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis2", "angry", "angry"), "Table S4.16")
+```
+*Note*:`r title(IV[2], DV[5], ref[1])` `r table_note1(abbreviations2)`
+\
+\
+
+##### Worried
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis2", "worried", "worried"), "Table S4.17")
+```
+*Note*: `r title(IV[2], DV[6], ref[1])` `r table_note1(abbreviations2)`
+\
+\
+
+##### Sad
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis2", "sad", "sad"), "Table S4.18")
+```
+*Note*: `r title(IV[2], DV[7], ref[1])` `r table_note1(abbreviations2)`
+\
+\
+
+#### Meta-Analysis {.tabset .tabset-fade .tabset-pills}
+
+##### Well-Being / Affect Balance
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis2", "well_being", "affect_balance"), "Table S4.19")
+```
+*Note*: Effect of FtF interactions, CMC, and mixed episodes on well-being and affect balance (reference category: no social interaction). `r table_note2(abbreviations2)`
+\
+\
+
+##### Content / Happy
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis2", "content", "happy"), "Table S4.20")
+```
+*Note*: Effect of FtF interactions, CMC, and mixed episodes on contentment and happiness (reference category: no social interaction). `r table_note2(abbreviations2)`
+\
+\
+
+##### Stressed
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis2", "stressed", "stressed"), "Table S4.21")
+```
+*Note*: Effect of FtF interactions, CMC, and mixed episodes on stress (reference category: no social interaction). `r table_note2(abbreviations2)`
+\
+\
+
+##### Lonely
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis2", "lonely", "lonely"), "Table S4.22")
+```
+*Note*: Effect of FtF interactions, CMC, and mixed episodes on loneliness (reference category: no social interaction). `r table_note2(abbreviations2)`
+\
+\
+
+### Analysis 1c {.tabset .tabset-fade .tabset-pills}
+
+#### Unstandardized Models {.tabset .tabset-fade .tabset-pills}
+
+##### Well-Being / Affect Balance
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis3", "well_being", "affect_balance"), "Table S4.23")
+```
+*Note*: `r title(IV[3], DV[1], ref[1])` `r table_note1(abbreviations3)`
+\
+\
+
+##### Content / Happy
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis3", "content", "happy"), "Table S4.24")
+```
+*Note*: `r title(IV[3], DV[2], ref[1])` `r table_note1(abbreviations3)`
+\
+\
+
+##### Stressed
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis3", "stressed", "stressed"), "Table S4.25")
+```
+*Note*: `r title(IV[3], DV[3], ref[1])` `r table_note1(abbreviations3)`
+\
+\
+
+##### Lonely
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis3", "lonely", "lonely"), "Table S4.26")
+```
+*Note*: `r title(IV[3], DV[4], ref[1])` `r table_note1(abbreviations3)`
+\
+\
+
+##### Angry
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis3", "angry", "angry"), "Table S4.27")
+```
+*Note*: `r title(IV[3], DV[5], ref[1])` `r table_note1(abbreviations3)`
+\
+\
+
+##### Worried
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis3", "worried", "worried"), "Table S4.28")
+```
+*Note*: `r title(IV[3], DV[6], ref[1])` `r table_note1(abbreviations3)`
+\
+\
+
+##### Sad
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis3", "sad", "sad"), "Table S4.29")
+```
+*Note*: `r title(IV[3], DV[7], ref[1])` `r table_note1(abbreviations3)`
+\
+\
+
+#### Meta-Analysis {.tabset .tabset-fade .tabset-pills}
+
+##### Well-Being / Affect Balance
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis3", "well_being", "affect_balance"), "Table S4.30")
+```
+*Note*: Effect of close peers, family, and weak ties on well-being and affect balance (reference category: no social interaction). `r table_note2(abbreviations3)`
+\
+\
+
+##### Content / Happy
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis3", "content", "happy"), "Table S4.31")
+```
+*Note*: Effect of close peers, family, and weak ties on contentment and happiness (reference category: no social interaction). `r table_note2(abbreviations3)`
+\
+\
+
+##### Stressed
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis3", "stressed", "stressed"), "Table S4.32")
+```
+*Note*: Effect of close peers, family, and weak ties on stress (reference category: no social interaction). `r table_note2(abbreviations3)`
+\
+\
+
+##### Lonely
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis3", "lonely", "lonely"), "Table S4.33")
+```
+*Note*: Effect of close peers, family, and weak ties on loneliness (reference category: no social interaction). `r table_note2(abbreviations3)`
+\
+\
+
+### Analysis 2a {.tabset .tabset-fade .tabset-pills}
+
+#### Unstandardized Models {.tabset .tabset-fade .tabset-pills}
+
+##### Well-Being / Affect Balance
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis4", "well_being", "affect_balance"), "Table S4.34")
+```
+*Note*: `r title(IV[4], DV[1], ref[2])` `r table_note1(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Content / Happy
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis4", "content", "happy"), "Table S4.35")
+```
+*Note*: `r title(IV[4], DV[2], ref[2])` `r table_note1(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Stressed
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis4", "stressed", "stressed"), "Table S4.36")
+```
+*Note*: `r title(IV[4], DV[3], ref[2])` `r table_note1(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Lonely
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis4", "lonely", "lonely"), "Table S4.37")
+```
+*Note*: `r title(IV[4], DV[4], ref[2])` `r table_note1(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Angry
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis4", "angry", "angry"), "Table S4.38")
+```
+*Note*: `r title(IV[4], DV[5], ref[2])` `r table_note1(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Worried
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis4", "worried", "worried"), "Table S4.39")
+```
+*Note*: `r title(IV[4], DV[6], ref[2])` `r table_note1(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Sad
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis4", "sad", "sad"), "Table S4.40")
+```
+*Note*: `r title(IV[4], DV[7], ref[2])` `r table_note1(paste(abbreviations2, abbreviations3))`
+\
+\
+
+#### Meta-Analysis {.tabset .tabset-fade .tabset-pills}
+
+##### Well-Being / Affect Balance
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis4", "well_being", "affect_balance"), "Table S4.41")
+```
+*Note*: Effect of CMC, mixed episodes, family, and weak ties on well-being and affect balance (reference category: FtF interactions with close peers). `r table_note2(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Content / Happy
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis4", "content", "happy"), "Table S4.42")
+```
+*Note*: Effect of CMC, mixed episodes, family, and weak ties on contentment and happiness (reference category: FtF interactions with close peers). `r table_note2(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Stressed
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis4", "stressed", "stressed"), "Table S4.43")
+```
+*Note*: Effect of CMC, mixed episodes, family, and weak ties on stress (reference category: FtF interactions with close peers). `r table_note2(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Lonely
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis4", "lonely", "lonely"), "Table S4.44")
+```
+*Note*: Effect of CMC, mixed episodes, family, and weak ties on loneliness (reference category: FtF interactions with close peers). `r table_note2(paste(abbreviations2, abbreviations3))`
+\
+\
+
+### Analysis 2b {.tabset .tabset-fade .tabset-pills}
+
+#### Unstandardized Models {.tabset .tabset-fade .tabset-pills}
+
+##### Well-Being / Affect Balance
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis5", "well_being", "affect_balance"), "Table S4.45")
+```
+*Note*: `r title(IV[4], DV[1], ref[2])` `r table_note1(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Content / Happy
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis5", "content", "happy"), "Table S4.46")
+```
+*Note*: `r title(IV[4], DV[2], ref[2])` `r table_note1(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Stressed
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis5", "stressed", "stressed"), "Table S4.47")
+```
+*Note*: `r title(IV[4], DV[3], ref[2])` `r table_note1(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Lonely
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis5", "lonely", "lonely"), "Table S4.48")
+```
+*Note*: `r title(IV[4], DV[4], ref[2])` `r table_note1(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Angry
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis5", "angry", "angry"), "Table S4.49")
+```
+*Note*: `r title(IV[4], DV[5], ref[2])` `r table_note1(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Worried
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis5", "worried", "worried"), "Table S4.50")
+```
+*Note*: `r title(IV[4], DV[6], ref[2])` `r table_note1(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Sad
+
+```{r}
+create_output(create_table(Values_Base, Values_Personality, "analysis5", "sad", "sad"), "Table S4.51")
+```
+*Note*: `r title(IV[4], DV[7], ref[2])` `r table_note1(paste(abbreviations2, abbreviations3))`
+\
+\
+
+#### Meta-Analysis {.tabset .tabset-fade .tabset-pills}
+
+##### Well-Being / Affect Balance
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis5", "well_being", "affect_balance"), "Table S4.52")
+```
+*Note*: Effect of CMC, mixed episodes, family, and weak ties on well-being and affect balance (reference category: FtF interactions with close peers). `r table_note2(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Content / Happy
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis5", "content", "happy"), "Table S4.53")
+```
+*Note*: Effect of CMC, mixed episodes, family, and weak ties on contentment and happiness (reference category: FtF interactions with close peers). `r table_note2(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Stressed
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis5", "stressed", "stressed"), "Table S4.54")
+```
+*Note*: Effect of CMC, mixed episodes, family, and weak ties on stress (reference category: FtF interactions with close peers). `r table_note2(paste(abbreviations2, abbreviations3))`
+\
+\
+
+##### Lonely
+
+```{r}
+create_output(meta_analysis(Values_Base, Values_Personality, "analysis5", "lonely", "lonely"), "Table S4.55")
+```
+*Note*: Effect of CMC, mixed episodes, family, and weak ties on loneliness (reference category: FtF interactions with close peers). `r table_note2(paste(abbreviations2, abbreviations3))`
+\
+\
+
+## S5: Demographic Control Variables {.tabset .tabset-fade .tabset-pills}
+
+### Unstandardized Models {.tabset .tabset-fade .tabset-pills}
+
+#### Analysis 1a
+
+```{r}
+create_output(create_table(Values_Base_Demog, Values_Personality_Demog, "analysis1", "well_being", "affect_balance"), "Table S5.1")
+```
+*Note*: Effect of social interactions on well-being in S1 and S2 and affect balance in S3 (reference category: no social interaction), controlling for demographic variables. `r table_note1(paste(abbreviations1, abbreviations6))`
+\
+\
+
+#### Analysis 1b
+
+```{r}
+create_output(create_table(Values_Base_Demog, Values_Personality_Demog, "analysis2", "well_being", "affect_balance"), "Table S5.2")
+```
+*Note*: Effect of FtF interactions, CMC, and mixed episodes on well-being in S1 and S2 and affect balance in S3 (reference category: no social interaction), controlling for demographic variables. `r table_note1(paste(abbreviations2, abbreviations6))`
+\
+\
+
+#### Analysis 1c
+
+```{r}
+create_output(create_table(Values_Base_Demog, Values_Personality_Demog, "analysis3", "well_being", "affect_balance"), "Table S5.3")
+```
+*Note*: Effect of close peers, family, and weak ties on well-being in S1 and S2 and affect balance in S3 (reference category: no social interaction), controlling for demographic variables. `r table_note1(paste(abbreviations3, abbreviations6))`
+\
+\
+
+#### Analysis 2a
+
+```{r}
+create_output(create_table(Values_Base_Demog, Values_Personality_Demog, "analysis4", "well_being", "affect_balance"), "Table S5.4")
+```
+*Note*: Effect of CMC, mixed episodes, family, and weak ties on well-being in S1 and S2 and affect balance in S3 (reference category: FtF interactions with close peers), controlling for demographic variables. `r table_note1(paste(abbreviations2, abbreviations3, abbreviations6))`
+\
+\
+
+#### Analysis 2b
+
+```{r}
+create_output(create_table(Values_Base_Demog, Values_Personality_Demog, "analysis5", "well_being", "affect_balance"), "Table S5.5")
+```
+*Note*: Effect of CMC, mixed episodes, family, and weak ties on well-being in S1 and S2 and affect balance in S3 (reference category: FtF interactions with close peers), controlling for demographic variables. `r table_note1(paste(abbreviations2, abbreviations3, abbreviations6))`
+\
+\
+
+### Meta-Analysis {.tabset .tabset-fade .tabset-pills}
+
+#### Analysis 1a
+
+```{r}
+create_output(meta_analysis(Values_Base_Demog, Values_Personality_Demog, "analysis1", "well_being", "affect_balance"), "Table S5.6")
+```
+*Note*: Effect of social interactions on well-being and affect balance (reference category: no social interaction), controlling for demographic variables. `r table_note2(paste(abbreviations1))`
+\
+\
+
+#### Analysis 1b
+
+```{r}
+create_output(meta_analysis(Values_Base_Demog, Values_Personality_Demog, "analysis2", "well_being", "affect_balance"), "Table S5.7")
+```
+*Note*: Effect of FtF interactions, CMC, and mixed episodes on well-being and affect balance (reference category: no social interaction), controlling for demographic variables. `r table_note2(paste(abbreviations2))`
+\
+\
+
+#### Analysis 1c
+
+```{r}
+create_output(meta_analysis(Values_Base_Demog, Values_Personality_Demog, "analysis3", "well_being", "affect_balance"), "Table S5.8")
+```
+*Note*: Effect of close peers, family, and weak ties on well-being and affect balance (reference category: no social interaction), controlling for demographic variables. `r table_note2(paste(abbreviations3))`
+\
+\
+
+#### Analysis 2a
+
+```{r}
+create_output(meta_analysis(Values_Base_Demog, Values_Personality_Demog, "analysis4", "well_being", "affect_balance"), "Table S5.9")
+```
+*Note*: Effect of CMC, mixed episodes, family, and weak ties on well-being and affect balance (reference category: FtF interactions with close peers), controlling for demographic variables. `r table_note2(paste(abbreviations2, abbreviations3))`
+\
+\
+
+#### Analysis 2b
+
+```{r}
+create_output(meta_analysis(Values_Base_Demog, Values_Personality_Demog, "analysis5", "well_being", "affect_balance"), "Table S5.10")
+```
+*Note*: Effect of CMC, mixed episodes, family, and weak ties on well-being and affect balance (reference category: FtF interactions with close peers), controlling for demographic variables. `r table_note2(paste(abbreviations2, abbreviations3))`
+\
+\
+
+## S6: Plots {.tabset .tabset-fade .tabset-pills}
+
+### Simple Slope Plots {.tabset .tabset-fade .tabset-pills}
+
+#### Social interaction
+
+```{r results='hide'}
+source("mplus.R")
+
+# Function to read in Mplus files
+get_data1 <- function(file, label) {
+  as.data.frame(cbind(x = mplus.get.loop.xvalues(file),
+                      y = mplus.get.loop.estimates(file, label),
+                      upperci = mplus.get.loop.upperci(file, label),
+                      lowerci = mplus.get.loop.lowerci(file, label)
+  ))
+}
+
+# Function to create plot with two simple slopes
+simple_slopes_plot1 <- function(dat, xaxis) {
+  ggplot(dat, aes(x = x, y = y, colour = level)) +
+    geom_line(linetype = 2) +
+    geom_ribbon(aes(ymin = lowerci, ymax = upperci, colour = level), linetype = 1, alpha = 0.1) +
+    jtools::theme_apa() +
+    labs(x = xaxis, y = "Well-being(z)") +
+    ylim(-0.78, 0.55) +
+    labs(tag = "A")
+}
+
+# Function to create plot with one simple slope
+simple_slopes_plot2 <- function(dat, title, xaxis) {
+  ggplot(dat, aes(x = x, y = y)) +
+    geom_line(linetype = 2, colour = "#4575b4") +
+    geom_ribbon(aes(ymin = lowerci, ymax = upperci), colour = "#abd9e9", linetype = 1, alpha = 0.1) +
+    jtools::theme_apa() +
+    theme(plot.title = element_text(size = 12)) +
+    labs(x = xaxis, y = "Well-being(z)", title = title) +
+    ylim(-1.12, 0.80) +
+    coord_cartesian(clip = "off") +
+    geom_rect(xmin = -1.1, xmax = 1.0, ymin = 4.2, ymax = 5.6, fill = "grey")
+}
+
+```
+
+```{r}
+# Read in Mplus files
+dat_very_low <- get_data1("SS Plot1.gh5", "VL") # very low = 2 SD below the mean
+dat_low <- get_data1("SS Plot1.gh5", "L") # low = 1 SD below the mean
+dat_medium <- get_data1("SS Plot1.gh5", "M") # medium = average
+dat_high <- get_data1("SS Plot1.gh5", "H") # high = 1 SD above the mean
+dat_very_high <- get_data1("SS Plot1.gh5", "VH") # very high = 2 SD above the mean
+
+dat_low_high <- rbind(dat_low, dat_high) # combine low and high into one data frame
+dat_low_high$level <- rep(c("Low", "High"), each = 201) # create level variable
+
+```
+
+**Figure S6.1**
+\
+```{r}
+# Create plot with two simple slopes
+plot_low_high <- simple_slopes_plot1(dat_low_high, xaxis = "Social interaction within-person")
+plot_low_high
+```
+\
+*Note*: Shown are simple slopes for two levels of neuroticism: 1 *SD* below the mean (low) and 1 *SD* above the mean (high). The plot was generated in a pooled data set, which included data from all three studies (participants *N* = 2,533, observations *N* = 120,973). Due to the differences in scales across studies, well-being was z-standardized before merging the three data sets (max = 1.5, min = -3).
+\
+\
+
+**Figure S6.2**
+\
+\
+```{r fig.width=12}
+# Create separate plots for five simple slopes
+plot_very_low <- simple_slopes_plot2(dat_very_low, title = "-2SD (PTCL = 2.25)\nb = 0.241", xaxis = "Social interaction\nwithin-person")
+plot_low <- simple_slopes_plot2(dat_low, title = "-1SD (PTCL = 16.34)\nb = 0.278", xaxis = "Social interaction\nwithin-person")
+plot_medium <- simple_slopes_plot2(dat_medium, title = "0 (PTCL = 54.20)\nb = 0.314", xaxis = "Social interaction\nwithin-person")
+plot_high <- simple_slopes_plot2(dat_high, title = "+1SD (PTCL = 84.29)\nb = 0.351", xaxis = "Social interaction\nwithin-person")
+plot_very_high <- simple_slopes_plot2(dat_very_high, title = "+2SD (PTCL = 98.22)\nb = 0.386", xaxis = "Social interaction\nwithin-person")
+
+# Combine five plots into one panel
+gridExtra::grid.arrange(plot_very_low, plot_low, plot_medium, plot_high, plot_very_high, ncol = 5)
+
+```
+\
+*Note*: Shown are simple slopes for five levels of neuroticism: 2 *SD* below the mean, 1 *SD* below the mean, average, 1 *SD* above the mean, and 2 *SD* above the mean. The plots were generated in a pooled data set, which included data from all three studies (participants *N* = 2,533, observations *N* = 120,973). Due to the differences in scales across studies, well-being was z-standardized before merging the three data sets (max = 1.5, min = -3).
+\
+\
+
+#### FtF
+
+```{r}
+# Read in Mplus files
+dat_very_low <- get_data1("SS Plot2.gh5", "VL") # very low = 2 SD below the mean
+dat_low <- get_data1("SS Plot2.gh5", "L") # low = 1 SD below the mean
+dat_medium <- get_data1("SS Plot2.gh5", "M") # medium = average
+dat_high <- get_data1("SS Plot2.gh5", "H") # high = 1 SD above the mean
+dat_very_high <- get_data1("SS Plot2.gh5", "VH") # very high = 2 SD above the mean
+
+dat_low_high <- rbind(dat_low, dat_high) # combine low and high into one data frame
+dat_low_high$level <- rep(c("Low", "High"), each = 201) # create level variable
+
+```
+
+**Figure S6.3**
+\
+```{r}
+# Create plot with two simple slopes
+plot_low_high <- simple_slopes_plot1(dat_low_high, xaxis = "FtF within-person")
+plot_low_high
+```
+\
+*Note*: Shown are simple slopes for two levels of neuroticism: 1 *SD* below the mean (low) and 1 *SD* above the mean (high). The plot was generated in a pooled data set, which included data from all three studies (participants *N* = 2,531, observations *N* = 120,315). Due to the differences in scales across studies, well-being was z-standardized before merging the three data sets (max = 1.5, min = -3).
+\
+\
+
+**Figure S6.4**
+\
+\
+```{r fig.width=12}
+# Create separate plots for five simple slopes
+plot_very_low <- simple_slopes_plot2(dat_very_low, title = "-2SD (PTCL = 2.25)\nb = 0.318", xaxis = "FtF within-person")
+plot_low <- simple_slopes_plot2(dat_low, title = "-1SD (PTCL = 16.36)\nb = 0.376", xaxis = "FtF within-person")
+plot_medium <- simple_slopes_plot2(dat_medium, title = "0 (PTCL = 54.25)\nb = 0.434", xaxis = "FtF within-person")
+plot_high <- simple_slopes_plot2(dat_high, title = "+1SD (PTCL = 84.31)\nb = 0.491", xaxis = "FtF within-person")
+plot_very_high <- simple_slopes_plot2(dat_very_high, title = "+2SD (PTCL = 98.26)\nb = 0.549", xaxis = "FtF within-person")
+
+# Combine five plots into one panel
+gridExtra::grid.arrange(plot_very_low, plot_low, plot_medium, plot_high, plot_very_high, ncol = 5)
+
+```
+\
+*Note*: Shown are simple slopes for five levels of neuroticism: 2 *SD* below the mean, 1 *SD* below the mean, average, 1 *SD* above the mean, and 2 *SD* above the mean. The plots were generated in a pooled data set, which included data from all three studies (participants *N* = 2,531, observations *N* = 120,315). Due to the differences in scales across studies, well-being was z-standardized before merging the three data sets (max = 1.5, min = -3).
+\
+\
+
+#### Mixed
+
+```{r}
+# Read in Mplus files
+dat_very_low <- get_data1("SS Plot3.gh5", "VL") # very low = 2 SD below the mean
+dat_low <- get_data1("SS Plot3.gh5", "L") # low = 1 SD below the mean
+dat_medium <- get_data1("SS Plot3.gh5", "M") # medium = average
+dat_high <- get_data1("SS Plot3.gh5", "H") # high = 1 SD above the mean
+dat_very_high <- get_data1("SS Plot3.gh5", "VH") # very high = 2 SD above the mean
+
+dat_low_high <- rbind(dat_low, dat_high) # combine low and high into one data frame
+dat_low_high$level <- rep(c("Low", "High"), each = 201) # create level variable
+
+```
+
+**Figure S6.5**
+\
+```{r}
+# Create plot with two simple slopes
+plot_low_high <- simple_slopes_plot1(dat_low_high, xaxis = "Mixed within-person")
+plot_low_high
+```
+\
+*Note*: Shown are simple slopes for two levels of neuroticism: 1 *SD* below the mean (low) and 1 *SD* above the mean (high). The plot was generated in a pooled data set, which included data from all three studies (participants *N* = 2,531, observations *N* = 120,315). Due to the differences in scales across studies, well-being was z-standardized before merging the three data sets (max = 1.5, min = -3).
+\
+\
+
+**Figure S6.6**
+\
+\
+```{r fig.width=12}
+# Create separate plots for five simple slopes
+plot_very_low <- simple_slopes_plot2(dat_very_low, title = "-2SD (PTCL = 2.25)\nb = 0.272", xaxis = "Mixed within-person")
+plot_low <- simple_slopes_plot2(dat_low, title = "-1SD (PTCL = 16.36)\nb = 0.334", xaxis = "Mixed within-person")
+plot_medium <- simple_slopes_plot2(dat_medium, title = "0 (PTCL = 54.25)\nb = 0.396", xaxis = "Mixed within-person")
+plot_high <- simple_slopes_plot2(dat_high, title = "+1SD (PTCL = 84.31)\nb = 0.457", xaxis = "Mixed within-person")
+plot_very_high <- simple_slopes_plot2(dat_very_high, title = "+2SD (PTCL = 98.26)\nb = 0.517", xaxis = "Mixed within-person")
+
+# Combine five plots into one panel
+gridExtra::grid.arrange(plot_very_low, plot_low, plot_medium, plot_high, plot_very_high, ncol = 5)
+
+```
+\
+*Note*: Shown are simple slopes for five levels of neuroticism: 2 *SD* below the mean, 1 *SD* below the mean, average, 1 *SD* above the mean, and 2 *SD* above the mean. The plots were generated in a pooled data set, which included data from all three studies (participants *N* = 2,531, observations *N* = 120,315). Due to the differences in scales across studies, well-being was z-standardized before merging the three data sets (max = 1.5, min = -3).
+\
+\
+
+#### CMC * Weak Ties
+
+**Figure S6.7**
+\
+```{r}
+# Read in Mplus files
+dat_P <- get_data1("SS Plot4.gh5", "P")
+dat_W <- get_data1("SS Plot4.gh5", "W")
+
+dat_peers_weak_ties <- rbind(dat_P, dat_W) # combine peers and weak ties into one data frame
+dat_peers_weak_ties$level <- rep(c("Close peers", "Weak ties"), each = 2) #  create level variable
+
+# Create bar plot
+ggplot(dat_peers_weak_ties, aes(x = x, y = y, fill = level)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  scale_fill_manual(values = c("grey75", "grey35")) +
+  geom_errorbar(aes(ymin = lowerci, ymax = upperci), width = .2, position = position_dodge(.9)) +
+  jtools::theme_apa() +
+  scale_x_continuous(name = "", breaks = c(0, 1), labels = c("FtF", "CMC")) +
+  labs(y = "Well-being(z)")
+
+```
+\
+*Note*: Interaction effect between mode of communication and type of interaction partner. The plot was generated in a pooled data set, which included data from all three studies (participants *N* = 3,036, observations *N* = 59,110). Due to the differences in scales across studies, well-being was z-standardized before merging the three data sets (max = 1.5, min = -3).
+\
+\
+
+### Johnson Neyman Plots {.tabset .tabset-fade .tabset-pills}
+
+#### Social interaction
+
+```{r}
+# Function to read in Mplus files
+get_data2 <- function(file) {
+  as.data.frame(cbind(x = mplus.get.loop.xvalues(file),
+                      y = mplus.get.loop.estimates(file) / sqrt(0.583),
+                      upperci = mplus.get.loop.upperci(file) / sqrt(0.583),
+                      lowerci = mplus.get.loop.lowerci(file) / sqrt(0.583)
+  ))
+}
+
+# Function to create Johnson-Neyman plot
+johnson_neyman_plot <- function(dat, yaxis) {
+  ggplot(dat, aes(x = x, y = y)) +
+    geom_line(linetype = 2, colour = "#4575b4") +
+    geom_ribbon(aes(ymin = lowerci, ymax = upperci), colour = "#abd9e9", linetype = 1, alpha = 0.1) +
+    jtools::theme_apa() +
+    labs(x = "Neuroticism(gmc)", y = yaxis) +
+    geom_hline(yintercept = 0, linetype = 3) +
+    geom_segment(x = -2.03, y = 0, xend = 1.89, yend = 0) + # minimum value of neuroticism: -2.03, maximum value of neuroticism: 1.89
+    labs(tag = "B")
+}
+
+```
+
+**Figure S6.8**
+\
+```{r}
+# Read in Mplus file
+dat <- get_data2("JN Plot1.gh5")
+# Create Johnson-Neyman plot
+johnson_neyman_plot(dat, "Standardized within-person slope of social interaction")
+```
+\
+*Note*: Shown are simple slopes for varying levels of neuroticism. Neuroticism was grand-mean centered (max = 1.89, min = -2.03). The plot was generated in a pooled data set, which included data from all three studies (participants *N* = 2,533, observations *N* = 120,973). Due to the differences in scales across studies, well-being was z-standardized before merging the three data sets (max = 1.5, min = -3).
+\
+\
+
+#### FtF
+
+**Figure S6.9**
+\
+```{r}
+# Read in Mplus file
+dat <- get_data2("JN Plot2.gh5")
+# Create Johnson-Neyman plot
+johnson_neyman_plot(dat, "Standardized within-person slope of FtF")
+```
+\
+*Note*: Shown are simple slopes for varying levels of neuroticism. Neuroticism was grand-mean centered (max = 1.89, min = -2.02). The plot was generated in a pooled data set, which included data from all three studies (participants *N* = 2,531, observations *N* = 120,315). Due to the differences in scales across studies, well-being was z-standardized before merging the three data sets (max = 1.5, min = -3).
+\
+\
+
+#### Mixed
+
+**Figure S6.10**
+\
+```{r}
+# Read in Mplus file
+dat <- get_data2("JN Plot3.gh5")
+# Create Johnson-Neyman plot
+johnson_neyman_plot(dat, "Standardized within-person slope of mixed")
+```
+\
+*Note*: Shown are simple slopes for varying levels of neuroticism. Neuroticism was grand-mean centered (max = 1.89, min = -2.02). The plot was generated in a pooled data set, which included data from all three studies (participants *N* = 2,531, observations *N* = 120,315). Due to the differences in scales across studies, well-being was z-standardized before merging the three data sets (max = 1.5, min = -3).
+\
+\
+
+## S7: Power Analysis {.tabset .tabset-fade .tabset-pills}
+
+```{r results='hide'}
+# Read in Mplus file
+power <- as.data.frame(MplusAutomation::readModels("Power Analysis.out")$parameters)
+# Create parameter variable by combining parameter headers and parameters from Mplus output files
+power$Parameter <- paste(power$unstandardized.paramHeader, power$unstandardized.param)
+# Rename parameters
+power$Parameter[power$Parameter == "Intercepts S1"] <- "Social interaction WP"
+power$Parameter[power$Parameter == "WB.ON INT"] <- "Social interaction BP"
+power$Parameter[power$Parameter == "S1.ON P"] <- "Personality trait * Social interaction WP"
+
+# Rename variables
+names(power)[c(3:9)] <- c("Poulation estimate", "Average estimate", "Population SD", "Average SE", "MSE", "CI coverage", "% sig")
+# Choose parameters and variables
+power <- power[c(which(power$Parameter == "Social interaction WP"),
+                 which(power$Parameter == "Social interaction BP"),
+                 which(power$Parameter == "Personality trait * Social interaction WP")),
+               c("Parameter", "Poulation estimate", "Average estimate", "Population SD", "Average SE", "MSE", "CI coverage", "% sig")]
+# Format coefficients
+power[, c("Average estimate", "Population SD", "Average SE", "MSE")] <- apply(power[c("Average estimate", "Population SD", "Average SE", "MSE")], 2, function(x) {format(round(x, 3), nsmall = 3)})
+# Delete row names
+row.names(power) <- NULL
+  
+```
+
+```{r}
+create_output(power, "Table S7.1")
+```
+*Note*: Results of a Monte Carlo power simulation for the power to detect small (standardized coefficient = 0.10) within-person and between-person effects of social interactions on well-being and a small cross-level interaction effect between personality and social interactions in the prediction of well-being. Number of samples = 1,000; Level 2 sample size = 3,075 participants; Level 1 sample size = 45 observations per participant.
+\
+\
+
+We conducted a Monte Carlo power simulation to calculate the power we had to detect small (standardized coefficient = 0.10) within- and between-person effects of social interactions on well-being and a small cross-level interaction effect between personality and social interactions in the prediction of well-being. A standardized within- or between-person coefficient of 0.10 indicates that social interactions explain 1% of the within- or between-person variance in well-being, respectively. A standardized cross-level interaction effect of 0.10 indicates that personality explains 1% of the random slope variance of social interactions predicting well-being.
+
+The parameters for the population model were generated as described in Arend & Schäfer (2019):
+
+1) To obtain realistic estimates of the variances and covariances, we created a pooled data set and specified (a) a null model in which we estimated the unconditional variances of social interactions and well-being (i.e., without predictors), and (b) a random intercept-random slope model for the within-person relationship between social interactions and well-being, in which we estimated the unconditional random slope variance (i.e., without the cross-level interaction effect). From the null model, we derived the within- and between-person variances of well-being (within: 0.583, between: 0.431) and social interactions (within: 0.173, between: 0.053). From the random intercept-random slope model, we derived the random slope variance (0.048) and the random intercept-random slope covariance (-0.036). The mean of personality was set to 0 and the variance was set to 0.589 (variance of neuroticism in the pooled data set). The Level 2 mean of social interactions was set to 0.690 (adapted from the null model) and the Level 2 intercept of well-being was set to -0.200 (expected value for a person who never interacts if the overall mean is 0).
+
+2) We adjusted the standardized coefficients to the scales in the empirical data set using the following equation: <br /> 
+standardized coefficient * sd outcome / sd predictor (see Equation 15 in Arend & Schäfer, 2019). <br />
+This resulted in the following parameters for the simulation: <br />
+Level 1 effect (Int -> WB): 0.10 * sqrt(0.583) / sqrt(0.173) = **0.184** <br /> 
+Level 2 effect (Int -> WB): 0.10 * sqrt(0.431) / sqrt(0.053) = **0.285** <br /> 
+Level 2 effect (P -> WB): 0.10 * sqrt(0.431) / sqrt(0.589) = 0.086 <br /> 
+Cross-level interaction effect (P -> S): 0.10 * sqrt(0.048) / sqrt(0.589) = **0.029**
+
+3) We adjusted the residual variances of well-being and the residual variance of the random slope to account for the variance explained, as described by Arend & Schäfer (2019). Specifically, the residual variances were estimated as: <br /> 
+Residual variance WB within: 0.583 * 0.99 = 0.577 (1% of the variance explained) <br /> 
+Residual variance WB between: 0.431 * 0.98 = 0.422 (2% of the variance explained) <br /> 
+Residual variance slope: 0.048 * 0.99 = 0.048 (1% of the variance explained)
+
+Based on these input parameters, we generated 1,000 samples (level 2 sample size = 3,075 participants, level 1 sample size = 45 observations per participant; total number of observations = 138,375) and determined the proportion of samples in which the estimates were significant (alpha = 0.05). The results indicated that we had 100% power to detect small within- and between-person effects of social interactions on well-being and 93% power to detect a small cross-level interaction effect between personality and social interactions in the prediction of well-being.
+\
+\
+
+## S8: Reliabilites {.tabset .tabset-fade .tabset-pills}
+
+The reliabilities (McDonald’s omega) for the individual traits were as follows: .87 (extraversion), .78 (agreeableness), .79 (conscientiousness), .82 (neuroticism), and .79 (openness) in S1; .87 (extraversion), .78 (agreeableness), .80 (conscientiousness), .81 (neuroticism), and .79 (openness) in S2; .87 (extraversion), .81 (agreeableness), .83 (conscientiousness), .89 (neuroticism), and .84 (openness) in S3.

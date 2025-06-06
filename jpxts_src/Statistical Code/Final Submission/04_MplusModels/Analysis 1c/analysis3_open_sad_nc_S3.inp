@@ -1,0 +1,40 @@
+TITLE: Analysis 2+3
+DATA: FILE = analysis3_S3.dat;
+VARIABLE:
+NAMES = ID AB angry worried happy sad WB stressed lonely
+peers family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = sad
+peers family weak_ties
+weekend O;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = O;
+MISSING = .;
+DEFINE: CENTER O (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Sadness is predicted by peers, the slope is random
+S1 | sad ON peers;
+! Sadness is predicted by family, the slope is random
+S2 | sad ON family;
+! Sadness is predicted by weak ties, the slope is random
+S3 | sad ON weak_ties;
+! Control for weekend
+sad ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+sad S1-S3 WITH sad S1-S3;
+! The intercept is predicted by peers
+sad ON peers;
+! The intercept is predicted by family
+sad ON family;
+! The intercept is predicted by weak ties
+sad ON weak_ties;
+! The intercept is predicted by openness
+sad ON O;
+! The slopes are predicted by openness
+S1-S3 ON O;
+OUTPUT: STDYX STDY TECH8;

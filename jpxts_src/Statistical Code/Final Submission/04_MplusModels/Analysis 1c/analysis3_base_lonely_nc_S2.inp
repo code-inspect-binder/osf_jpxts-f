@@ -1,0 +1,34 @@
+TITLE: Analysis 2+3
+DATA: FILE = analysis3_S2.dat;
+VARIABLE:
+NAMES = ID WB content stressed lonely
+peers family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = lonely
+peers family weak_ties
+weekend;
+CLUSTER = ID;
+WITHIN = weekend;
+MISSING = .;
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Loneliness is predicted by peers, the slope is random
+S1 | lonely ON peers;
+! Loneliness is predicted by family, the slope is random
+S2 | lonely ON family;
+! Loneliness is predicted by weak ties, the slope is random
+S3 | lonely ON weak_ties;
+! Control for weekend
+lonely ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+lonely S1-S3 WITH lonely S1-S3;
+! The intercept is predicted by peers
+lonely ON peers;
+! The intercept is predicted by family
+lonely ON family;
+! The intercept is predicted by weak ties
+lonely ON weak_ties;
+OUTPUT: STDYX STDY TECH8;

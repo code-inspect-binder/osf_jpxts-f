@@ -1,0 +1,32 @@
+TITLE: Analysis 1
+DATA: FILE = analysis1_S3.dat;
+VARIABLE:
+NAMES = ID AB angry worried happy sad WB stressed lonely
+int
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = stressed
+int
+weekend C;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = C;
+MISSING = .;
+DEFINE: CENTER C (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Stress is predicted by social interactions, the slope is random
+S1 | stressed ON int;
+! Control for weekend
+stressed ON weekend;
+%BETWEEN%
+! Covariance between intercept and slope
+stressed WITH S1;
+! The intercept is predicted by social interactions
+stressed ON int;
+! The intercept is predicted by conscientiousness
+stressed ON C;
+! The slope is predicted by conscientiousness
+S1 ON C;
+OUTPUT: STDYX STDY TECH8;

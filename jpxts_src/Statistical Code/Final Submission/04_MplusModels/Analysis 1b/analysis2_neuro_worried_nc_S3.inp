@@ -1,0 +1,40 @@
+TITLE: Analysis 2+3
+DATA: FILE = analysis2_S3.dat;
+VARIABLE:
+NAMES = ID AB angry worried happy sad WB stressed lonely
+FTF CMC mixed
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = worried
+FTF CMC mixed
+weekend N;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = N;
+MISSING = .;
+DEFINE: CENTER N (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Worry is predicted by FtF interactions, the slope is random
+S1 | worried ON FTF;
+! Worry is predicted by CMC, the slope is random
+S2 | worried ON CMC;
+! Worry is predicted by mixed episodes, the slope is random
+S3 | worried ON mixed;
+! Control for weekend
+worried ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+worried S1-S3 WITH worried S1-S3;
+! The intercept is predicted by FtF interactions
+worried ON FTF;
+! The intercept is predicted by CMC
+worried ON CMC;
+! The intercept is predicted by mixed episodes
+worried ON mixed;
+! The intercept is predicted by neuroticism
+worried ON N;
+! The slopes are predicted by neuroticism
+S1-S3 ON N;
+OUTPUT: STDYX STDY TECH8;

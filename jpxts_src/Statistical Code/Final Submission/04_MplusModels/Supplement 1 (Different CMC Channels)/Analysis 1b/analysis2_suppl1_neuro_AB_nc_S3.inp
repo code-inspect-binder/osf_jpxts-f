@@ -1,0 +1,40 @@
+TITLE: Analysis 2+3
+DATA: FILE = analysis2_suppl1_S3.dat;
+VARIABLE:
+NAMES = ID AB angry worried happy sad WB stressed lonely
+TVC TCE SN
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = AB
+TVC TCE SN
+weekend N;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = N;
+MISSING = .;
+DEFINE: CENTER N (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Affect balance is predicted by TVC, the slope is random
+S1 | AB ON TVC;
+! Affect balance is predicted by TCE, the slope is random
+S2 | AB ON TCE;
+! Affect balance is predicted by SN, the slope is random
+S3 | AB ON SN;
+! Control for weekend
+AB ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+AB S1-S3 WITH AB S1-S3;
+! The intercept is predicted by TVC
+AB ON TVC;
+! The intercept is predicted by TCE
+AB ON TCE;
+! The intercept is predicted by SN
+AB ON SN;
+! The intercept is predicted by neuroticism
+AB ON N;
+! The slopes are predicted by neuroticism
+S1-S3 ON N;
+OUTPUT: STDYX STDY TECH8;

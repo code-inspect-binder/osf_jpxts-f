@@ -1,0 +1,55 @@
+TITLE: Analysis 5
+DATA: FILE = analysis4+5_suppl1_S2.dat;
+VARIABLE:
+NAMES = ID WB content stressed lonely
+TVC TCE SN peers family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = WB
+TCE SN family weak_ties
+weekend O
+txf txw sxf sxw;
+CLUSTER = ID;
+WITHIN = TCE SN family weak_ties weekend
+txf txw sxf sxw;
+BETWEEN = O;
+MISSING = .;
+DEFINE:
+CENTER TCE (GROUPMEAN);
+CENTER SN (GROUPMEAN);
+CENTER family (GROUPMEAN);
+CENTER weak_ties (GROUPMEAN);
+txf=TCE*family;
+txw=TCE*weak_ties;
+sxf=SN*family;
+sxw=SN*weak_ties;
+CENTER O (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Well-being is predicted by TCE, the slope is random
+S1 | WB ON TCE;
+! Well-being is predicted by SN, the slope is random
+S2 | WB ON SN;
+! Well-being is predicted by family, the slope is random
+S3 | WB ON family;
+! Well-being is predicted by weak ties, the slope is random
+S4 | WB ON weak_ties;
+! Well-being is predicted by TCE*family, the slope is random
+S5 | WB ON txf;
+! Well-being is predicted by TCE*weak ties, the slope is random
+S6 | WB ON txw;
+! Well-being is predicted by SN*family, the slope is random
+S7 | WB ON sxf;
+! Well-being is predicted by SN*weak ties, the slope is random
+S8 | WB ON sxw;
+! Control for weekend
+WB ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+WB S1-S8 WITH WB S1-S8;
+! The intercept is predicted by openness
+WB ON O;
+! The slopes are predicted by openness
+S1-S8 ON O;
+OUTPUT: STDYX STDY TECH8;

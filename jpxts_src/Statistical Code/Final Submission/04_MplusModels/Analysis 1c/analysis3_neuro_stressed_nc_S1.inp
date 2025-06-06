@@ -1,0 +1,40 @@
+TITLE: Analysis 2+3
+DATA: FILE = analysis3_S1.dat;
+VARIABLE:
+NAMES = ID WB content stressed lonely
+peers family weak_ties
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = stressed
+peers family weak_ties
+weekend N;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = N;
+MISSING = .;
+DEFINE: CENTER N (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Stress is predicted by peers, the slope is random
+S1 | stressed ON peers;
+! Stress is predicted by family, the slope is random
+S2 | stressed ON family;
+! Stress is predicted by weak ties, the slope is random
+S3 | stressed ON weak_ties;
+! Control for weekend
+stressed ON weekend;
+%BETWEEN%
+! Covariance between intercept and slopes
+stressed S1-S3 WITH stressed S1-S3;
+! The intercept is predicted by peers
+stressed ON peers;
+! The intercept is predicted by family
+stressed ON family;
+! The intercept is predicted by weak ties
+stressed ON weak_ties;
+! The intercept is predicted by neuroticism
+stressed ON N;
+! The slopes are predicted by neuroticism
+S1-S3 ON N;
+OUTPUT: STDYX STDY TECH8;

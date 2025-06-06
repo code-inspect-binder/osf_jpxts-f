@@ -1,0 +1,52 @@
+TITLE: Analysis 2+3
+DATA: FILE IS analysis1_model2.dat;
+VARIABLE:
+NAMES ARE ID WB FTF CMC mixed N
+gender ethnicity SES weekend;
+USEVARIABLES ARE WB FTF CMC mixed weekend N;
+CLUSTER IS ID;
+WITHIN IS weekend; BETWEEN IS N;
+MISSING = .;
+DEFINE:
+CENTER N (GRANDMEAN);
+CENTER FTF (GRANDMEAN);
+CENTER CMC (GRANDMEAN);
+CENTER mixed (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:			
+%WITHIN%
+WB;
+S1 | WB ON FTF; !Well-being is predicted by FtF interactions, the slope is random
+S2 | WB ON CMC; !Well-being is predicted by CMC, the slope is random
+S3 | WB ON mixed; !Well-being is predicted by mixed episodes, the slope is random
+WB ON weekend; !Control for weekend on the within-person level	
+%BETWEEN%
+[WB] (alpha);
+[S3] (slope);
+[S1];
+[S2];
+WB S1-S3; WB S1-S3 WITH WB S1-S3; 
+WB ON FTF; !The intercept is predicted by FtF interactions
+WB ON CMC; !The intercept is predicted by CMC
+WB ON mixed; !The intercept is predicted by mixed episodes
+WB ON N (alpha_N); !The intercept is predicted by neuroticism
+S1 ON N; !The slope of FtF interactions is predicted by neuroticism
+S2 ON N; !The slope of CMC is predicted by neuroticism
+S3 ON N (slope_N); !The slope of mixed episodes is predicted by neuroticism
+MODEL CONSTRAINT:
+PLOT(VL L M H VH);
+LOOP(XAXIS,-1,1,0.01);
+VL = alpha + alpha_N*(-2)*SQRT(0.588) + (slope + slope_N*(-2)*SQRT(0.588))*XAXIS;
+L = alpha + alpha_N*(-1)*SQRT(0.588) + (slope + slope_N*(-1)*SQRT(0.588))*XAXIS;
+M = alpha + slope*XAXIS;
+H = alpha + alpha_N*1*SQRT(0.588) + (slope + slope_N*1*SQRT(0.588))*XAXIS;
+VH = alpha + alpha_N*2*SQRT(0.588) + (slope + slope_N*2*SQRT(0.588))*XAXIS;
+NEW (SVL SL SM SH SVH);
+SVL = slope + slope_N*(-2)*SQRT(0.588);
+SL = slope + slope_N*(-1)*SQRT(0.588);
+SM = slope;
+SH = slope + slope_N*1*SQRT(0.588);
+SVH = slope + slope_N*2*SQRT(0.588);
+PLOT: TYPE = PLOT2;
+OUTPUT: STDYX STDY TECH8;

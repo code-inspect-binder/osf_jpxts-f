@@ -1,0 +1,26 @@
+TITLE: Analysis 1
+DATA: FILE = analysis1_S1.dat;
+VARIABLE:
+NAMES = ID WB content stressed lonely
+int
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = lonely
+int
+weekend;
+CLUSTER = ID;
+WITHIN = weekend;
+MISSING = .;
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Loneliness is predicted by social interactions, the slope is random
+S1 | lonely ON int;
+! Control for weekend
+lonely ON weekend;
+%BETWEEN%
+! Covariance between intercept and slope
+lonely WITH S1;
+! The intercept is predicted by social interactions
+lonely ON int;
+OUTPUT: STDYX STDY TECH8;

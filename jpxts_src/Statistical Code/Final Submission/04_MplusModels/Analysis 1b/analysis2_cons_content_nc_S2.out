@@ -1,0 +1,1024 @@
+Mplus VERSION 8.5 (Mac)
+MUTHEN & MUTHEN
+03/15/2022   1:56 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE: Analysis 2+3
+  DATA: FILE = analysis2_S2.dat;
+  VARIABLE:
+  NAMES = ID WB content stressed lonely
+  FTF CMC mixed
+  E A C N O gender ethnicity SES weekend;
+  USEVARIABLES = content
+  FTF CMC mixed
+  weekend C;
+  CLUSTER = ID;
+  WITHIN = weekend;
+  BETWEEN = C;
+  MISSING = .;
+  DEFINE: CENTER C (GRANDMEAN);
+  ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+  BITERATIONS = (10000); PROCESSORS = 2;
+  MODEL:
+  %WITHIN%
+  ! Contentment is predicted by FtF interactions, the slope is random
+  S1 | content ON FTF;
+  ! Contentment is predicted by CMC, the slope is random
+  S2 | content ON CMC;
+  ! Contentment is predicted by mixed episodes, the slope is random
+  S3 | content ON mixed;
+  ! Control for weekend
+  content ON weekend;
+  %BETWEEN%
+  ! Covariance between intercept and slopes
+  content S1-S3 WITH content S1-S3;
+  ! The intercept is predicted by FtF interactions
+  content ON FTF;
+  ! The intercept is predicted by CMC
+  content ON CMC;
+  ! The intercept is predicted by mixed episodes
+  content ON mixed;
+  ! The intercept is predicted by conscientiousness
+  content ON C;
+  ! The slopes are predicted by conscientiousness
+  S1-S3 ON C;
+  OUTPUT: STDYX STDY TECH8;
+
+
+
+*** WARNING in MODEL command
+  In the MODEL command, the x variable on the WITHIN level has been turned into a
+  y variable to enable latent variable decomposition.  This variable will be treated
+  as a y-variable on both levels:  FTF
+*** WARNING in MODEL command
+  In the MODEL command, the x variable on the WITHIN level has been turned into a
+  y variable to enable latent variable decomposition.  This variable will be treated
+  as a y-variable on both levels:  CMC
+*** WARNING in MODEL command
+  In the MODEL command, the x variable on the WITHIN level has been turned into a
+  y variable to enable latent variable decomposition.  This variable will be treated
+  as a y-variable on both levels:  MIXED
+*** WARNING
+  One or more individual-level variables have no variation within a
+  cluster for the following clusters.
+
+     Variable   Cluster IDs with no within-cluster variation
+
+      CONTENT     486 131 708 453 563 629 13 610
+      FTF         486 723 131 283 703 679 65 599 368 326 307 335 357 619 117 680 134
+      CMC         448 486 664 723 131 157 350 679 603 118 513 69 316 182 783 107 198 333 619 644
+                  360 519 836 179 727 536 211 320 501 332 311 606 88 582 177 202
+      MIXED       486 497 723 565 350 679 382 603 513 96 50 643 93 453 621 599 107 357 312 38
+                  574 417 567 568 155 790 826 19 619 362 592 410 646 822 41 707 500 360 711 338
+                  677 821 746 90 785 628 32 427 737 690 260 371 836 179 176 642 422 294 237 290
+                  428 851 736 776 320 331 614 40 501 251 226 506 630 116 130 395 578 401 175 203
+                  547 15 413 779 602 177 377 576 87 272 585 374 396 520 667 324 755 696 148 291
+                  346
+      WEEKEND     448 486 283 208 157 350 293 197 100 513 69 404 595 93 849 357 668
+
+*** WARNING
+  Data set contains cases with missing on x-variables.
+  These cases were not included in the analysis.
+  Number of cases with missing on x-variables:  5569
+   5 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+Analysis 2+3
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                       21349
+
+Number of dependent variables                                    4
+Number of independent variables                                  2
+Number of continuous latent variables                            3
+
+Observed dependent variables
+
+  Continuous
+   CONTENT     FTF         CMC         MIXED
+
+Observed independent variables
+   WEEKEND     C
+
+Continuous latent variables
+   S1          S2          S3
+
+Variables with special functions
+
+  Cluster variable      ID
+
+  Within variables
+   WEEKEND
+
+  Between variables
+   C
+
+  Centering (GRANDMEAN)
+   C
+
+
+Estimator                                                    BAYES
+Specifications for Bayesian Estimation
+  Point estimate                                            MEDIAN
+  Number of Markov chain Monte Carlo (MCMC) chains               2
+  Random seed for the first chain                                0
+  Starting value information                           UNPERTURBED
+  Algorithm used for Markov chain Monte Carlo           GIBBS(PX1)
+  Convergence criterion                                  0.500D-01
+  Maximum number of iterations                               50000
+  K-th iteration used for thinning                               1
+
+Input data file(s)
+  analysis2_S2.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of clusters                        633
+
+       Size (s)    Cluster ID with Size s
+
+          1        46 121 145 207 301 304 336 450 831
+          2        448 486 497 664
+          3        723 131 283 703
+          4        708 208 157 565 350 679
+          5        382 293 603 197 215 100
+          6        498
+          7        65 650 118
+          8        513 515 69 96 50 643 277 404
+          9        496 595 93 453 621
+         10        599 150 316 373
+         11        182 368 326 276 247 11 307 849
+         12        783 61 502 747 335 777 107
+         13        198 140 357 312 38 262
+         14        597 668 574 163 689
+         15        555 417 2 567 568 847 155 231
+         16        657 790 29 563 220 826 212 537 19
+         17        649 333 478 126 559 300 619 321 546
+         18        698 480 362 334 6 592 672 629 410 644
+         19        646 822 343 620 191 117
+         20        110 509 363 41 601 194 64 463
+         21        43 229 707 500 360 711 338 13 265 10 483 623 216 677
+         22        318 370 682 267 380 239 310 244 104 414 485 608
+         23        72 98 217 519 23 820 821 680 746 685 753 90 123 36
+         24        785 477 532 754 722 628 137
+         25        616 564 195 302 528 32 427 737 466 633 750 690 241 845
+                   260 701 854
+         26        45 398 451 243 371 213 91 772
+         27        470 715 306 434 435 328 836 733 190 179 846 807 639
+         28        305 457 766 798 76 412 812 782 542 670 176 857
+         29        724 727 759 158 832 359 133 471 67 810 713 814 86 700
+                   143
+         30        531 79 717 533 31 834 48 642 422 406 473 71 817 294
+                   237
+         31        432 18 325 481 290 108 536 721 566 543 162 570 425 579
+                   591
+         32        631 327 372 225 428 211 511 173 757 583 381 770 257
+                   851 441 219 199
+         33        725 634 760 635 736 467 776 522 320 331 614 40
+         34        279 802 681 12 501 842 251 666 387 332 671 311 230 94
+         35        226 95 271 386 159 617 160 506 146 354 4 709 809 222
+                   299 115 848 816 630 606 718
+         36        739 596 14 116 92 385 436 421 130 73 164 756 507 49
+                   562 431 714 830
+         37        771 833 744 408 152 469 395 204 42 400 577 825 578 401
+         38        175 82 792 269 693 221 527 203 530 132 258 313 84 22
+                   183 232 852 648 516
+         39        764 632 768 161 589 245 808 541 52 249 547 624 493 15
+                   88 794 795 27
+         40        838 187 460 804 582 167 789 476 641 264 674 413 270
+                   779 101
+         41        743 843 275 581 156 125 638 769 571 134 740 168 472
+         42        602 656 773 464 415 282 184 127 26 694 20 142 361 439
+                   544 622 765 458 379 8
+         43        482 399 177 758 665 801 377 474 551 784 394 54 170 120
+                   459 640
+         44        234 576 695 172 202 87 297 540 827 186 242 174
+         45        652 59 272 246 193 613 593 787 7
+         46        348 364 405 57 99 47 25 732 55 355 128 585 112 508 654
+         47        374 56 274 763 813 103 37 735 503 83 78 214
+         48        688 647 726 780 446 660 824 250 66 263
+         49        136 534 295 396 704 538 403 426 655
+         50        210 573 699 490 774 423 227 181 748
+         51        77 391 135 520 468 692 139 154
+         52        358 393 235 636 749 388 402 662 610 600 74 138 667
+         53        356 60 514 584 324 97 169 319 266 24
+         54        63 499 800 705 625 444
+         55        580 738 367 661 819 315
+         56        598 389 80 308 755
+         57        309 853 569 378 850 730
+         58        529 696 287
+         59        323 192 609 273
+         60        684 550 201 252 51 337 248 607 148 16
+         61        278 345 44 775 659 284
+         62        572 383 254 525
+         63        291 479 53 228
+         64        465 767
+         65        346 811 366
+         66        141 418
+
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+     Number of missing data patterns             2
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              CONTENT       FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ CONTENT        0.996
+ FTF            0.996         1.000
+ CMC            0.996         1.000         1.000
+ MIXED          0.996         1.000         1.000         1.000
+ WEEKEND        0.996         1.000         1.000         1.000         1.000
+ C              0.996         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              C
+              ________
+ C              1.000
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     CONTENT               2.589       0.057       1.000   10.02%       2.000      2.000      3.000
+           21274.000       0.798      -0.802       4.000   17.79%       3.000      3.000
+     FTF                   0.334       0.703       0.000   66.59%       0.000      0.000      0.000
+           21349.000       0.222      -1.505       1.000   33.41%       0.000      1.000
+     CMC                   0.238       1.229       0.000   76.18%       0.000      0.000      0.000
+           21349.000       0.181      -0.489       1.000   23.82%       0.000      1.000
+     MIXED                 0.170       1.752       0.000   82.95%       0.000      0.000      0.000
+           21349.000       0.141       1.071       1.000   17.05%       0.000      0.000
+     WEEKEND               0.285       0.950       0.000   71.45%       0.000      0.000      0.000
+           21349.000       0.204      -1.098       1.000   28.55%       0.000      1.000
+     C                     0.000       0.036      -1.778    0.16%      -0.445     -0.222      0.000
+             633.000       0.399      -0.295       1.555    0.63%       0.111      0.555
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+     USE THE FBITERATIONS OPTION TO INCREASE THE NUMBER OF ITERATIONS BY A FACTOR
+     OF AT LEAST TWO TO CHECK CONVERGENCE AND THAT THE PSR VALUE DOES NOT INCREASE.
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                              32
+
+Information Criteria
+
+          Deviance (DIC)                       111124.782
+          Estimated Number of Parameters (pD)    2469.329
+
+
+
+MODEL RESULTS
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within Level
+
+ CONTENT    ON
+    WEEKEND            0.171       0.011      0.000       0.150       0.193      *
+
+ Variances
+    FTF                0.201       0.002      0.000       0.197       0.205      *
+    CMC                0.158       0.002      0.000       0.155       0.161      *
+    MIXED              0.122       0.001      0.000       0.119       0.124      *
+
+ Residual Variances
+    CONTENT            0.498       0.005      0.000       0.488       0.508      *
+
+Between Level
+
+ S1         ON
+    C                 -0.006       0.027      0.408      -0.058       0.048
+
+ S2         ON
+    C                  0.007       0.027      0.389      -0.048       0.059
+
+ S3         ON
+    C                 -0.001       0.034      0.493      -0.068       0.066
+
+ CONTENT    ON
+    FTF                0.677       0.207      0.000       0.276       1.085      *
+    CMC                0.393       0.181      0.015       0.041       0.756      *
+    MIXED              0.622       0.177      0.000       0.280       0.974      *
+    C                  0.126       0.033      0.000       0.061       0.192      *
+
+ CONTENT  WITH
+    S1                -0.004       0.009      0.340      -0.021       0.013
+    S2                 0.002       0.010      0.425      -0.018       0.020
+    S3                -0.024       0.012      0.022      -0.047      -0.001      *
+
+ S1       WITH
+    S2                 0.004       0.006      0.294      -0.008       0.016
+    S3                 0.045       0.010      0.000       0.025       0.065      *
+
+ S2       WITH
+    S3                 0.017       0.009      0.030      -0.001       0.034
+
+ Means
+    FTF                0.335       0.007      0.000       0.322       0.349      *
+    CMC                0.245       0.007      0.000       0.231       0.258      *
+    MIXED              0.171       0.006      0.000       0.159       0.184      *
+
+ Intercepts
+    CONTENT            2.130       0.116      0.000       1.898       2.352      *
+    S1                 0.276       0.017      0.000       0.244       0.310      *
+    S2                 0.106       0.017      0.000       0.074       0.139      *
+    S3                 0.251       0.022      0.000       0.207       0.294      *
+
+ Variances
+    FTF                0.022       0.002      0.000       0.019       0.026      *
+    CMC                0.025       0.002      0.000       0.022       0.028      *
+    MIXED              0.020       0.001      0.000       0.018       0.023      *
+
+ Residual Variances
+    CONTENT            0.253       0.016      0.000       0.223       0.286      *
+    S1                 0.049       0.010      0.000       0.031       0.069      *
+    S2                 0.018       0.007      0.000       0.006       0.034      *
+    S3                 0.076       0.015      0.000       0.048       0.108      *
+
+
+STANDARDIZED MODEL RESULTS
+
+
+STDYX Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | CONTENT ON
+    FTF                0.163       0.008      0.000       0.146       0.178      *
+
+ S2 | CONTENT ON
+    CMC                0.056       0.008      0.000       0.040       0.073      *
+
+ S3 | CONTENT ON
+    MIXED              0.113       0.009      0.000       0.097       0.131      *
+
+ CONTENT    ON
+    WEEKEND            0.098       0.006      0.000       0.086       0.111      *
+
+ Variances
+    FTF                1.000       0.000      0.000       1.000       1.000
+    CMC                1.000       0.000      0.000       1.000       1.000
+    MIXED              1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    CONTENT            0.911       0.006      0.000       0.900       0.923      *
+
+Between Level
+
+ S1         ON
+    C                 -0.013       0.054      0.408      -0.117       0.095
+
+ S2         ON
+    C                  0.024       0.094      0.389      -0.159       0.216
+
+ S3         ON
+    C                 -0.001       0.055      0.493      -0.110       0.105
+
+ CONTENT    ON
+    FTF                0.191       0.056      0.000       0.079       0.298      *
+    CMC                0.117       0.052      0.015       0.012       0.219      *
+    MIXED              0.168       0.046      0.000       0.076       0.257      *
+    C                  0.106       0.028      0.000       0.051       0.160      *
+
+ CONTENT  WITH
+    S1                -0.033       0.080      0.340      -0.194       0.120
+    S2                 0.027       0.147      0.425      -0.264       0.320
+    S3                -0.170       0.083      0.022      -0.334      -0.006      *
+
+ S1       WITH
+    S2                 0.130       0.209      0.294      -0.334       0.459
+    S3                 0.734       0.096      0.000       0.525       0.899      *
+
+ S2       WITH
+    S3                 0.469       0.204      0.030      -0.044       0.758
+
+ Means
+    FTF                2.248       0.095      0.000       2.064       2.442      *
+    CMC                1.558       0.070      0.000       1.422       1.695      *
+    MIXED              1.207       0.061      0.000       1.088       1.327      *
+
+ Intercepts
+    CONTENT            4.029       0.308      0.000       3.404       4.615      *
+    S1                 1.252       0.148      0.000       1.010       1.584      *
+    S2                 0.793       0.224      0.000       0.474       1.366      *
+    S3                 0.906       0.131      0.000       0.696       1.195      *
+
+ Variances
+    FTF                1.000       0.000      0.000       1.000       1.000
+    CMC                1.000       0.000      0.000       1.000       1.000
+    MIXED              1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    CONTENT            0.906       0.037      0.000       0.819       0.963      *
+    S1                 0.999       0.004      0.000       0.985       1.000      *
+    S2                 0.996       0.014      0.000       0.950       1.000      *
+    S3                 0.999       0.004      0.000       0.985       1.000      *
+
+
+STDY Standardization
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within-Level Standardized Estimates Averaged Over Clusters
+
+ S1 | CONTENT ON
+    FTF                0.163       0.008      0.000       0.146       0.178      *
+
+ S2 | CONTENT ON
+    CMC                0.056       0.008      0.000       0.040       0.073      *
+
+ S3 | CONTENT ON
+    MIXED              0.113       0.009      0.000       0.097       0.131      *
+
+ CONTENT    ON
+    WEEKEND            0.232       0.015      0.000       0.202       0.262      *
+
+ Variances
+    FTF                1.000       0.000      0.000       1.000       1.000
+    CMC                1.000       0.000      0.000       1.000       1.000
+    MIXED              1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    CONTENT            0.911       0.006      0.000       0.900       0.923      *
+
+Between Level
+
+ S1         ON
+    C                 -0.029       0.122      0.408      -0.265       0.213
+
+ S2         ON
+    C                  0.055       0.211      0.389      -0.360       0.487
+
+ S3         ON
+    C                 -0.002       0.124      0.493      -0.247       0.238
+
+ CONTENT    ON
+    FTF                0.191       0.056      0.000       0.079       0.298      *
+    CMC                0.117       0.052      0.015       0.012       0.219      *
+    MIXED              0.168       0.046      0.000       0.076       0.257      *
+    C                  0.239       0.063      0.000       0.116       0.361      *
+
+ CONTENT  WITH
+    S1                -0.033       0.080      0.340      -0.194       0.120
+    S2                 0.027       0.147      0.425      -0.264       0.320
+    S3                -0.170       0.083      0.022      -0.334      -0.006      *
+
+ S1       WITH
+    S2                 0.130       0.209      0.294      -0.334       0.459
+    S3                 0.734       0.096      0.000       0.525       0.899      *
+
+ S2       WITH
+    S3                 0.469       0.204      0.030      -0.044       0.758
+
+ Means
+    FTF                2.248       0.095      0.000       2.064       2.442      *
+    CMC                1.558       0.070      0.000       1.422       1.695      *
+    MIXED              1.207       0.061      0.000       1.088       1.327      *
+
+ Intercepts
+    CONTENT            4.029       0.308      0.000       3.404       4.615      *
+    S1                 1.252       0.148      0.000       1.010       1.584      *
+    S2                 0.793       0.224      0.000       0.474       1.366      *
+    S3                 0.906       0.131      0.000       0.696       1.195      *
+
+ Variances
+    FTF                1.000       0.000      0.000       1.000       1.000
+    CMC                1.000       0.000      0.000       1.000       1.000
+    MIXED              1.000       0.000      0.000       1.000       1.000
+
+ Residual Variances
+    CONTENT            0.906       0.037      0.000       0.819       0.963      *
+    S1                 0.999       0.004      0.000       0.985       1.000      *
+    S2                 0.996       0.014      0.000       0.950       1.000      *
+    S3                 0.999       0.004      0.000       0.985       1.000      *
+
+
+R-SQUARE
+
+Within-Level R-Square Averaged Across Clusters
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    CONTENT            0.089       0.006      0.000       0.077       0.100
+
+Between Level
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    CONTENT            0.094       0.037      0.000       0.037       0.181
+
+                                Posterior  One-Tailed         95% C.I.
+    Variable        Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%
+
+    S1                 0.001       0.004      0.000       0.000       0.015
+    S2                 0.004       0.014      0.000       0.000       0.050
+    S3                 0.001       0.004      0.000       0.000       0.015
+
+
+TECHNICAL 1 OUTPUT
+
+
+     PARAMETER SPECIFICATION FOR WITHIN
+
+
+           NU
+              CONTENT       FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           LAMBDA
+              CONTENT       FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ CONTENT            0             0             0             0             0
+ FTF                0             0             0             0             0
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           THETA
+              CONTENT       FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ CONTENT            0
+ FTF                0             0
+ CMC                0             0             0
+ MIXED              0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           ALPHA
+              CONTENT       FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           BETA
+              CONTENT       FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ CONTENT            0             0             0             0             1
+ FTF                0             0             0             0             0
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ WEEKEND            0             0             0             0             0
+
+
+           PSI
+              CONTENT       FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ CONTENT            2
+ FTF                0             3
+ CMC                0             0             4
+ MIXED              0             0             0             5
+ WEEKEND            0             0             0             0             0
+
+
+     PARAMETER SPECIFICATION FOR BETWEEN
+
+
+           NU
+              CONTENT       FTF           CMC           MIXED         C
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           LAMBDA
+              S1            S2            S3            CONTENT       FTF
+              ________      ________      ________      ________      ________
+ CONTENT            0             0             0             0             0
+ FTF                0             0             0             0             0
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ C                  0             0             0             0             0
+
+
+           LAMBDA
+              CMC           MIXED         C
+              ________      ________      ________
+ CONTENT            0             0             0
+ FTF                0             0             0
+ CMC                0             0             0
+ MIXED              0             0             0
+ C                  0             0             0
+
+
+           THETA
+              CONTENT       FTF           CMC           MIXED         C
+              ________      ________      ________      ________      ________
+ CONTENT            0
+ FTF                0             0
+ CMC                0             0             0
+ MIXED              0             0             0             0
+ C                  0             0             0             0             0
+
+
+           ALPHA
+              S1            S2            S3            CONTENT       FTF
+              ________      ________      ________      ________      ________
+                    6             7             8             9            10
+
+
+           ALPHA
+              CMC           MIXED         C
+              ________      ________      ________
+                   11            12             0
+
+
+           BETA
+              S1            S2            S3            CONTENT       FTF
+              ________      ________      ________      ________      ________
+ S1                 0             0             0             0             0
+ S2                 0             0             0             0             0
+ S3                 0             0             0             0             0
+ CONTENT            0             0             0             0            16
+ FTF                0             0             0             0             0
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ C                  0             0             0             0             0
+
+
+           BETA
+              CMC           MIXED         C
+              ________      ________      ________
+ S1                 0             0            13
+ S2                 0             0            14
+ S3                 0             0            15
+ CONTENT           17            18            19
+ FTF                0             0             0
+ CMC                0             0             0
+ MIXED              0             0             0
+ C                  0             0             0
+
+
+           PSI
+              S1            S2            S3            CONTENT       FTF
+              ________      ________      ________      ________      ________
+ S1                20
+ S2                21            22
+ S3                23            24            25
+ CONTENT           26            27            28            29
+ FTF                0             0             0             0            30
+ CMC                0             0             0             0             0
+ MIXED              0             0             0             0             0
+ C                  0             0             0             0             0
+
+
+           PSI
+              CMC           MIXED         C
+              ________      ________      ________
+ CMC               31
+ MIXED              0            32
+ C                  0             0             0
+
+
+     STARTING VALUES FOR WITHIN
+
+
+           NU
+              CONTENT       FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              CONTENT       FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ CONTENT        1.000         0.000         0.000         0.000         0.000
+ FTF            0.000         1.000         0.000         0.000         0.000
+ CMC            0.000         0.000         1.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         1.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         1.000
+
+
+           THETA
+              CONTENT       FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ CONTENT        0.000
+ FTF            0.000         0.000
+ CMC            0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           ALPHA
+              CONTENT       FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              CONTENT       FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ CONTENT        0.000         0.000         0.000         0.000         0.000
+ FTF            0.000         0.000         0.000         0.000         0.000
+ CMC            0.000         0.000         0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         0.000         0.000
+ WEEKEND        0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              CONTENT       FTF           CMC           MIXED         WEEKEND
+              ________      ________      ________      ________      ________
+ CONTENT        0.399
+ FTF            0.000         0.111
+ CMC            0.000         0.000         0.091
+ MIXED          0.000         0.000         0.000         0.071
+ WEEKEND        0.000         0.000         0.000         0.000         0.102
+
+
+     STARTING VALUES FOR BETWEEN
+
+
+           NU
+              CONTENT       FTF           CMC           MIXED         C
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              S1            S2            S3            CONTENT       FTF
+              ________      ________      ________      ________      ________
+ CONTENT        0.000         0.000         0.000         1.000         0.000
+ FTF            0.000         0.000         0.000         0.000         1.000
+ CMC            0.000         0.000         0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         0.000         0.000
+ C              0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              CMC           MIXED         C
+              ________      ________      ________
+ CONTENT        0.000         0.000         0.000
+ FTF            0.000         0.000         0.000
+ CMC            1.000         0.000         0.000
+ MIXED          0.000         1.000         0.000
+ C              0.000         0.000         1.000
+
+
+           THETA
+              CONTENT       FTF           CMC           MIXED         C
+              ________      ________      ________      ________      ________
+ CONTENT        0.000
+ FTF            0.000         0.000
+ CMC            0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         0.000
+ C              0.000         0.000         0.000         0.000         0.000
+
+
+           ALPHA
+              S1            S2            S3            CONTENT       FTF
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         2.589         0.334
+
+
+           ALPHA
+              CMC           MIXED         C
+              ________      ________      ________
+                0.238         0.170         0.000
+
+
+           BETA
+              S1            S2            S3            CONTENT       FTF
+              ________      ________      ________      ________      ________
+ S1             0.000         0.000         0.000         0.000         0.000
+ S2             0.000         0.000         0.000         0.000         0.000
+ S3             0.000         0.000         0.000         0.000         0.000
+ CONTENT        0.000         0.000         0.000         0.000         0.000
+ FTF            0.000         0.000         0.000         0.000         0.000
+ CMC            0.000         0.000         0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         0.000         0.000
+ C              0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              CMC           MIXED         C
+              ________      ________      ________
+ S1             0.000         0.000         0.000
+ S2             0.000         0.000         0.000
+ S3             0.000         0.000         0.000
+ CONTENT        0.000         0.000         0.000
+ FTF            0.000         0.000         0.000
+ CMC            0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000
+ C              0.000         0.000         0.000
+
+
+           PSI
+              S1            S2            S3            CONTENT       FTF
+              ________      ________      ________      ________      ________
+ S1             1.000
+ S2             0.000         1.000
+ S3             0.000         0.000         1.000
+ CONTENT        0.000         0.000         0.000         0.399
+ FTF            0.000         0.000         0.000         0.000         0.111
+ CMC            0.000         0.000         0.000         0.000         0.000
+ MIXED          0.000         0.000         0.000         0.000         0.000
+ C              0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              CMC           MIXED         C
+              ________      ________      ________
+ CMC            0.091
+ MIXED          0.000         0.071
+ C              0.000         0.000         0.196
+
+
+
+     PRIORS FOR ALL PARAMETERS            PRIOR MEAN      PRIOR VARIANCE     PRIOR STD. DEV.
+
+     Parameter 1~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 2~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 3~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 4~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 5~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 6~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 7~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 8~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 9~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 10~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 11~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 12~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 13~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 14~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 15~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 16~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 17~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 18~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 19~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 20~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 21~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 22~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 23~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 24~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 25~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 26~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 27~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 28~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 29~IW(0.000,-5)             infinity            infinity            infinity
+     Parameter 30~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 31~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 32~IG(-1.000,0.000)         infinity            infinity            infinity
+
+
+TECHNICAL 8 OUTPUT
+
+
+   TECHNICAL 8 OUTPUT FOR BAYES ESTIMATION
+
+     CHAIN    BSEED
+     1        0
+     2        285380
+
+                     POTENTIAL       PARAMETER WITH
+     ITERATION    SCALE REDUCTION      HIGHEST PSR
+     100              1.459               25
+     200              1.242               8
+     300              1.262               23
+     400              1.356               23
+     500              1.319               14
+     600              1.105               14
+     700              1.219               25
+     800              1.105               25
+     900              1.087               24
+     1000             1.078               23
+     1100             1.074               24
+     1200             1.085               20
+     1300             1.084               20
+     1400             1.084               14
+     1500             1.115               22
+     1600             1.101               22
+     1700             1.113               22
+     1800             1.043               22
+     1900             1.022               6
+     2000             1.022               6
+     2100             1.016               6
+     2200             1.014               6
+     2300             1.010               25
+     2400             1.019               25
+     2500             1.042               24
+     2600             1.052               24
+     2700             1.076               24
+     2800             1.092               24
+     2900             1.098               24
+     3000             1.079               24
+     3100             1.073               24
+     3200             1.078               24
+     3300             1.094               24
+     3400             1.133               24
+     3500             1.143               24
+     3600             1.152               24
+     3700             1.155               24
+     3800             1.164               24
+     3900             1.175               24
+     4000             1.209               24
+     4100             1.208               24
+     4200             1.210               24
+     4300             1.246               24
+     4400             1.260               24
+     4500             1.273               24
+     4600             1.275               24
+     4700             1.279               24
+     4800             1.255               24
+     4900             1.227               24
+     5000             1.213               24
+     5100             1.200               24
+     5200             1.174               24
+     5300             1.148               24
+     5400             1.123               24
+     5500             1.097               24
+     5600             1.090               24
+     5700             1.083               24
+     5800             1.072               25
+     5900             1.077               25
+     6000             1.070               25
+     6100             1.069               25
+     6200             1.070               25
+     6300             1.068               25
+     6400             1.069               25
+     6500             1.065               25
+     6600             1.064               25
+     6700             1.051               25
+     6800             1.045               25
+     6900             1.039               25
+     7000             1.034               25
+     7100             1.032               25
+     7200             1.027               25
+     7300             1.029               25
+     7400             1.032               25
+     7500             1.029               25
+     7600             1.024               25
+     7700             1.026               25
+     7800             1.027               25
+     7900             1.028               25
+     8000             1.028               25
+     8100             1.025               25
+     8200             1.027               25
+     8300             1.028               25
+     8400             1.029               25
+     8500             1.030               22
+     8600             1.034               22
+     8700             1.041               22
+     8800             1.052               22
+     8900             1.061               22
+     9000             1.070               22
+     9100             1.072               22
+     9200             1.070               22
+     9300             1.068               22
+     9400             1.069               22
+     9500             1.069               22
+     9600             1.067               22
+     9700             1.070               22
+     9800             1.069               22
+     9900             1.063               22
+     10000            1.059               22
+
+
+     Beginning Time:  13:56:51
+        Ending Time:  14:02:42
+       Elapsed Time:  00:05:51
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2020 Muthen & Muthen

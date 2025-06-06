@@ -1,0 +1,518 @@
+Mplus VERSION 8.5 (Mac)
+MUTHEN & MUTHEN
+10/11/2021   9:43 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE: Power analysis;
+  MONTECARLO: NAMES ARE WB int P;
+  NOBSERVATIONS = 138375;
+  CSIZES = 3075(45); NREPS = 1000;
+  SEED = 3729; NCSIZES = 1;
+  BETWEEN IS P;
+  ANALYSIS: TYPE IS TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+  MODEL POPULATION:
+  %WITHIN%
+  WB*0.577 int*0.173;
+  S1 | WB ON int;
+  %BETWEEN%
+  [WB*-0.200 S1*0.184 int*0.690];
+  WB*0.422 S1*0.048 int*0.053;
+  WB WITH S1*-0.036;
+  WB ON int*0.285;
+  WB ON P*0.086;
+  S1 ON P*0.029;
+  P*0.589; [P*0];
+  MODEL:
+  %WITHIN%
+  WB*0.577 int*0.173;
+  S1 | WB ON int;
+  %BETWEEN%
+  [WB*-0.200 S1*0.184 int*0.690];
+  WB*0.422 S1*0.048 int*0.053;
+  WB WITH S1*-0.036;
+  WB ON int*0.285;
+  WB ON P*0.086;
+  S1 ON P*0.029;
+
+
+
+
+*** WARNING in MODEL command
+  In the MODEL command, the x variable on the WITHIN level has been turned into a
+  y variable to enable latent variable decomposition.  This variable will be treated
+  as a y-variable on both levels:  INT
+   1 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+Power analysis;
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                      138375
+
+Number of replications
+    Requested                                                 1000
+    Completed                                                 1000
+Value of seed                                                 3729
+
+Number of dependent variables                                    2
+Number of independent variables                                  1
+Number of continuous latent variables                            1
+
+Observed dependent variables
+
+  Continuous
+   WB          INT
+
+Observed independent variables
+   P
+
+Continuous latent variables
+   S1
+
+Variables with special functions
+
+  Between variables
+   P
+
+
+Estimator                                                    BAYES
+Specifications for Bayesian Estimation
+  Point estimate                                            MEDIAN
+  Number of Markov chain Monte Carlo (MCMC) chains               2
+  Random seed for the first chain                                0
+  Starting value information                           UNPERTURBED
+  Algorithm used for Markov chain Monte Carlo           GIBBS(PX1)
+  Convergence criterion                                  0.500D-01
+  Maximum number of iterations                               50000
+  K-th iteration used for thinning                               1
+
+
+SUMMARY OF DATA FOR THE FIRST REPLICATION
+
+     Cluster information
+
+       Size (s)    Number of clusters of Size s
+
+         45          3075
+
+
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                       12
+
+Information Criteria
+
+    Deviance (DIC)
+
+        Mean                            473203.394
+        Std Dev                            781.287
+        Number of successful computations     1000
+
+             Proportions                   Percentiles
+        Expected    Observed         Expected       Observed
+           0.990       0.990       471385.886     471377.574
+           0.980       0.983       471598.865     471639.720
+           0.950       0.950       471918.255     471913.546
+           0.900       0.900       472202.096     472197.796
+           0.800       0.802       472545.863     472549.094
+           0.700       0.701       472793.687     472797.179
+           0.500       0.499       473203.394     473202.718
+           0.300       0.290       473613.100     473595.924
+           0.200       0.192       473860.925     473843.328
+           0.100       0.108       474204.691     474231.313
+           0.050       0.053       474488.532     474497.063
+           0.020       0.017       474807.922     474750.540
+           0.010       0.010       475020.901     475012.833
+
+    Estimated Number of Parameters (pD)
+
+        Mean                              6654.148
+        Std Dev                             76.214
+        Number of successful computations     1000
+
+             Proportions                   Percentiles
+        Expected    Observed         Expected       Observed
+           0.990       0.997         6476.851       6514.402
+           0.980       0.994         6497.627       6523.784
+           0.950       0.973         6528.783       6545.269
+           0.900       0.928         6556.472       6567.997
+           0.800       0.807         6590.006       6592.756
+           0.700       0.689         6614.182       6612.130
+           0.500       0.440         6654.148       6644.752
+           0.300       0.244         6694.115       6682.237
+           0.200       0.175         6718.290       6708.543
+           0.100       0.105         6751.825       6755.635
+           0.050       0.080         6779.513       6808.971
+           0.020       0.047         6810.670       6851.768
+           0.010       0.031         6831.446       6867.027
+
+
+
+MODEL RESULTS
+
+                              ESTIMATES              S. E.     M. S. E.  95%  % Sig
+                 Population   Average   Std. Dev.   Average             Cover Coeff
+
+Within Level
+
+ Variances
+  INT                 0.173     0.1730     0.0007     0.0007     0.0000 0.937 1.000
+
+ Residual Variances
+  WB                  0.577     0.5771     0.0023     0.0022     0.0000 0.932 1.000
+
+Between Level
+
+ S1         ON
+  P                   0.029     0.0287     0.0086     0.0081     0.0001 0.930 0.929
+
+ WB         ON
+  INT                 0.285     0.2867     0.0534     0.0526     0.0029 0.935 1.000
+  P                   0.086     0.0856     0.0157     0.0155     0.0002 0.937 1.000
+
+ WB       WITH
+  S1                 -0.036    -0.0360     0.0043     0.0042     0.0000 0.932 1.000
+
+ Means
+  INT                 0.690     0.6899     0.0042     0.0043     0.0000 0.946 1.000
+
+ Intercepts
+  WB                 -0.200    -0.2009     0.0386     0.0381     0.0015 0.932 0.999
+  S1                  0.184     0.1839     0.0067     0.0062     0.0000 0.934 1.000
+
+ Variances
+  INT                 0.053     0.0531     0.0015     0.0015     0.0000 0.944 1.000
+
+ Residual Variances
+  WB                  0.422     0.4224     0.0112     0.0111     0.0001 0.952 1.000
+  S1                  0.048     0.0479     0.0035     0.0030     0.0000 0.895 1.000
+
+
+CORRELATIONS AND MEAN SQUARE ERROR OF THE TRUE FACTOR VALUES AND THE FACTOR SCORES
+
+                        CORRELATIONS                MEAN SQUARE ERROR
+                    Average    Std. Dev.           Average    Std. Dev.
+  S1                  0.640       0.011              0.169       0.002
+  WB                  0.985       0.001              0.113       0.002
+  INT                 0.965       0.001              0.060       0.001
+
+
+TECHNICAL 1 OUTPUT
+
+
+     PARAMETER SPECIFICATION FOR WITHIN
+
+
+           NU
+              WB            INT
+              ________      ________
+                    0             0
+
+
+           LAMBDA
+              WB            INT
+              ________      ________
+ WB                 0             0
+ INT                0             0
+
+
+           THETA
+              WB            INT
+              ________      ________
+ WB                 0
+ INT                0             0
+
+
+           ALPHA
+              WB            INT
+              ________      ________
+                    0             0
+
+
+           BETA
+              WB            INT
+              ________      ________
+ WB                 0             0
+ INT                0             0
+
+
+           PSI
+              WB            INT
+              ________      ________
+ WB                 1
+ INT                0             2
+
+
+     PARAMETER SPECIFICATION FOR BETWEEN
+
+
+           NU
+              WB            INT           P
+              ________      ________      ________
+                    0             0             0
+
+
+           LAMBDA
+              S1            WB            INT           P
+              ________      ________      ________      ________
+ WB                 0             0             0             0
+ INT                0             0             0             0
+ P                  0             0             0             0
+
+
+           THETA
+              WB            INT           P
+              ________      ________      ________
+ WB                 0
+ INT                0             0
+ P                  0             0             0
+
+
+           ALPHA
+              S1            WB            INT           P
+              ________      ________      ________      ________
+                    3             4             5             0
+
+
+           BETA
+              S1            WB            INT           P
+              ________      ________      ________      ________
+ S1                 0             0             0             6
+ WB                 0             0             7             8
+ INT                0             0             0             0
+ P                  0             0             0             0
+
+
+           PSI
+              S1            WB            INT           P
+              ________      ________      ________      ________
+ S1                 9
+ WB                10            11
+ INT                0             0            12
+ P                  0             0             0             0
+
+
+     STARTING VALUES FOR WITHIN
+
+
+           NU
+              WB            INT
+              ________      ________
+                0.000         0.000
+
+
+           LAMBDA
+              WB            INT
+              ________      ________
+ WB             1.000         0.000
+ INT            0.000         1.000
+
+
+           THETA
+              WB            INT
+              ________      ________
+ WB             0.000
+ INT            0.000         0.000
+
+
+           ALPHA
+              WB            INT
+              ________      ________
+                0.000         0.000
+
+
+           BETA
+              WB            INT
+              ________      ________
+ WB             0.000         0.000
+ INT            0.000         0.000
+
+
+           PSI
+              WB            INT
+              ________      ________
+ WB             0.577
+ INT            0.000         0.173
+
+
+     STARTING VALUES FOR BETWEEN
+
+
+           NU
+              WB            INT           P
+              ________      ________      ________
+                0.000         0.000         0.000
+
+
+           LAMBDA
+              S1            WB            INT           P
+              ________      ________      ________      ________
+ WB             0.000         1.000         0.000         0.000
+ INT            0.000         0.000         1.000         0.000
+ P              0.000         0.000         0.000         1.000
+
+
+           THETA
+              WB            INT           P
+              ________      ________      ________
+ WB             0.000
+ INT            0.000         0.000
+ P              0.000         0.000         0.000
+
+
+           ALPHA
+              S1            WB            INT           P
+              ________      ________      ________      ________
+                0.184        -0.200         0.690         0.000
+
+
+           BETA
+              S1            WB            INT           P
+              ________      ________      ________      ________
+ S1             0.000         0.000         0.000         0.029
+ WB             0.000         0.000         0.285         0.086
+ INT            0.000         0.000         0.000         0.000
+ P              0.000         0.000         0.000         0.000
+
+
+           PSI
+              S1            WB            INT           P
+              ________      ________      ________      ________
+ S1             0.048
+ WB            -0.036         0.422
+ INT            0.000         0.000         0.053
+ P              0.000         0.000         0.000         0.500
+
+
+     POPULATION VALUES FOR WITHIN
+
+
+           NU
+              WB            INT
+              ________      ________
+                0.000         0.000
+
+
+           LAMBDA
+              WB            INT
+              ________      ________
+ WB             1.000         0.000
+ INT            0.000         1.000
+
+
+           THETA
+              WB            INT
+              ________      ________
+ WB             0.000
+ INT            0.000         0.000
+
+
+           ALPHA
+              WB            INT
+              ________      ________
+                0.000         0.000
+
+
+           BETA
+              WB            INT
+              ________      ________
+ WB             0.000         0.000
+ INT            0.000         0.000
+
+
+           PSI
+              WB            INT
+              ________      ________
+ WB             0.577
+ INT            0.000         0.173
+
+
+     POPULATION VALUES FOR BETWEEN
+
+
+           NU
+              WB            INT           P
+              ________      ________      ________
+                0.000         0.000         0.000
+
+
+           LAMBDA
+              S1            WB            INT           P
+              ________      ________      ________      ________
+ WB             0.000         1.000         0.000         0.000
+ INT            0.000         0.000         1.000         0.000
+ P              0.000         0.000         0.000         1.000
+
+
+           THETA
+              WB            INT           P
+              ________      ________      ________
+ WB             0.000
+ INT            0.000         0.000
+ P              0.000         0.000         0.000
+
+
+           ALPHA
+              S1            WB            INT           P
+              ________      ________      ________      ________
+                0.184        -0.200         0.690         0.000
+
+
+           BETA
+              S1            WB            INT           P
+              ________      ________      ________      ________
+ S1             0.000         0.000         0.000         0.029
+ WB             0.000         0.000         0.285         0.086
+ INT            0.000         0.000         0.000         0.000
+ P              0.000         0.000         0.000         0.000
+
+
+           PSI
+              S1            WB            INT           P
+              ________      ________      ________      ________
+ S1             0.048
+ WB            -0.036         0.422
+ INT            0.000         0.000         0.053
+ P              0.000         0.000         0.000         0.589
+
+
+
+     PRIORS FOR ALL PARAMETERS            PRIOR MEAN      PRIOR VARIANCE     PRIOR STD. DEV.
+
+     Parameter 1~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 2~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 3~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 4~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 5~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 6~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 7~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 8~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 9~IW(0.000,-3)              infinity            infinity            infinity
+     Parameter 10~IW(0.000,-3)             infinity            infinity            infinity
+     Parameter 11~IW(0.000,-3)             infinity            infinity            infinity
+     Parameter 12~IG(-1.000,0.000)         infinity            infinity            infinity
+
+
+     Beginning Time:  21:43:57
+        Ending Time:  02:05:04
+       Elapsed Time:  04:21:07
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2020 Muthen & Muthen

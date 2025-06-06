@@ -1,0 +1,40 @@
+TITLE: Analysis 1
+DATA: FILE IS analysis1_model1.dat;
+VARIABLE:
+NAMES ARE ID WB int N
+gender ethnicity SES weekend;
+USEVARIABLES ARE WB int weekend N;
+CLUSTER IS ID;
+WITHIN IS weekend; BETWEEN IS N;
+MISSING = .;
+DEFINE: CENTER N (GRANDMEAN); CENTER int (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:			
+%WITHIN%
+WB;
+S1 | WB ON int; !Well-being is predicted by social interactions, the slope is random
+WB ON weekend; !Control for weekend on the within-person level
+%BETWEEN%
+[WB] (alpha);
+[S1] (slope);
+WB S1; WB WITH S1;
+WB ON int; !The intercept is predicted by social interactions
+WB ON N (alpha_N); !The intercept is predicted by neuroticism
+S1 on N (slope_N); !The slope is predicted by neuroticism
+MODEL CONSTRAINT:
+PLOT(VL L M H VH);
+LOOP(XAXIS,-1,1,0.01);
+VL = alpha + alpha_N*(-2)*SQRT(0.589) + (slope + slope_N*(-2)*SQRT(0.589))*XAXIS;
+L = alpha + alpha_N*(-1)*SQRT(0.589) + (slope + slope_N*(-1)*SQRT(0.589))*XAXIS;
+M = alpha + slope*XAXIS;
+H = alpha + alpha_N*1*SQRT(0.589) + (slope + slope_N*1*SQRT(0.589))*XAXIS;
+VH = alpha + alpha_N*2*SQRT(0.589) + (slope + slope_N*2*SQRT(0.589))*XAXIS;
+NEW (SVL SL SM SH SVH);
+SVL = slope + slope_N*(-2)*SQRT(0.589);
+SL = slope + slope_N*(-1)*SQRT(0.589);
+SM = slope;
+SH = slope + slope_N*1*SQRT(0.589);
+SVH = slope + slope_N*2*SQRT(0.589);
+PLOT: TYPE = PLOT2;
+OUTPUT: STDYX STDY TECH8;

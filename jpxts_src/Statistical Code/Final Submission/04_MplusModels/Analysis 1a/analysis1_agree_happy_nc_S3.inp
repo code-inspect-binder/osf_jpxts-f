@@ -1,0 +1,32 @@
+TITLE: Analysis 1
+DATA: FILE = analysis1_S3.dat;
+VARIABLE:
+NAMES = ID AB angry worried happy sad WB stressed lonely
+int
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = happy
+int
+weekend A;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = A;
+MISSING = .;
+DEFINE: CENTER A (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Happiness is predicted by social interactions, the slope is random
+S1 | happy ON int;
+! Control for weekend
+happy ON weekend;
+%BETWEEN%
+! Covariance between intercept and slope
+happy WITH S1;
+! The intercept is predicted by social interactions
+happy ON int;
+! The intercept is predicted by agreeableness
+happy ON A;
+! The slope is predicted by agreeableness
+S1 ON A;
+OUTPUT: STDYX STDY TECH8;

@@ -1,0 +1,32 @@
+TITLE: Analysis 1
+DATA: FILE = analysis1_S1.dat;
+VARIABLE:
+NAMES = ID WB content stressed lonely
+int
+E A C N O gender ethnicity SES weekend;
+USEVARIABLES = content
+int
+weekend O;
+CLUSTER = ID;
+WITHIN = weekend;
+BETWEEN = O;
+MISSING = .;
+DEFINE: CENTER O (GRANDMEAN);
+ANALYSIS: TYPE = TWOLEVEL RANDOM; ESTIMATOR = BAYES;
+BITERATIONS = (10000); PROCESSORS = 2;
+MODEL:
+%WITHIN%
+! Contentment is predicted by social interactions, the slope is random
+S1 | content ON int;
+! Control for weekend
+content ON weekend;
+%BETWEEN%
+! Covariance between intercept and slope
+content WITH S1;
+! The intercept is predicted by social interactions
+content ON int;
+! The intercept is predicted by openness
+content ON O;
+! The slope is predicted by openness
+S1 ON O;
+OUTPUT: STDYX STDY TECH8;
